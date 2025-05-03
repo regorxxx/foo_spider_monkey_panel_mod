@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="qwr\abort_callback.cpp" />
+    <ClCompile Include="qwr\delayed_executor.cpp" />
+    <ClCompile Include="qwr\error_popup.cpp" />
+    <ClCompile Include="qwr\fb2k_paths.cpp" />
+    <ClCompile Include="qwr\file_helpers.cpp" />
+    <ClCompile Include="qwr\hook_handler.cpp" />
+    <ClCompile Include="qwr\pfc_helpers_cfg.cpp" />
+    <ClCompile Include="qwr\pfc_helpers_stream.cpp" />
+    <ClCompile Include="qwr\semantic_version.cpp" />
+    <ClCompile Include="qwr\string_helpers.cpp" />
+    <ClCompile Include="qwr\text_helpers.cpp" />
+    <ClCompile Include="qwr\thread_helpers.cpp" />
+    <ClCompile Include="qwr\thread_pool.cpp" />
+    <ClCompile Include="qwr\ui_centered_message_box.cpp" />
+    <ClCompile Include="qwr\unicode.cpp" />
+    <ClCompile Include="qwr\winapi_error_helpers.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="qwr\abort_callback.h" />
+    <ClInclude Include="qwr\delayed_executor.h" />
+    <ClInclude Include="qwr\error_popup.h" />
+    <ClInclude Include="qwr\fb2k_adv_config.h" />
+    <ClInclude Include="qwr\fb2k_config.h" />
+    <ClInclude Include="qwr\fb2k_config_ui_option.h" />
+    <ClInclude Include="qwr\fb2k_paths.h" />
+    <ClInclude Include="qwr\file_helpers.h" />
+    <ClInclude Include="qwr\final_action.h" />
+    <ClInclude Include="qwr\hook_handler.h" />
+    <ClInclude Include="qwr\macros.h" />
+    <ClInclude Include="qwr\pfc_helpers_cfg.h" />
+    <ClInclude Include="qwr\pfc_helpers_cnt.h" />
+    <ClInclude Include="qwr\pfc_helpers_stream.h" />
+    <ClInclude Include="qwr\pfc_helpers_ui.h" />
+    <ClInclude Include="qwr\qwr_exception.h" />
+    <ClInclude Include="qwr\semantic_version.h" />
+    <ClInclude Include="qwr\string_helpers.h" />
+    <ClInclude Include="qwr\text_helpers.h" />
+    <ClInclude Include="qwr\thread_helpers.h" />
+    <ClInclude Include="qwr\thread_pool.h" />
+    <ClInclude Include="qwr\type_traits.h" />
+    <ClInclude Include="qwr\ui_centered_message_box.h" />
+    <ClInclude Include="qwr\ui_ddx.h" />
+    <ClInclude Include="qwr\ui_ddx_option.h" />
+    <ClInclude Include="qwr\ui_option.h" />
+    <ClInclude Include="qwr\unicode.h" />
+    <ClInclude Include="qwr\winapi_error_helpers.h" />
+    <ClInclude Include="stdafx.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{979a196b-7f80-47b2-8cda-b16540891f67}</ProjectGuid>
+    <RootNamespace>fb2kutils</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>..\foobar2000-sdk;..\includes;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/Zm200 /Zc:__cplusplus /Zc:preprocessor /experimental:newLambdaProcessor /Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>..\foobar2000-sdk;..\includes;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/Zm200 /Zc:__cplusplus /Zc:preprocessor /experimental:newLambdaProcessor /Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

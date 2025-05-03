@@ -1,0 +1,492 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\workspaces\packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.props" Condition="Exists('..\workspaces\packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.props')" />
+  <Import Project="..\workspaces\packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.props" Condition="Exists('..\workspaces\packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.props')" />
+  <Import Project="..\workspaces\packages\Microsoft.Build.Tasks.Git.1.0.0\build\Microsoft.Build.Tasks.Git.props" Condition="Exists('..\workspaces\packages\Microsoft.Build.Tasks.Git.1.0.0\build\Microsoft.Build.Tasks.Git.props')" />
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{43DF6037-DBE4-4468-9A50-4311495F3C86}</ProjectGuid>
+    <RootNamespace>foo_spider_monkey_panel</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+    <UseOfMfc>false</UseOfMfc>
+    <UseOfAtl>false</UseOfAtl>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(SolutionDir)\..\props\submodules\submodules.props" />
+    <Import Project="$(SolutionDir)\..\props\submodules\fb2k_utils.props" />
+    <Import Project="$(QwrFb2kUtilsPropsDir)env\BuildEnvCommon.props" />
+    <Import Project="$(QwrFb2kUtilsPropsDir)env\BuildEnvCpp.props" />
+    <Import Project="$(QwrFb2kUtilsPropsDir)env\StaticRuntime.props" />
+    <Import Project="$(QwrFb2kUtilsPropsDir)submodules\fmt.props" />
+    <Import Project="$(QwrFb2kUtilsPropsDir)submodules\foobar2000_sdk.props" />
+    <Import Project="$(QwrFb2kUtilsPropsDir)submodules\json.props" />
+    <Import Project="$(QwrFb2kUtilsPropsDir)submodules\range.props" />
+    <Import Project="$(QwrFb2kUtilsPropsDir)submodules\pfc.props" />
+    <Import Project="$(QwrFb2kUtilsPropsDir)submodules\scintilla.props" />
+    <Import Project="$(QwrFb2kUtilsPropsDir)submodules\timsort.props" />
+    <Import Project="$(QwrFb2kUtilsPropsDir)submodules\wtl.props" />
+    <Import Project="$(SolutionDir)\..\props\local_dependencies\miniz.props" />
+    <Import Project="$(SolutionDir)\..\props\local_dependencies\mozjs.props" />
+    <Import Project="$(SolutionDir)\..\props\local_dependencies\property_list.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup>
+    <CAExcludePath>$(IncludePath);$(ProjectDir)..\PropertyList\;$(CAExcludePath)</CAExcludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <EnableMicrosoftCodeAnalysis>true</EnableMicrosoftCodeAnalysis>
+    <EnableClangTidyCodeAnalysis>false</EnableClangTidyCodeAnalysis>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <PreprocessorDefinitions>_WINDOWS;_USRDLL;_SILENCE_CXX20_U8PATH_DEPRECATION_WARNING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalOptions>/Zm200 /Zc:__cplusplus /Zc:preprocessor /experimental:newLambdaProcessor /Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <DisableSpecificWarnings>5105;26812;33005</DisableSpecificWarnings>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>GdiPlus.lib;shlwapi.lib;WinMM.lib;Imm32.lib;uxtheme.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalOptions>/SOURCELINK:$(IndependentGeneratedDir)source_link.json %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FloatingPointModel>Fast</FloatingPointModel>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+    </ResourceCompile>
+    <Link>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\miniz\miniz.vcxproj">
+      <Project>{1b0654f2-3fec-43b8-8c0a-6206c64bd6b2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\submodules\columns_ui-sdk\columns_ui-sdk.vcxproj">
+      <Project>{93ec0ede-01cd-4fb0-b8e8-4f2a027e026e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\submodules\fb2k_utils\src\fb2k_utils.vcxproj">
+      <Project>{ee3bf4f9-2014-4cff-96c8-44cfb85e0571}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\submodules\foobar2000\foobar2000_component_client\foobar2000_component_client.vcxproj">
+      <Project>{71ad2674-065b-48f5-b8b0-e1f9d3892081}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\submodules\foobar2000\SDK\foobar2000_SDK.vcxproj">
+      <Project>{e8091321-d79d-4575-86ef-064ea1a4a20d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\submodules\pfc\pfc.vcxproj">
+      <Project>{ebfffb4e-261d-44d3-b89c-957b31a0bf9c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\submodules\scintilla\lexilla\src\lexilla.vcxproj">
+      <Project>{7ca4bbc9-83ca-42be-84bb-8a98368fabab}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\submodules\scintilla\win32\scintilla.vcxproj">
+      <Project>{10b2a7ef-9089-4352-ba26-7e9aef50987d}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="component_paths.cpp" />
+    <ClCompile Include="com_objects\file_drop_target.cpp" />
+    <ClCompile Include="com_utils\com_destruction_handler.cpp" />
+    <ClCompile Include="com_utils\com_error_helpers.cpp" />
+    <ClCompile Include="config\delayed_package_utils.cpp" />
+    <ClCompile Include="config\package_utils.cpp" />
+    <ClCompile Include="config\panel_config.cpp" />
+    <ClCompile Include="config\panel_config_binary.cpp" />
+    <ClCompile Include="config\panel_config_com.cpp" />
+    <ClCompile Include="config\panel_config_json.cpp" />
+    <ClCompile Include="config\parsed_panel_config.cpp" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="com_objects\com_tools.cpp" />
+    <ClCompile Include="com_objects\drop_source_impl.cpp" />
+    <ClCompile Include="com_objects\drop_target_impl.cpp" />
+    <ClCompile Include="com_objects\track_drop_target.cpp" />
+    <ClCompile Include="com_objects\host_external.cpp" />
+    <ClCompile Include="com_objects\internal\drag_image.cpp" />
+    <ClCompile Include="com_objects\internal\drag_utils.cpp" />
+    <ClCompile Include="convert\com.cpp" />
+    <ClCompile Include="convert\js_to_native.cpp" />
+    <ClCompile Include="convert\native_to_js.cpp" />
+    <ClCompile Include="events\event.cpp" />
+    <ClCompile Include="events\event_drag.cpp" />
+    <ClCompile Include="events\event_js_task.cpp" />
+    <ClCompile Include="events\event_dispatcher.cpp" />
+    <ClCompile Include="events\event_mouse.cpp" />
+    <ClCompile Include="events\event_basic.cpp" />
+    <ClCompile Include="events\event_js_executor.cpp" />
+    <ClCompile Include="events\event_notify_others.cpp" />
+    <ClCompile Include="events\event_timer.cpp" />
+    <ClCompile Include="events\task_controller.cpp" />
+    <ClCompile Include="fb2k\acfu_integration.cpp" />
+    <ClCompile Include="fb2k\advanced_config.cpp" />
+    <ClCompile Include="fb2k\config.cpp" />
+    <ClCompile Include="fb2k\fb2k_callbacks.cpp" />
+    <ClCompile Include="fb2k\mainmenu.cpp" />
+    <ClCompile Include="fb2k\mainmenu_dynamic.cpp" />
+    <ClCompile Include="fb2k\playlist_lock.cpp" />
+    <ClCompile Include="fb2k\selection_holder_helper.cpp" />
+    <ClCompile Include="fb2k\stats.cpp" />
+    <ClCompile Include="js_engine\heartbeat_window.cpp" />
+    <ClCompile Include="js_engine\js_realm_inner.cpp" />
+    <ClCompile Include="js_engine\js_container.cpp" />
+    <ClCompile Include="js_engine\js_engine.cpp" />
+    <ClCompile Include="js_engine\js_gc.cpp" />
+    <ClCompile Include="js_engine\js_internal_global.cpp" />
+    <ClCompile Include="js_engine\js_monitor.cpp" />
+    <ClCompile Include="js_engine\native_to_js_invoker.cpp" />
+    <ClCompile Include="js_objects\active_x_object.cpp" />
+    <ClCompile Include="js_objects\active_x_object_iterator.cpp" />
+    <ClCompile Include="js_objects\console.cpp" />
+    <ClCompile Include="js_objects\context_menu_manager.cpp" />
+    <ClCompile Include="js_objects\drop_source_action.cpp" />
+    <ClCompile Include="js_objects\enumerator.cpp" />
+    <ClCompile Include="js_objects\fb_file_info.cpp" />
+    <ClCompile Include="js_objects\fb_metadb_handle.cpp" />
+    <ClCompile Include="js_objects\fb_metadb_handle_list.cpp" />
+    <ClCompile Include="js_objects\fb_metadb_handle_list_iterator.cpp" />
+    <ClCompile Include="js_objects\fb_playback_queue_item.cpp" />
+    <ClCompile Include="js_objects\fb_playing_item_location.cpp" />
+    <ClCompile Include="js_objects\fb_playlist_manager.cpp" />
+    <ClCompile Include="js_objects\fb_playlist_recycler.cpp" />
+    <ClCompile Include="js_objects\fb_profiler.cpp" />
+    <ClCompile Include="js_objects\fb_title_format.cpp" />
+    <ClCompile Include="js_objects\fb_tooltip.cpp" />
+    <ClCompile Include="js_objects\fb_ui_selection_holder.cpp" />
+    <ClCompile Include="js_objects\fb_utils.cpp" />
+    <ClCompile Include="js_objects\fb_window.cpp" />
+    <ClCompile Include="js_objects\gdi_bitmap.cpp" />
+    <ClCompile Include="js_objects\gdi_graphics.cpp" />
+    <ClCompile Include="js_objects\gdi_raw_bitmap.cpp" />
+    <ClCompile Include="js_objects\gdi_utils.cpp" />
+    <ClCompile Include="js_objects\gdi_font.cpp" />
+    <ClCompile Include="js_objects\global_object.cpp" />
+    <ClCompile Include="js_objects\hacks.cpp" />
+    <ClCompile Include="js_objects\internal\fb_properties.cpp" />
+    <ClCompile Include="js_objects\internal\global_heap_manager.cpp" />
+    <ClCompile Include="js_objects\main_menu_manager.cpp" />
+    <ClCompile Include="js_objects\measure_string_info.cpp" />
+    <ClCompile Include="js_objects\menu_object.cpp" />
+    <ClCompile Include="js_objects\theme_manager.cpp" />
+    <ClCompile Include="js_objects\utils.cpp" />
+    <ClCompile Include="js_objects\window.cpp" />
+    <ClCompile Include="js_utils\cached_utf8_paths_hack.cpp" />
+    <ClCompile Include="js_utils\current_script_path_hack.cpp" />
+    <ClCompile Include="js_utils\js_art_helpers.cpp" />
+    <ClCompile Include="js_utils\js_error_helper.cpp" />
+    <ClCompile Include="js_utils\js_hwnd_helpers.cpp" />
+    <ClCompile Include="js_utils\js_image_helpers.cpp" />
+    <ClCompile Include="js_utils\js_object_helper.cpp" />
+    <ClCompile Include="js_utils\serialized_value.cpp" />
+    <ClCompile Include="panel\edit_script.cpp" />
+    <ClCompile Include="panel\js_panel_window.cpp" />
+    <ClCompile Include="panel\js_panel_window_cui.cpp" />
+    <ClCompile Include="panel\js_panel_window_dui.cpp" />
+    <ClCompile Include="panel\modal_blocking_scope.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="timeout\timeout.cpp" />
+    <ClCompile Include="timeout\timeout_executor.cpp" />
+    <ClCompile Include="timeout\timeout_manager.cpp" />
+    <ClCompile Include="timeout\timer_custom.cpp" />
+    <ClCompile Include="timeout\timer_manager_custom.cpp" />
+    <ClCompile Include="timeout\timer_manager_native.cpp" />
+    <ClCompile Include="timeout\timer_native.cpp" />
+    <ClCompile Include="ui\impl\ui_conf_tab_appearance.cpp" />
+    <ClCompile Include="ui\impl\ui_conf_tab_package.cpp" />
+    <ClCompile Include="ui\impl\ui_conf_tab_properties.cpp" />
+    <ClCompile Include="ui\impl\ui_conf_tab_script_source.cpp" />
+    <ClCompile Include="ui\scintilla\sci_config.cpp" />
+    <ClCompile Include="ui\scintilla\sci_prop_sets.cpp" />
+    <ClCompile Include="ui\scintilla\ui_sci_editor.cpp" />
+    <ClCompile Include="ui\scintilla\ui_sci_find_replace.cpp" />
+    <ClCompile Include="ui\scintilla\ui_sci_goto.cpp" />
+    <ClCompile Include="ui\ui_conf.cpp" />
+    <ClCompile Include="ui\ui_editor.cpp" />
+    <ClCompile Include="ui\ui_edit_in_progress.cpp" />
+    <ClCompile Include="ui\ui_html.cpp">
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
+    </ClCompile>
+    <ClCompile Include="ui\ui_input_box.cpp" />
+    <ClCompile Include="ui\ui_name_value_edit.cpp" />
+    <ClCompile Include="ui\ui_package_manager.cpp" />
+    <ClCompile Include="ui\ui_editor_config.cpp" />
+    <ClCompile Include="ui\ui_slow_script.cpp" />
+    <ClCompile Include="utils\art_helpers.cpp" />
+    <ClCompile Include="utils\art_loading_options.cpp" />
+    <ClCompile Include="utils\edit_text.cpp" />
+    <ClCompile Include="utils\gdi_error_helpers.cpp" />
+    <ClCompile Include="utils\gdi_helpers.cpp" />
+    <ClCompile Include="utils\guid_helpers.cpp" />
+    <ClCompile Include="utils\image_helpers.cpp" />
+    <ClCompile Include="utils\js_exception.cpp" />
+    <ClCompile Include="utils\kmeans.cpp" />
+    <ClCompile Include="utils\location_processor.cpp" />
+    <ClCompile Include="utils\logging.cpp" />
+    <ClCompile Include="utils\md5.cpp" />
+    <ClCompile Include="utils\menu_helpers.cpp" />
+    <ClCompile Include="utils\path_helpers.cpp" />
+    <ClCompile Include="utils\resource_helpers.cpp" />
+    <ClCompile Include="utils\stackblur.cpp" />
+    <ClCompile Include="utils\stacktrace.cpp" />
+    <ClCompile Include="utils\text_helpers.cpp" />
+    <ClCompile Include="utils\thread_pool_instance.cpp" />
+    <ClCompile Include="utils\zip_utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="component_defines.h" />
+    <ClInclude Include="component_guids.h" />
+    <ClInclude Include="component_paths.h" />
+    <ClInclude Include="com_objects\com_tools.h" />
+    <ClInclude Include="com_objects\dispatch_ptr.h" />
+    <ClInclude Include="com_objects\drop_source_impl.h" />
+    <ClInclude Include="com_objects\drop_target_impl.h" />
+    <ClInclude Include="com_objects\file_drop_target.h" />
+    <ClInclude Include="com_objects\track_drop_target.h" />
+    <ClInclude Include="com_objects\host_external.h" />
+    <ClInclude Include="com_objects\internal\drag_image.h" />
+    <ClInclude Include="com_objects\internal\drag_utils.h" />
+    <ClInclude Include="com_objects\internal\handle.h" />
+    <ClInclude Include="com_objects\com_interface.h" />
+    <ClInclude Include="com_utils\com_destruction_handler.h" />
+    <ClInclude Include="com_utils\com_error_helpers.h" />
+    <ClInclude Include="config\delayed_package_utils.h" />
+    <ClInclude Include="config\package_utils.h" />
+    <ClInclude Include="config\panel_config.h" />
+    <ClInclude Include="config\panel_config_binary.h" />
+    <ClInclude Include="config\panel_config_com.h" />
+    <ClInclude Include="config\panel_config_json.h" />
+    <ClInclude Include="config\parsed_panel_config.h" />
+    <ClInclude Include="convert\com.h" />
+    <ClInclude Include="convert\js_to_native.h" />
+    <ClInclude Include="convert\native_to_js.h" />
+    <ClInclude Include="events\event.h" />
+    <ClInclude Include="events\event_drag.h" />
+    <ClInclude Include="events\event_js_callback.h" />
+    <ClInclude Include="events\event_js_task.h" />
+    <ClInclude Include="events\event_dispatcher.h" />
+    <ClInclude Include="events\event_mouse.h" />
+    <ClInclude Include="events\event_basic.h" />
+    <ClInclude Include="events\event_js_executor.h" />
+    <ClInclude Include="events\event_notify_others.h" />
+    <ClInclude Include="events\event_timer.h" />
+    <ClInclude Include="events\task_controller.h" />
+    <ClInclude Include="fb2k\advanced_config.h" />
+    <ClInclude Include="fb2k\config.h" />
+    <ClInclude Include="fb2k\mainmenu_dynamic.h" />
+    <ClInclude Include="fb2k\playlist_lock.h" />
+    <ClInclude Include="fb2k\selection_holder_helper.h" />
+    <ClInclude Include="fb2k\stats.h" />
+    <ClInclude Include="js_engine\heartbeat_window.h" />
+    <ClInclude Include="js_engine\js_realm_inner.h" />
+    <ClInclude Include="js_engine\js_container.h" />
+    <ClInclude Include="js_engine\js_engine.h" />
+    <ClInclude Include="js_engine\js_gc.h" />
+    <ClInclude Include="js_engine\js_internal_global.h" />
+    <ClInclude Include="js_engine\js_monitor.h" />
+    <ClInclude Include="js_engine\js_to_native_invoker.h" />
+    <ClInclude Include="js_engine\native_to_js_invoker.h" />
+    <ClInclude Include="js_objects\active_x_object.h" />
+    <ClInclude Include="js_objects\active_x_object_iterator.h" />
+    <ClInclude Include="js_objects\enumerator.h" />
+    <ClInclude Include="js_objects\fb_metadb_handle_list_iterator.h" />
+    <ClInclude Include="js_objects\fb_playlist_recycler.h" />
+    <ClInclude Include="js_objects\fb_window.h" />
+    <ClInclude Include="js_objects\hacks.h" />
+    <ClInclude Include="js_objects\internal\fb_properties.h" />
+    <ClInclude Include="js_objects\internal\global_heap_manager.h" />
+    <ClInclude Include="js_objects\internal\prototype_ids.h" />
+    <ClInclude Include="js_objects\object_base.h" />
+    <ClInclude Include="js_objects\console.h" />
+    <ClInclude Include="js_objects\context_menu_manager.h" />
+    <ClInclude Include="js_objects\drop_source_action.h" />
+    <ClInclude Include="js_objects\fb_file_info.h" />
+    <ClInclude Include="js_objects\fb_metadb_handle.h" />
+    <ClInclude Include="js_objects\fb_metadb_handle_list.h" />
+    <ClInclude Include="js_objects\fb_playback_queue_item.h" />
+    <ClInclude Include="js_objects\fb_playing_item_location.h" />
+    <ClInclude Include="js_objects\fb_playlist_manager.h" />
+    <ClInclude Include="js_objects\fb_profiler.h" />
+    <ClInclude Include="js_objects\fb_title_format.h" />
+    <ClInclude Include="js_objects\fb_tooltip.h" />
+    <ClInclude Include="js_objects\fb_ui_selection_holder.h" />
+    <ClInclude Include="js_objects\fb_utils.h" />
+    <ClInclude Include="js_objects\gdi_bitmap.h" />
+    <ClInclude Include="js_objects\gdi_graphics.h" />
+    <ClInclude Include="js_objects\gdi_raw_bitmap.h" />
+    <ClInclude Include="js_objects\gdi_utils.h" />
+    <ClInclude Include="js_objects\gdi_font.h" />
+    <ClInclude Include="js_objects\global_object.h" />
+    <ClInclude Include="js_objects\main_menu_manager.h" />
+    <ClInclude Include="js_objects\measure_string_info.h" />
+    <ClInclude Include="js_objects\menu_object.h" />
+    <ClInclude Include="js_objects\theme_manager.h" />
+    <ClInclude Include="js_objects\utils.h" />
+    <ClInclude Include="js_objects\window.h" />
+    <ClInclude Include="js_utils\cached_utf8_paths_hack.h" />
+    <ClInclude Include="js_utils\current_script_path_hack.h" />
+    <ClInclude Include="js_utils\js_art_helpers.h" />
+    <ClInclude Include="js_utils\js_async_task.h" />
+    <ClInclude Include="js_utils\js_error_helper.h" />
+    <ClInclude Include="js_utils\js_heap_helper.h" />
+    <ClInclude Include="js_utils\js_hwnd_helpers.h" />
+    <ClInclude Include="js_utils\js_image_helpers.h" />
+    <ClInclude Include="js_utils\js_object_helper.h" />
+    <ClInclude Include="js_utils\js_property_helper.h" />
+    <ClInclude Include="js_utils\js_prototype_helpers.h" />
+    <ClInclude Include="js_utils\scope_helper.h" />
+    <ClInclude Include="js_utils\serialized_value.h" />
+    <ClInclude Include="panel\drag_action_params.h" />
+    <ClInclude Include="panel\edit_script.h" />
+    <ClInclude Include="panel\js_panel_window.h" />
+    <ClInclude Include="panel\js_panel_window_cui.h" />
+    <ClInclude Include="panel\js_panel_window_dui.h" />
+    <ClInclude Include="panel\modal_blocking_scope.h" />
+    <ClInclude Include="panel\user_message.h" />
+    <ClInclude Include="resources\resource.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="timeout\timeout.h" />
+    <ClInclude Include="timeout\timeout_executor.h" />
+    <ClInclude Include="timeout\timeout_manager.h" />
+    <ClInclude Include="timeout\timer_custom.h" />
+    <ClInclude Include="timeout\timer_interface.h" />
+    <ClInclude Include="timeout\timer_interface_fwd.h" />
+    <ClInclude Include="timeout\timer_manager_custom.h" />
+    <ClInclude Include="timeout\timer_manager_native.h" />
+    <ClInclude Include="timeout\timer_native.h" />
+    <ClInclude Include="timeout\time_types.h" />
+    <ClInclude Include="ui\impl\ui_conf_tab_appearance.h" />
+    <ClInclude Include="ui\impl\ui_conf_tab_package.h" />
+    <ClInclude Include="ui\impl\ui_conf_tab_properties.h" />
+    <ClInclude Include="ui\impl\ui_conf_tab_script_source.h" />
+    <ClInclude Include="ui\impl\ui_itab.h" />
+    <ClInclude Include="ui\scintilla\sci_config.h" />
+    <ClInclude Include="ui\scintilla\sci_prop_sets.h" />
+    <ClInclude Include="ui\scintilla\ui_sci_editor.h" />
+    <ClInclude Include="ui\scintilla\ui_sci_find_replace.h" />
+    <ClInclude Include="ui\scintilla\ui_sci_goto.h" />
+    <ClInclude Include="ui\scintilla\wtlscintilla.h" />
+    <ClInclude Include="ui\ui_conf.h" />
+    <ClInclude Include="ui\ui_editor.h" />
+    <ClInclude Include="ui\ui_edit_in_progress.h" />
+    <ClInclude Include="ui\ui_html.h" />
+    <ClInclude Include="ui\ui_input_box.h" />
+    <ClInclude Include="ui\ui_name_value_edit.h" />
+    <ClInclude Include="ui\ui_package_manager.h" />
+    <ClInclude Include="ui\ui_editor_config.h" />
+    <ClInclude Include="ui\ui_slow_script.h" />
+    <ClInclude Include="utils\art_helpers.h" />
+    <ClInclude Include="utils\art_loading_options.h" />
+    <ClInclude Include="utils\colour_helpers.h" />
+    <ClInclude Include="utils\edit_text.h" />
+    <ClInclude Include="utils\fmt_pfc_adaptor.h" />
+    <ClInclude Include="utils\gdi_error_helpers.h" />
+    <ClInclude Include="utils\gdi_helpers.h" />
+    <ClInclude Include="utils\guid_helpers.h" />
+    <ClInclude Include="utils\image_helpers.h" />
+    <ClInclude Include="utils\js_exception.h" />
+    <ClInclude Include="utils\kmeans.h" />
+    <ClInclude Include="utils\location_processor.h" />
+    <ClInclude Include="utils\logging.h" />
+    <ClInclude Include="utils\make_unique_ptr.h" />
+    <ClInclude Include="utils\md5.h" />
+    <ClInclude Include="utils\menu_helpers.h" />
+    <ClInclude Include="utils\path_helpers.h" />
+    <ClInclude Include="utils\relative_filepath_trie.h" />
+    <ClInclude Include="utils\resource_helpers.h" />
+    <ClInclude Include="utils\stackblur.h" />
+    <ClInclude Include="utils\stacktrace.h" />
+    <ClInclude Include="utils\text_helpers.h" />
+    <ClInclude Include="utils\thread_pool_instance.h" />
+    <ClInclude Include="utils\zip_utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="resources\default_script.js" />
+    <None Include="resources\recovery_package_json.json" />
+    <None Include="resources\foo_spider_monkey_panel.rc2" />
+    <None Include="resources\recovery_package_script.js" />
+    <None Include="resources\scintilla_interface.api" />
+    <None Include="resources\scintilla_jscript.api" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="com_objects\com_interface.idl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources\foo_spider_monkey_panel.rc" />
+    <ResourceCompile Include="resources\version.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\workspaces\packages\Microsoft.Build.Tasks.Git.1.0.0\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('..\workspaces\packages\Microsoft.Build.Tasks.Git.1.0.0\build\Microsoft.Build.Tasks.Git.targets')" />
+    <Import Project="..\workspaces\packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.targets" Condition="Exists('..\workspaces\packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.targets')" />
+    <Import Project="..\workspaces\packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('..\workspaces\packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.targets')" />
+  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\workspaces\packages\Microsoft.Build.Tasks.Git.1.0.0\build\Microsoft.Build.Tasks.Git.props')" Text="$([System.String]::Format('$(ErrorText)', '..\workspaces\packages\Microsoft.Build.Tasks.Git.1.0.0\build\Microsoft.Build.Tasks.Git.props'))" />
+    <Error Condition="!Exists('..\workspaces\packages\Microsoft.Build.Tasks.Git.1.0.0\build\Microsoft.Build.Tasks.Git.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\workspaces\packages\Microsoft.Build.Tasks.Git.1.0.0\build\Microsoft.Build.Tasks.Git.targets'))" />
+    <Error Condition="!Exists('..\workspaces\packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '..\workspaces\packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.props'))" />
+    <Error Condition="!Exists('..\workspaces\packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\workspaces\packages\Microsoft.SourceLink.Common.1.0.0\build\Microsoft.SourceLink.Common.targets'))" />
+    <Error Condition="!Exists('..\workspaces\packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.props')" Text="$([System.String]::Format('$(ErrorText)', '..\workspaces\packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.props'))" />
+    <Error Condition="!Exists('..\workspaces\packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\workspaces\packages\Microsoft.SourceLink.GitHub.1.0.0\build\Microsoft.SourceLink.GitHub.targets'))" />
+  </Target>
+</Project>
