@@ -55,10 +55,12 @@ MJS_DEFINE_JS_FN_FROM_NATIVE( CreatePlaylist, JsFbPlaylistManager::CreatePlaylis
 MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( DuplicatePlaylist, JsFbPlaylistManager::DuplicatePlaylist, JsFbPlaylistManager::DuplicatePlaylistWithOpt, 1 );
 MJS_DEFINE_JS_FN_FROM_NATIVE( EnsurePlaylistItemVisible, JsFbPlaylistManager::EnsurePlaylistItemVisible );
 MJS_DEFINE_JS_FN_FROM_NATIVE( ExecutePlaylistDefaultAction, JsFbPlaylistManager::ExecutePlaylistDefaultAction );
+MJS_DEFINE_JS_FN_FROM_NATIVE( FindByGUID, JsFbPlaylistManager::FindByGUID );
 MJS_DEFINE_JS_FN_FROM_NATIVE( FindOrCreatePlaylist, JsFbPlaylistManager::FindOrCreatePlaylist );
 MJS_DEFINE_JS_FN_FROM_NATIVE( FindPlaybackQueueItemIndex, JsFbPlaylistManager::FindPlaybackQueueItemIndex );
 MJS_DEFINE_JS_FN_FROM_NATIVE( FindPlaylist, JsFbPlaylistManager::FindPlaylist );
 MJS_DEFINE_JS_FN_FROM_NATIVE( FlushPlaybackQueue, JsFbPlaylistManager::FlushPlaybackQueue );
+MJS_DEFINE_JS_FN_FROM_NATIVE( GetGUID, JsFbPlaylistManager::GetGUID);
 MJS_DEFINE_JS_FN_FROM_NATIVE( GetPlaybackQueueContents, JsFbPlaylistManager::GetPlaybackQueueContents );
 MJS_DEFINE_JS_FN_FROM_NATIVE( GetPlaybackQueueHandles, JsFbPlaylistManager::GetPlaybackQueueHandles );
 MJS_DEFINE_JS_FN_FROM_NATIVE( GetPlayingItemLocation, JsFbPlaylistManager::GetPlayingItemLocation );
@@ -110,10 +112,12 @@ constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
         JS_FN( "DuplicatePlaylist", DuplicatePlaylist, 1, kDefaultPropsFlags ),
         JS_FN( "EnsurePlaylistItemVisible", EnsurePlaylistItemVisible, 2, kDefaultPropsFlags ),
         JS_FN( "ExecutePlaylistDefaultAction", ExecutePlaylistDefaultAction, 2, kDefaultPropsFlags ),
+        JS_FN( "FindByGUID", FindByGUID, 1, kDefaultPropsFlags),
         JS_FN( "FindOrCreatePlaylist", FindOrCreatePlaylist, 2, kDefaultPropsFlags ),
         JS_FN( "FindPlaybackQueueItemIndex", FindPlaybackQueueItemIndex, 3, kDefaultPropsFlags ),
         JS_FN( "FindPlaylist", FindPlaylist, 1, kDefaultPropsFlags ),
         JS_FN( "FlushPlaybackQueue", FlushPlaybackQueue, 0, kDefaultPropsFlags ),
+        JS_FN( "GetGUID", GetGUID, 1, kDefaultPropsFlags),
         JS_FN( "GetPlaybackQueueContents", GetPlaybackQueueContents, 0, kDefaultPropsFlags ),
         JS_FN( "GetPlaybackQueueHandles", GetPlaybackQueueHandles, 0, kDefaultPropsFlags ),
         JS_FN( "GetPlayingItemLocation", GetPlayingItemLocation, 0, kDefaultPropsFlags ),
@@ -362,6 +366,12 @@ bool JsFbPlaylistManager::ExecutePlaylistDefaultAction( uint32_t playlistIndex, 
     return playlist_manager::get()->playlist_execute_default_action( playlistIndex, playlistItemIndex );
 }
 
+int32_t JsFbPlaylistManager::FindByGUID(const qwr::u8string& str)
+{
+    const auto guid = pfc::GUID_from_text(str.c_str());
+    return static_cast<int32_t>(playlist_manager_v5::get()->find_playlist_by_guid(guid));
+}
+
 uint32_t JsFbPlaylistManager::FindOrCreatePlaylist( const qwr::u8string& name, bool unlocked )
 {
     auto api = playlist_manager::get();
@@ -402,6 +412,16 @@ int32_t JsFbPlaylistManager::FindPlaylist( const qwr::u8string& name )
 void JsFbPlaylistManager::FlushPlaybackQueue()
 {
     playlist_manager::get()->queue_flush();
+}
+
+qwr::u8string JsFbPlaylistManager::GetGUID(uint32_t playlistIndex)
+{
+    const auto api = playlist_manager_v5::get();
+
+    qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
+
+    const auto guid = api->playlist_get_guid(playlistIndex);
+    return pfc::print_guid(guid).get_ptr();
 }
 
 JS::Value JsFbPlaylistManager::GetPlaybackQueueContents()

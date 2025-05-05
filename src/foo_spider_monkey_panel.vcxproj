@@ -425,6 +425,9 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
       <Project>{10b2a7ef-9089-4352-ba26-7e9aef50987d}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\scintilla_interface.api" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

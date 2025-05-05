@@ -51,10 +51,12 @@ public:
     uint32_t DuplicatePlaylistWithOpt( size_t optArgCount, uint32_t from, const qwr::u8string& name );
     void EnsurePlaylistItemVisible( uint32_t playlistIndex, uint32_t playlistItemIndex );
     bool ExecutePlaylistDefaultAction( uint32_t playlistIndex, uint32_t playlistItemIndex );
+    int32_t FindByGUID(const qwr::u8string& str);
     uint32_t FindOrCreatePlaylist( const qwr::u8string& name, bool unlocked );
     int32_t FindPlaybackQueueItemIndex( JsFbMetadbHandle* handle, uint32_t playlistIndex, uint32_t playlistItemIndex );
     int32_t FindPlaylist( const qwr::u8string& name );
     void FlushPlaybackQueue();
+    qwr::u8string GetGUID(uint32_t playlistIndex);
     JS::Value GetPlaybackQueueContents();
     JSObject* GetPlaybackQueueHandles();
     JSObject* GetPlayingItemLocation();
