@@ -355,7 +355,7 @@ public:
     {
         if ( idx >= this->size() )
         {
-            throw std::out_of_range;
+            throw std::out_of_range();
         }
         return this->operator[]( idx );
     }
@@ -363,7 +363,7 @@ public:
     {
         if ( idx >= this->size() )
         {
-            throw std::out_of_range;
+            throw std::out_of_range();
         }
         return this->operator[]( idx );
     }

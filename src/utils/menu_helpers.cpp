@@ -138,7 +138,7 @@ qwr::u8string GenerateMainmenuCommandPath( const GuidMenuMap& group_guid_map, co
 
             if ( !displayName.is_empty() )
             {
-                path = fmt::format( "{}/{}", displayName, path );
+                path = fmt::format( "{}/{}", displayName.get_ptr(), path);
             }
         }
 

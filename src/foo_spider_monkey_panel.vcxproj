@@ -33,7 +33,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ProjectDir);$(IncludePath);..\foobar2000-sdk;..\foobar2000-sdk\foobar2000;..\includes;..\scintilla\include;..\scintilla\lexilla\src;..\scintilla\lexlib;..\mozjs\include;..\fb2k_utils;..\miniz;..\src\PropertyList;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalOptions>/Zm200 /Zc:__cplusplus /Zc:preprocessor /experimental:newLambdaProcessor /Zc:char8_t- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/Zm200 /Zc:__cplusplus /Zc:preprocessor /experimental:newLambdaProcessor /Zc:char8_t- /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <DisableSpecificWarnings>5105;26812;33005</DisableSpecificWarnings>
       <TreatWarningAsError>false</TreatWarningAsError>
@@ -370,7 +370,6 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     <ClInclude Include="utils\art_loading_options.h" />
     <ClInclude Include="utils\colour_helpers.h" />
     <ClInclude Include="utils\edit_text.h" />
-    <ClInclude Include="utils\fmt_pfc_adaptor.h" />
     <ClInclude Include="utils\gdi_error_helpers.h" />
     <ClInclude Include="utils\gdi_helpers.h" />
     <ClInclude Include="utils\guid_helpers.h" />

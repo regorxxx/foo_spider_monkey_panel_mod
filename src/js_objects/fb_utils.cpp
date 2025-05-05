@@ -526,8 +526,6 @@ JSObject* JsFbUtils::GetNowPlaying()
 
 qwr::u8string JsFbUtils::GetOutputDevices()
 {
-    qwr::QwrException::ExpectTrue( static_api_test_t<output_manager_v2>(), "This method requires foobar2000 v1.4 or later" );
-
     using json = nlohmann::json;
 
     json j = json::array();
@@ -537,8 +535,8 @@ qwr::u8string JsFbUtils::GetOutputDevices()
     api->getCoreConfig( config );
 
     api->listDevices( [&j, &config]( const qwr::u8string& name, const GUID& output_id, const GUID& device_id ) {
-        const qwr::u8string output_string = fmt::format( "{{{}}}", pfc::print_guid( output_id ) );
-        const qwr::u8string device_string = fmt::format( "{{{}}}", pfc::print_guid( device_id ) );
+        const qwr::u8string output_string = fmt::format( "{{{}}}", pfc::print_guid( output_id ).get_ptr() );
+        const qwr::u8string device_string = fmt::format( "{{{}}}", pfc::print_guid( device_id ).get_ptr() );
 
         j.push_back(
             { { "name", name },
