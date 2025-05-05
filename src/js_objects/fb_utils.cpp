@@ -24,7 +24,6 @@
 #include <utils/art_helpers.h>
 #include <utils/menu_helpers.h>
 
-#include <qwr/delayed_executor.h>
 #include <qwr/fb2k_paths.h>
 #include <qwr/string_helpers.h>
 
@@ -800,7 +799,7 @@ void JsFbUtils::ShowLibrarySearchUI( const qwr::u8string& query )
 
 void JsFbUtils::ShowPopupMessage( const qwr::u8string& msg, const qwr::u8string& title )
 {
-    qwr::DelayedExecutor::GetInstance().AddTask( [msg, title] {
+    fb2k::inMainThread( [msg, title] {
         popup_message::g_show( msg.c_str(), title.c_str() );
     } );
 }
