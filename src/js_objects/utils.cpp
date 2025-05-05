@@ -30,6 +30,8 @@
 
 using namespace smp;
 
+namespace fs = std::filesystem;
+
 namespace
 {
 
@@ -68,6 +70,7 @@ MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( GetAlbumArtAsync, JsUtils::GetAlbumArtAsy
 MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( GetAlbumArtAsyncV2, JsUtils::GetAlbumArtAsyncV2, JsUtils::GetAlbumArtAsyncV2WithOpt, 4 );
 MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( GetAlbumArtEmbedded, JsUtils::GetAlbumArtEmbedded, JsUtils::GetAlbumArtEmbeddedWithOpt, 1 );
 MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( GetAlbumArtV2, JsUtils::GetAlbumArtV2, JsUtils::GetAlbumArtV2WithOpt, 2 );
+MJS_DEFINE_JS_FN_FROM_NATIVE( GetClipboardText, JsUtils::GetClipboardText );
 MJS_DEFINE_JS_FN_FROM_NATIVE( GetFileSize, JsUtils::GetFileSize );
 MJS_DEFINE_JS_FN_FROM_NATIVE( GetPackageInfo, JsUtils::GetPackageInfo );
 MJS_DEFINE_JS_FN_FROM_NATIVE( GetPackagePath, JsUtils::GetPackagePath );
@@ -82,6 +85,7 @@ MJS_DEFINE_JS_FN_FROM_NATIVE( MapString, JsUtils::MapString );
 MJS_DEFINE_JS_FN_FROM_NATIVE( PathWildcardMatch, JsUtils::PathWildcardMatch );
 MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( ReadINI, JsUtils::ReadINI, JsUtils::ReadINIWithOpt, 1 );
 MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( ReadTextFile, JsUtils::ReadTextFile, JsUtils::ReadTextFileWithOpt, 1 );
+MJS_DEFINE_JS_FN_FROM_NATIVE( SetClipboardText, JsUtils::SetClipboardText );
 MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( ShowHtmlDialog, JsUtils::ShowHtmlDialog, JsUtils::ShowHtmlDialogWithOpt, 1 );
 MJS_DEFINE_JS_FN_FROM_NATIVE( SplitFilePath, JsUtils::SplitFilePath );
 MJS_DEFINE_JS_FN_FROM_NATIVE( WriteINI, JsUtils::WriteINI );
@@ -102,6 +106,7 @@ constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
         JS_FN( "GetAlbumArtAsyncV2", GetAlbumArtAsyncV2, 2, kDefaultPropsFlags ),
         JS_FN( "GetAlbumArtEmbedded", GetAlbumArtEmbedded, 1, kDefaultPropsFlags ),
         JS_FN( "GetAlbumArtV2", GetAlbumArtV2, 1, kDefaultPropsFlags ),
+        JS_FN( "GetClipboardText", GetClipboardText, 0, kDefaultPropsFlags ),
         JS_FN( "GetFileSize", GetFileSize, 1, kDefaultPropsFlags ),
         JS_FN( "GetPackageInfo", GetPackageInfo, 1, kDefaultPropsFlags ),
         JS_FN( "GetPackagePath", GetPackagePath, 1, kDefaultPropsFlags ),
@@ -116,6 +121,7 @@ constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
         JS_FN( "PathWildcardMatch", PathWildcardMatch, 2, kDefaultPropsFlags ),
         JS_FN( "ReadINI", ReadINI, 3, kDefaultPropsFlags ),
         JS_FN( "ReadTextFile", ReadTextFile, 1, kDefaultPropsFlags ),
+        JS_FN( "SetClipboardText", SetClipboardText, 1, kDefaultPropsFlags ),
         JS_FN( "ShowHtmlDialog", ShowHtmlDialog, 3, kDefaultPropsFlags ),
         JS_FN( "SplitFilePath", SplitFilePath, 1, kDefaultPropsFlags ),
         JS_FN( "WriteINI", WriteINI, 4, kDefaultPropsFlags ),
@@ -220,25 +226,19 @@ bool JsUtils::CheckFont( const std::wstring& name ) const
     return ( it != font_families.cend() );
 }
 
-uint32_t JsUtils::ColourPicker( uint32_t hWnd, uint32_t default_colour )
+uint32_t JsUtils::ColourPicker( uint32_t, uint32_t default_colour )
 {
-    (void)hWnd;
+    static std::array<COLORREF, 16> colours{};
     const HWND hPanel = GetPanelHwndForCurrentGlobal( pJsCtx_ );
     qwr::QwrException::ExpectTrue( hPanel, "Method called before fb2k was initialized completely" );
 
-    COLORREF colour{};
-    std::array<COLORREF, 16> dummy{};
-    if ( !uChooseColor( &colour, hPanel, dummy.data() ) )
-    {
-        colour = smp::colour::ArgbToColorref( default_colour );
-    }
-
+    auto colour = smp::colour::ArgbToColorref(default_colour);
+    uChooseColor(&colour, hPanel, colours.data());
     return smp::colour::ColorrefToArgb( colour );
 }
 
 uint32_t JsUtils::DetectCharset( const std::wstring& path ) const
 {
-    namespace fs = std::filesystem;
     const auto cleanedPath = fs::path( path ).lexically_normal();
 
     return static_cast<uint32_t>( qwr::file::DetectFileCharset( cleanedPath ) );
@@ -257,20 +257,13 @@ void JsUtils::EditTextFile( const std::wstring& path )
     modal_dialog_scope scope( hPanel );
 
     // TODO: add options - editor_path, is_modal
-    smp::EditTextFile( hPanel, std::filesystem::path{ path }, false, false );
+    smp::EditTextFile( hPanel, fs::path{ path }, false, false );
 }
 
 bool JsUtils::FileExists( const std::wstring& path ) const
 {
-    namespace fs = std::filesystem;
-    try
-    {
-        return fs::exists( path );
-    }
-    catch ( const fs::filesystem_error& e )
-    {
-        throw qwr::QwrException( e );
-    }
+    std::error_code ec;
+    return fs::exists(path, ec);
 }
 
 JS::Value JsUtils::FileTest( const std::wstring& path, const std::wstring& mode )
@@ -430,18 +423,21 @@ JSObject* JsUtils::GetAlbumArtV2WithOpt( size_t optArgCount, JsFbMetadbHandle* h
     }
 }
 
+qwr::u8string JsUtils::GetClipboardText() const
+{
+    pfc::string8 text;
+    uGetClipboardString( text );
+    return qwr::u8string( text );
+}
+
 uint64_t JsUtils::GetFileSize( const std::wstring& path ) const
 {
-    namespace fs = std::filesystem;
-    try
+    if (fs::is_regular_file(path))
     {
-        qwr::QwrException::ExpectTrue( fs::exists( path ), L"Path does not point to a file: {}", path );
-        return fs::file_size( path );
+        return fs::file_size(path);
     }
-    catch ( const fs::filesystem_error& e )
-    {
-        throw qwr::QwrException( e );
-    }
+
+    return {};
 }
 
 JSObject* JsUtils::GetPackageInfo( const qwr::u8string& packageId ) const
@@ -580,28 +576,14 @@ qwr::u8string JsUtils::InputBoxWithOpt( size_t optArgCount, uint32_t hWnd, const
 
 bool JsUtils::IsDirectory( const std::wstring& path ) const
 {
-    namespace fs = std::filesystem;
-    try
-    {
-        return fs::is_directory( path );
-    }
-    catch ( const fs::filesystem_error& e )
-    {
-        throw qwr::QwrException( e );
-    }
+    std::error_code ec;
+    return fs::is_directory(path, ec);
 }
 
 bool JsUtils::IsFile( const std::wstring& path ) const
 {
-    namespace fs = std::filesystem;
-    try
-    {
-        return fs::is_regular_file( path );
-    }
-    catch ( const fs::filesystem_error& e )
-    {
-        throw qwr::QwrException( e );
-    }
+    std::error_code ec;
+    return fs::is_regular_file(path, ec);
 }
 
 bool JsUtils::IsKeyPressed( uint32_t vkey ) const
@@ -704,6 +686,11 @@ std::wstring JsUtils::ReadTextFileWithOpt( size_t optArgCount, const std::wstrin
     }
 }
 
+void JsUtils::SetClipboardText( const qwr::u8string& text )
+{
+    uSetClipboardString( text.c_str() );
+}
+
 JS::Value JsUtils::ShowHtmlDialog( uint32_t hWnd, const std::wstring& htmlCode, JS::HandleValue options )
 {
     (void)hWnd;
@@ -748,7 +735,7 @@ JS::Value JsUtils::ShowHtmlDialogWithOpt( size_t optArgCount, uint32_t hWnd, con
 
 JS::Value JsUtils::SplitFilePath( const std::wstring& path )
 {
-    const auto cleanedPath = std::filesystem::path( path ).lexically_normal();
+    const auto cleanedPath = fs::path( path ).lexically_normal();
 
     std::vector<std::wstring> out( 3 );
     if ( PathIsFileSpec( cleanedPath.filename().c_str() ) )
