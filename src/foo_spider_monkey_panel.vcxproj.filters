@@ -421,6 +421,9 @@
     <ClCompile Include="utils\art_loading_options.cpp">
       <Filter>utils</Filter>
     </ClCompile>
+    <ClCompile Include="js_objects\fb_audio_chunk.cpp">
+      <Filter>js_objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="js_engine\js_engine.h">
@@ -906,6 +909,9 @@
     </ClInclude>
     <ClInclude Include="utils\fmt_pfc_adaptor.h">
       <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="js_objects\fb_audio_chunk.h">
+      <Filter>js_objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

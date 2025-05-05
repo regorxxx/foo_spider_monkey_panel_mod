@@ -8,6 +8,7 @@
 #include <fb2k/stats.h>
 #include <js_engine/js_to_native_invoker.h>
 #include <js_objects/context_menu_manager.h>
+#include <js_objects/fb_audio_chunk.h>
 #include <js_objects/fb_metadb_handle.h>
 #include <js_objects/fb_metadb_handle_list.h>
 #include <js_objects/fb_profiler.h>
@@ -66,7 +67,8 @@ MJS_DEFINE_JS_FN_FROM_NATIVE( CreateMainMenuManager, JsFbUtils::CreateMainMenuMa
 MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( CreateProfiler, JsFbUtils::CreateProfiler, JsFbUtils::CreateProfilerWithOpt, 1 )
 MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( DoDragDrop, JsFbUtils::DoDragDrop, JsFbUtils::DoDragDropWithOpt, 1 )
 MJS_DEFINE_JS_FN_FROM_NATIVE( Exit, JsFbUtils::Exit )
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( GetClipboardContents, JsFbUtils::GetClipboardContents, JsFbUtils::GetClipboardContentsWithOpt, 1 )
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( GetAudioChunk, JsFbUtils::GetAudioChunk, JsFbUtils::GetAudioChunkWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( GetClipboardContents, JsFbUtils::GetClipboardContents, JsFbUtils::GetClipboardContentsWithOpt, 1)
 MJS_DEFINE_JS_FN_FROM_NATIVE( GetDSPPresets, JsFbUtils::GetDSPPresets )
 MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( GetFocusItem, JsFbUtils::GetFocusItem, JsFbUtils::GetFocusItemWithOpt, 1 )
 MJS_DEFINE_JS_FN_FROM_NATIVE( GetLibraryItems, JsFbUtils::GetLibraryItems )
@@ -120,6 +122,7 @@ constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
         JS_FN( "CreateProfiler", CreateProfiler, 0, kDefaultPropsFlags ),
         JS_FN( "DoDragDrop", DoDragDrop, 3, kDefaultPropsFlags ),
         JS_FN( "Exit", Exit, 0, kDefaultPropsFlags ),
+        JS_FN( "GetAudioChunk", GetAudioChunk, 2, kDefaultPropsFlags),
         JS_FN( "GetClipboardContents", GetClipboardContents, 0, kDefaultPropsFlags ),
         JS_FN( "GetDSPPresets", GetDSPPresets, 0, kDefaultPropsFlags ),
         JS_FN( "GetFocusItem", GetFocusItem, 0, kDefaultPropsFlags ),
@@ -215,6 +218,7 @@ const JSPropertySpec* JsFbUtils::JsProperties = jsProperties.data();
 JsFbUtils::JsFbUtils( JSContext* cx )
     : pJsCtx_( cx )
 {
+    visualisation_manager::get()->create_stream(vis_, visualisation_manager::KStreamFlagNewFFT);
 }
 
 std::unique_ptr<JsFbUtils>
@@ -373,6 +377,29 @@ uint32_t JsFbUtils::DoDragDropWithOpt( size_t optArgCount, uint32_t hWnd, JsFbMe
 void JsFbUtils::Exit()
 {
     standard_commands::main_exit();
+}
+
+JSObject* JsFbUtils::GetAudioChunk(double requested_length, double offset)
+{
+    audio_chunk_impl chunk;
+    double time{};
+
+    if (vis_->get_absolute_time(time) && vis_->get_chunk_absolute(chunk, time + offset, requested_length))
+    {
+        return JsFbAudioChunk::CreateJs(pJsCtx_, chunk);
+    }
+    
+    return nullptr;
+}
+
+JSObject* JsFbUtils::GetAudioChunkWithOpt(size_t optArgCount, double requested_length, double offset)
+{
+    switch (optArgCount)
+    {
+    case 0: return GetAudioChunk(requested_length, offset);
+    case 1: return GetAudioChunk(requested_length);
+    default: throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
+    }
 }
 
 JSObject* JsFbUtils::GetClipboardContents( uint32_t hWnd )

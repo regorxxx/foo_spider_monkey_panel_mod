@@ -50,6 +50,8 @@ public:
     uint32_t DoDragDrop( uint32_t hWnd, JsFbMetadbHandleList* handles, uint32_t okEffects, JS::HandleValue options = JS::UndefinedHandleValue );
     uint32_t DoDragDropWithOpt( size_t optArgCount, uint32_t hWnd, JsFbMetadbHandleList* handles, uint32_t okEffects, JS::HandleValue options );
     void Exit();
+    JSObject* GetAudioChunk(double requested_length, double offset = 0.0);
+    JSObject* GetAudioChunkWithOpt(size_t optArgCount, double requested_length, double offset);
     JSObject* GetClipboardContents( uint32_t hWnd = 0 );
     JSObject* GetClipboardContentsWithOpt( size_t optArgCount, uint32_t hWnd );
     qwr::u8string GetDSPPresets();
@@ -134,6 +136,7 @@ private:
 
 private:
     JSContext* pJsCtx_ = nullptr;
+    visualisation_stream::ptr vis_;
 };
 
 } // namespace mozjs

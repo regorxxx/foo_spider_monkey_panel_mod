@@ -36,6 +36,7 @@ fb.CreateMainMenuManager()
 fb.CreateProfiler([name])
 fb.DoDragDrop(handle_list, effect)
 fb.Exit()
+fb.GetAudioChunk(requested_length[, offset])
 fb.GetClipboardContents()
 fb.GetDSPPresets();
 fb.GetFocusItem([force])
