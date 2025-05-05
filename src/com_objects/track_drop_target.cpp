@@ -140,12 +140,14 @@ void TrackDropTarget::ProcessDropEvent( IDataObjectPtr pDataObject, std::optiona
     const auto& dragParams = *dragParamsOpt;
 
     dropped_files_data_impl droppedData;
-    HRESULT hr = ole_interaction::get()->parse_dataobject( pDataObject.GetInterfacePtr(), droppedData );
-    if ( SUCCEEDED( hr ) )
+    const auto hr = ole_interaction::get()->parse_dataobject( pDataObject.GetInterfacePtr(), droppedData );
+    
+    if SUCCEEDED(hr)
     {
+        const auto g = playlist_manager_v5::get()->playlist_get_guid(dragParams.playlistIdx);
         droppedData.to_handles_async_ex( playlist_incoming_item_filter_v2::op_flag_delay_ui,
                                          core_api::get_main_window(),
-                                         fb2k::service_new<smp::utils::OnProcessLocationsNotify_InsertHandles>( dragParams.playlistIdx, dragParams.base, dragParams.toSelect ) );
+                                         fb2k::service_new<smp::utils::OnProcessLocationsNotify_InsertHandles>( g, dragParams.base, dragParams.toSelect ) );
     }
 }
 

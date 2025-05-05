@@ -218,20 +218,25 @@ void JsFbPlaylistManager::AddItemToPlaybackQueue( JsFbMetadbHandle* handle )
 
 void JsFbPlaylistManager::AddLocations( uint32_t playlistIndex, JS::HandleValue locations, bool select )
 {
+    auto api = playlist_manager_v5::get();
+    qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "playlistIndex is invalid");
+
     pfc::string_list_impl location_list;
     convert::to_native::ProcessArray<qwr::u8string>(
         pJsCtx_,
         locations,
         [&location_list]( const auto& location ) { location_list.add_item( location.c_str() ); } );
 
-    const t_size base = playlist_manager::get()->playlist_get_item_count( playlistIndex );
+    const t_size base = api->playlist_get_item_count( playlistIndex );
+    const auto g = api->playlist_get_guid(playlistIndex);
+
     playlist_incoming_item_filter_v2::get()->process_locations_async(
         location_list,
         playlist_incoming_item_filter_v2::op_flag_no_filter | playlist_incoming_item_filter_v2::op_flag_delay_ui,
         nullptr,
         nullptr,
         nullptr,
-        fb2k::service_new<smp::utils::OnProcessLocationsNotify_InsertHandles>( playlistIndex, base, select ) );
+        fb2k::service_new<smp::utils::OnProcessLocationsNotify_InsertHandles>(g, base, select));
 }
 
 void JsFbPlaylistManager::AddLocationsWithOpt( size_t optArgCount, uint32_t playlistIndex, JS::HandleValue locations, bool select )
