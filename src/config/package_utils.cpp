@@ -4,7 +4,6 @@
 
 #include <utils/guid_helpers.h>
 #include <utils/path_helpers.h>
-#include <utils/relative_filepath_trie.h>
 
 #include <component_paths.h>
 

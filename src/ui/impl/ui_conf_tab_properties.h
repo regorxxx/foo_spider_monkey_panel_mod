@@ -1,7 +1,7 @@
 #pragma once
 
 #include <config/panel_config.h>
-#include <property_list/PropertyList.h>
+#include <PropertyList.h>
 #include <resources/resource.h>
 #include <ui/impl/ui_itab.h>
 

@@ -38,7 +38,7 @@ bool UsesTheming( bool isThemed, HTHEME theme, int partId, int stateId )
 namespace uih
 {
 
-// Only used in non-themed mode – if theming is active, the shell draws the background for us
+// Only used in non-themed mode â€“ if theming is active, the shell draws the background for us
 void draw_drag_image_background( HWND wnd, bool isThemed, HTHEME theme, HDC dc, COLORREF selectionBackgroundColour, const RECT& rc )
 {
     constexpr int themeState = 0;

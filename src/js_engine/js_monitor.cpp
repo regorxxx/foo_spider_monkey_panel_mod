@@ -11,7 +11,6 @@
 #include <panel/modal_blocking_scope.h>
 #include <ui/ui_slow_script.h>
 
-#include <qwr/delayed_executor.h>
 #include <qwr/final_action.h>
 #include <qwr/thread_helpers.h>
 
@@ -35,7 +34,7 @@ namespace mozjs
 JsMonitor::JsMonitor()
     : slowScriptLimit_( smp::config::advanced::performance_max_runtime.GetValue() )
 { // JsMonitor might be created before fb2k is fully initialized
-    qwr::DelayedExecutor::GetInstance().AddTask( [&hFb2k = hFb2k_] { hFb2k = core_api::get_main_window(); } );
+    fb2k::inMainThread( [&hFb2k = hFb2k_] { hFb2k = core_api::get_main_window(); } );
 }
 
 void JsMonitor::Start( JSContext* cx )
