@@ -534,7 +534,7 @@ BEGIN
     END
     POPUP "Help"
     BEGIN
-        MENUITEM "View Help",                   ID_HELP
+        MENUITEM "View Help", ID_HELP
         MENUITEM SEPARATOR
         MENUITEM "About Spider Monkey Panel",   ID_APP_ABOUT
     END
@@ -557,9 +557,9 @@ BEGIN
     END
     POPUP "Help"
     BEGIN
-        MENUITEM "View Help",                   ID_HELP
+        MENUITEM "View Help", ID_HELP
         MENUITEM SEPARATOR
-        MENUITEM "About Spider Monkey Panel",   ID_APP_ABOUT
+        MENUITEM "About Spider Monkey Panel", ID_APP_ABOUT
     END
 END
 
@@ -630,17 +630,6 @@ BEGIN
     0
 END
 
+1 TYPELIB "foo_spider_monkey_panel.tlb"
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
-
-
-
-#ifndef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// Generated from the TEXTINCLUDE 3 resource.
-//
-#include "foo_spider_monkey_panel.rc2"
-/////////////////////////////////////////////////////////////////////////////
-#endif    // not APSTUDIO_INVOKED
-

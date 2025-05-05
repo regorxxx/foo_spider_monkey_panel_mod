@@ -235,16 +235,13 @@
     <ClCompile Include="panel\js_panel_window_dui.cpp">
       <Filter>panel</Filter>
     </ClCompile>
-    <ClCompile Include="fb2k\acfu_integration.cpp">
-      <Filter>fb2k</Filter>
-    </ClCompile>
     <ClCompile Include="js_engine\heartbeat_window.cpp">
       <Filter>js_engine</Filter>
     </ClCompile>
     <ClCompile Include="utils\js_exception.cpp">
       <Filter>utils</Filter>
     </ClCompile>
-    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="initquit.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="utils\thread_pool_instance.cpp">
       <Filter>utils</Filter>
@@ -672,9 +669,6 @@
     <ClInclude Include="utils\stacktrace.h">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="utils\relative_filepath_trie.h">
-      <Filter>utils</Filter>
-    </ClInclude>
     <ClInclude Include="js_engine\js_realm_inner.h">
       <Filter>js_engine</Filter>
     </ClInclude>
@@ -915,27 +909,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="resources\foo_spider_monkey_panel.rc2">
-      <Filter>resources</Filter>
-    </None>
-    <None Include="resources\default_script.js">
-      <Filter>resources</Filter>
-    </None>
-    <None Include="resources\scintilla_interface.api">
-      <Filter>resources</Filter>
-    </None>
-    <None Include="resources\scintilla_jscript.api">
-      <Filter>resources</Filter>
-    </None>
-    <None Include="resources\recovery_package_script.js">
-      <Filter>resources</Filter>
-    </None>
-    <None Include="resources\recovery_package_json.json">
-      <Filter>resources</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="js_engine">
       <UniqueIdentifier>{82fda107-c970-4ad4-9ad2-b6aae7fddd6d}</UniqueIdentifier>
     </Filter>
@@ -997,9 +970,6 @@
     </Midl>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="resources\version.rc">
-      <Filter>resources</Filter>
-    </ResourceCompile>
     <ResourceCompile Include="resources\foo_spider_monkey_panel.rc">
       <Filter>resources</Filter>
     </ResourceCompile>
