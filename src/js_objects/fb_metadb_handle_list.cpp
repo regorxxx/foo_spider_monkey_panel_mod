@@ -19,9 +19,48 @@ SMP_MJS_SUPPRESS_WARNINGS_PUSH
 #include <js/Conversions.h>
 SMP_MJS_SUPPRESS_WARNINGS_POP
 
-#include <utils/relative_filepath_trie.h>
+#include <ppl.h>
 
 using namespace smp;
+
+namespace CustomSort
+{
+    struct Item
+    {
+        std::wstring text;
+        size_t index{};
+    };
+
+    using Order = pfc::array_t<size_t>;
+
+    template <int32_t direction>
+    static bool sort_compare(const Item& a, const Item& b)
+    {
+        const auto ret = direction * StrCmpLogicalW(a.text.data(), b.text.data());
+
+        if (ret == 0)
+            return a.index < b.index;
+
+        return ret < 0;
+    }
+
+    static Order order(size_t count)
+    {
+        Order sort_order;
+        sort_order.set_size(count);
+        std::iota(sort_order.begin(), sort_order.end(), size_t{});
+        return sort_order;
+    }
+
+    static Order sort(pfc::array_t<Item>& items, int32_t direction = 1)
+    {
+        std::ranges::sort(items, direction > 0 ? sort_compare<1> : sort_compare<-1>);
+
+        auto sort_order = order(items.get_count());
+        std::ranges::transform(items, sort_order.begin(), [](const Item& item) { return item.index; });
+        return sort_order;
+    }
+}
 
 namespace
 {
@@ -373,12 +412,24 @@ int32_t JsFbMetadbHandleList::BSearch( JsFbMetadbHandle* handle )
 
 double JsFbMetadbHandleList::CalcTotalDuration()
 {
-    return metadbHandleList_.calc_total_duration();
+    pfc::array_t<double> lengths;
+    lengths.set_size(metadbHandleList_.get_count());
+
+    metadb_v2::get()->queryMultiParallel_(metadbHandleList_, [&lengths](size_t index, const metadb_v2::rec_t& rec)
+        {
+            if (rec.info.is_valid())
+            {
+                const double length = rec.info->info().get_length();
+                lengths[index] = std::max(0.0, length);
+            }
+        });
+
+    return std::reduce(lengths.begin(), lengths.end());
 }
 
 std::uint64_t JsFbMetadbHandleList::CalcTotalSize()
 {
-    return static_cast<uint64_t>( metadb_handle_list_helper::calc_total_size( metadbHandleList_, true ) );
+    return metadb_handle_list_helper::calc_total_size(metadbHandleList_, true);
 }
 
 JSObject* JsFbMetadbHandleList::Clone()
@@ -389,7 +440,7 @@ JSObject* JsFbMetadbHandleList::Clone()
 JS::Value JsFbMetadbHandleList::Convert()
 {
     JS::RootedValue jsValue( pJsCtx_ );
-    convert::to_js::ToArrayValue( pJsCtx_, qwr::pfc_x::Make_Stl_CRef( metadbHandleList_ ), &jsValue );
+    convert::to_js::ToArrayValue( pJsCtx_, metadbHandleList_, &jsValue );
     return jsValue;
 }
 
@@ -405,19 +456,18 @@ int32_t JsFbMetadbHandleList::Find( JsFbMetadbHandle* handle )
 
 JS::Value JsFbMetadbHandleList::GetLibraryRelativePaths()
 {
+    const auto count = metadbHandleList_.get_count();
     auto api = library_manager::get();
+    pfc::array_t<pfc::string8> values;
+    values.set_size(count);
+
+    concurrency::parallel_for(size_t{}, count, [&](size_t index)
+        {
+            api->get_relative_path(metadbHandleList_[index], values[index]);
+        });
 
     JS::RootedValue jsValue( pJsCtx_ );
-    convert::to_js::ToArrayValue(
-        pJsCtx_,
-        qwr::pfc_x::Make_Stl_CRef( metadbHandleList_ ),
-        [&api]( const auto& vec, auto index ) {
-            pfc::string8_fast path;
-            api->get_relative_path( vec[index], path );
-            return path;
-        },
-        &jsValue );
-
+    convert::to_js::ToArrayValue(pJsCtx_, values, &jsValue );
     return jsValue;
 }
 
@@ -438,41 +488,41 @@ void JsFbMetadbHandleList::InsertRange( uint32_t index, JsFbMetadbHandleList* ha
     metadbHandleList_.insert_items( handles->GetHandleList(), index );
 }
 
-void JsFbMetadbHandleList::MakeDifference( JsFbMetadbHandleList* handles )
+void JsFbMetadbHandleList::MakeDifference(JsFbMetadbHandleList* handles)
 {
-    qwr::QwrException::ExpectTrue( handles, "handles argument is null" );
+    qwr::QwrException::ExpectTrue(handles, "handles argument is null");
 
-    const auto a = qwr::pfc_x::Make_Stl_CRef( metadbHandleList_ );
-    const auto b = qwr::pfc_x::Make_Stl_CRef( handles->GetHandleList() );
+    const auto a = qwr::pfc_x::Make_Stl_CRef(metadbHandleList_);
+    const auto b = qwr::pfc_x::Make_Stl_CRef(handles->GetHandleList());
     qwr::pfc_x::Stl<metadb_handle_list> result;
 
-    std::set_difference( a.cbegin(), a.cend(), b.cbegin(), b.cend(), std::back_inserter( result ) );
+    std::set_difference(a.cbegin(), a.cend(), b.cbegin(), b.cend(), std::back_inserter(result));
 
     metadbHandleList_ = result.Pfc();
 }
 
-void JsFbMetadbHandleList::MakeIntersection( JsFbMetadbHandleList* handles )
+void JsFbMetadbHandleList::MakeIntersection(JsFbMetadbHandleList* handles)
 {
-    qwr::QwrException::ExpectTrue( handles, "handles argument is null" );
+    qwr::QwrException::ExpectTrue(handles, "handles argument is null");
 
-    const auto a = qwr::pfc_x::Make_Stl_CRef( metadbHandleList_ );
-    const auto b = qwr::pfc_x::Make_Stl_CRef( handles->GetHandleList() );
+    const auto a = qwr::pfc_x::Make_Stl_CRef(metadbHandleList_);
+    const auto b = qwr::pfc_x::Make_Stl_CRef(handles->GetHandleList());
     qwr::pfc_x::Stl<metadb_handle_list> result;
 
-    std::set_intersection( a.cbegin(), a.cend(), b.cbegin(), b.cend(), std::back_inserter( result ) );
+    std::set_intersection(a.cbegin(), a.cend(), b.cbegin(), b.cend(), std::back_inserter(result));
 
     metadbHandleList_ = result.Pfc();
 }
 
-void JsFbMetadbHandleList::MakeUnion( JsFbMetadbHandleList* handles )
+void JsFbMetadbHandleList::MakeUnion(JsFbMetadbHandleList* handles)
 {
-    qwr::QwrException::ExpectTrue( handles, "handles argument is null" );
+    qwr::QwrException::ExpectTrue(handles, "handles argument is null");
 
-    const auto a = qwr::pfc_x::Make_Stl_CRef( metadbHandleList_ );
-    const auto b = qwr::pfc_x::Make_Stl_CRef( handles->GetHandleList() );
+    const auto a = qwr::pfc_x::Make_Stl_CRef(metadbHandleList_);
+    const auto b = qwr::pfc_x::Make_Stl_CRef(handles->GetHandleList());
     qwr::pfc_x::Stl<metadb_handle_list> result;
 
-    std::set_union( a.cbegin(), a.cend(), b.cbegin(), b.cend(), std::back_inserter( result ) );
+    std::set_union(a.cbegin(), a.cend(), b.cbegin(), b.cend(), std::back_inserter(result));
 
     metadbHandleList_ = result.Pfc();
 }
@@ -491,38 +541,31 @@ void JsFbMetadbHandleList::OrderByPath()
 
 void JsFbMetadbHandleList::OrderByRelativePath()
 {
-    // Note: there is built-in metadb_handle_list::sort_by_relative_path(),
-    // but this implementation is much faster because of trie usage.
-    // Also see `get_subsong_index` below.
-
-    const auto stlHandleList = qwr::pfc_x::Make_Stl_CRef( metadbHandleList_ );
-
     auto api = library_manager::get();
 
-    pfc::string8_fastalloc temp;
-    temp.prealloc( 512 );
+    const auto count = metadbHandleList_.get_count();
+    pfc::array_t<CustomSort::Item> items;
+    items.set_size(count);
 
-    RelativeFilepathTrie<size_t> trie;
-    for ( const auto& [i, handle]: ranges::views::enumerate( stlHandleList ) )
-    {
-        temp = ""; ///< get_relative_path won't fill data on fail
-        api->get_relative_path( handle, temp );
+    concurrency::parallel_for(size_t{}, count, [&](size_t index)
+        {
+            pfc::string8_fastalloc temp;
+            temp.prealloc(512);
 
-        // One physical file can have multiple handles,
-        // which all return the same path, but have different subsong idx
-        // (e.g. cuesheets or files with multiple chapters)
-        temp << handle->get_subsong_index();
+            api->get_relative_path(metadbHandleList_[index], temp);
+            temp << metadbHandleList_[index]->get_subsong_index();
+            items[index].index = index;
+            items[index].text = qwr::unicode::ToWide(temp);
+        });
 
-        trie.emplace( qwr::unicode::ToWide( temp ), i );
-    }
-
-    metadbHandleList_.reorder( trie.get_sorted_values().data() );
+    auto order = CustomSort::sort(items);
+    metadbHandleList_.reorder(order.get_ptr());
 }
 
 void JsFbMetadbHandleList::RefreshStats()
 {
     pfc::list_t<metadb_index_hash> hashes;
-    for ( const auto& handle: qwr::pfc_x::Make_Stl_CRef( metadbHandleList_ ) )
+    for (const auto& handle: metadbHandleList_)
     {
         metadb_index_hash hash;
         if ( stats::HashHandle( handle, hash ) )
@@ -599,39 +642,37 @@ void JsFbMetadbHandleList::Sort()
 
 void JsFbMetadbHandleList::UpdateFileInfoFromJSON( const qwr::u8string& str )
 {
-    using json = nlohmann::json;
+    const auto count = metadbHandleList_.get_count();
 
-    const auto handleList = qwr::pfc_x::Make_Stl_CRef( metadbHandleList_ );
-    if ( handleList.empty() )
-    { // Not an error
+    if (count == 0 )
+    {
         return;
     }
 
-    const auto jsonObject = [&str] {
-        try
-        {
-            return json::parse( str );
-        }
-        catch ( const json::parse_error& e )
-        {
-            throw qwr::QwrException( "JSON parsing failed: {}", e.what() );
-        }
-    }();
+    const auto jsonObject = nlohmann::json::parse( str, nullptr, false);
+    bool isArray = jsonObject.is_array();
 
-    qwr::QwrException::ExpectTrue( jsonObject.is_array() || jsonObject.is_object(), "Invalid JSON info: unsupported value type" );
-
-    const bool isArray = jsonObject.is_array();
-    if ( isArray && jsonObject.size() != handleList.size() )
+    if (isArray)
     {
-        throw qwr::QwrException( "Invalid JSON info: mismatched with handle count" );
+        if (jsonObject.size() != count)
+        {
+            throw qwr::QwrException("Invalid JSON info: mismatched with handle count");
+        }
     }
-    if ( !isArray && jsonObject.empty() )
+    else if (jsonObject.is_object())
     {
-        throw qwr::QwrException( "Invalid JSON info: empty object" );
+        if (jsonObject.empty())
+        {
+            throw qwr::QwrException("Invalid JSON info: empty object");
+        }
+    }
+    else
+    {
+        throw qwr::QwrException("Invalid JSON info: unsupported value type");
     }
 
     const auto info =
-        ranges::views::enumerate( handleList )
+        ranges::views::enumerate(metadbHandleList_)
         | ranges::views::transform(
             [isArray, &jsonObject]( const auto& zippedElem ) {
                 const auto& [i, handle] = zippedElem;
@@ -645,7 +686,7 @@ void JsFbMetadbHandleList::UpdateFileInfoFromJSON( const qwr::u8string& str )
         | ranges::to_vector;
 
     metadb_io_v2::get()->update_info_async_simple(
-        handleList.Pfc(),
+        metadbHandleList_,
         pfc::ptr_list_const_array_t<const file_info, const file_info_impl*>( info.data(), info.size() ),
         core_api::get_main_window(),
         metadb_io_v2::op_flag_delay_ui,

@@ -138,16 +138,20 @@ JS::Value JsFbTitleFormat::EvalWithMetadbs( JsFbMetadbHandleList* handles )
 {
     qwr::QwrException::ExpectTrue( handles, "handles argument is null" );
 
-    JS::RootedValue jsValue( pJsCtx_ );
-    convert::to_js::ToArrayValue(
-        pJsCtx_,
-        qwr::pfc_x::Make_Stl_CRef( handles->GetHandleList() ),
-        [&titleFormat = titleFormatObject_]( const auto& vec, auto index ) {
-            pfc::string8_fast text;
-            vec[index]->format_title( nullptr, text, titleFormat, nullptr );
-            return text;
-        },
-        &jsValue );
+    const auto& native = handles->GetHandleList();
+    const auto count = native.get_count();
+    pfc::array_t<pfc::string8> values;
+    values.set_size(count);
+
+    auto api = metadb_v2::get();
+
+    api->queryMultiParallel_(native, [&](size_t index, const metadb_v2::rec_t& rec)
+        {
+            api->formatTitle_v2(native[index], rec, nullptr, values[index], titleFormatObject_, nullptr);
+        });
+
+    JS::RootedValue jsValue(pJsCtx_);
+    convert::to_js::ToArrayValue(pJsCtx_, values, &jsValue);
     return jsValue;
 }
 

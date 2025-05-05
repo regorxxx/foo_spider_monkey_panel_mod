@@ -37,12 +37,15 @@ public:
     void on_core_settings_change( const dsp_chain_config& p_newdata ) override;
 };
 
-class my_library_callback : public library_callback
+class my_library_callback : public library_callback_v2
 {
 public:
-    void on_items_added( metadb_handle_list_cref p_data ) override;
-    void on_items_modified( metadb_handle_list_cref p_data ) override;
-    void on_items_removed( metadb_handle_list_cref p_data ) override;
+    void on_items_added(metadb_handle_list_cref p_data) override;
+    void on_items_modified_v2(metadb_handle_list_cref p_data, metadb_io_callback_v2_data&) override;
+    void on_items_removed(metadb_handle_list_cref p_data) override;
+
+    void on_library_initialized() override {}
+    void on_items_modified(metadb_handle_list_cref) override {}
 };
 
 class my_metadb_io_callback : public metadb_io_callback
@@ -190,22 +193,22 @@ void my_dsp_config_callback::on_core_settings_change( const dsp_chain_config& )
 
 void my_library_callback::on_items_added( metadb_handle_list_cref p_data )
 {
-    EventDispatcher::Get().PutEventToAll( GenerateEvent_JsCallback( EventId::kFbLibraryItemsAdded, std::make_shared<metadb_handle_list>( std::move( p_data ) ) ) );
+    EventDispatcher::Get().PutEventToAll( GenerateEvent_JsCallback( EventId::kFbLibraryItemsAdded, std::make_shared<metadb_handle_list>( p_data ) ) );
 }
 
-void my_library_callback::on_items_modified( metadb_handle_list_cref p_data )
+void my_library_callback::on_items_modified_v2(metadb_handle_list_cref p_data, metadb_io_callback_v2_data&)
 {
-    EventDispatcher::Get().PutEventToAll( GenerateEvent_JsCallback( EventId::kFbLibraryItemsChanged, std::make_shared<metadb_handle_list>( std::move( p_data ) ) ) );
+    EventDispatcher::Get().PutEventToAll( GenerateEvent_JsCallback( EventId::kFbLibraryItemsChanged, std::make_shared<metadb_handle_list>( p_data ), is_modified_from_hook() ) );
 }
 
 void my_library_callback::on_items_removed( metadb_handle_list_cref p_data )
 {
-    EventDispatcher::Get().PutEventToAll( GenerateEvent_JsCallback( EventId::kFbLibraryItemsRemoved, std::make_shared<metadb_handle_list>( std::move( p_data ) ) ) );
+    EventDispatcher::Get().PutEventToAll( GenerateEvent_JsCallback( EventId::kFbLibraryItemsRemoved, std::make_shared<metadb_handle_list>( p_data ) ) );
 }
 
 void my_metadb_io_callback::on_changed_sorted( metadb_handle_list_cref p_items_sorted, bool p_fromhook )
 {
-    EventDispatcher::Get().PutEventToAll( GenerateEvent_JsCallback( EventId::kFbMetadbChanged, std::make_shared<metadb_handle_list>( std::move( p_items_sorted ) ), p_fromhook ) );
+    EventDispatcher::Get().PutEventToAll( GenerateEvent_JsCallback( EventId::kFbMetadbChanged, std::make_shared<metadb_handle_list>( p_items_sorted ), p_fromhook ) );
 }
 
 unsigned my_play_callback_static::get_flags()
