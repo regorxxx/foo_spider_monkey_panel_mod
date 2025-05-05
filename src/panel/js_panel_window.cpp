@@ -308,31 +308,12 @@ void js_panel_window::ExecuteEvent_Basic( EventId id )
         }
         isPaintInProgress_ = true;
 
-        if ( settings_.isPseudoTransparent && isBgRepaintNeeded_ )
-        { // Two pass redraw: paint BG > Repaint() > paint FG
-            CRect rc;
-            wnd_.GetUpdateRect( &rc, FALSE );
-            RepaintBackground( &rc ); ///< Calls Repaint() inside
-
-            isBgRepaintNeeded_ = false;
-            isPaintInProgress_ = false;
-
-            Repaint( true );
-            break;
-        }
         {
             CPaintDC dc{ wnd_ };
             OnPaint( dc, dc.m_ps.rcPaint );
         }
 
         isPaintInProgress_ = false;
-
-        break;
-    }
-    case EventId::kWndRepaintBackground:
-    {
-        isBgRepaintNeeded_ = true;
-        Repaint( true );
 
         break;
     }
@@ -677,12 +658,6 @@ std::optional<LRESULT> js_panel_window::ProcessWindowMessage( const MSG& msg )
     }
     case WM_ERASEBKGND:
     {
-        if ( settings_.isPseudoTransparent )
-        {
-            auto pEvent = std::make_unique<Event_Basic>( EventId::kWndRepaintBackground );
-            pEvent->SetTarget( pTarget_ );
-            ProcessEventManually( *pEvent );
-        }
         return 1;
     }
     case WM_PAINT:
@@ -1327,69 +1302,6 @@ void js_panel_window::RepaintRect( const CRect& rc, bool force )
     wnd_.RedrawWindow( &rc, nullptr, RDW_INVALIDATE | ( force ? RDW_UPDATENOW : 0 ) );
 }
 
-void js_panel_window::RepaintBackground( const CRect& updateRc )
-{
-    CWindow wnd_parent = GetAncestor( wnd_, GA_PARENT );
-
-    if ( !wnd_parent || IsIconic( core_api::get_main_window() ) || !wnd_.IsWindowVisible() )
-    {
-        return;
-    }
-
-    // HACK: for Tab control
-    // Find siblings
-    HWND hwnd = nullptr;
-    while ( ( hwnd = FindWindowEx( wnd_parent, hwnd, nullptr, nullptr ) ) )
-    {
-        if ( hwnd == wnd_ )
-        {
-            continue;
-        }
-        std::array<wchar_t, 64> buff;
-        GetClassName( hwnd, buff.data(), buff.size() );
-        if ( wcsstr( buff.data(), L"SysTabControl32" ) )
-        {
-            wnd_parent = hwnd;
-            break;
-        }
-    }
-
-    CRect rc_child{ 0, 0, static_cast<int>( width_ ), static_cast<int>( height_ ) };
-    CRgn rgn_child{ ::CreateRectRgnIndirect( &rc_child ) };
-    {
-        CRgn rgn{ ::CreateRectRgnIndirect( &updateRc ) };
-        rgn_child.CombineRgn( rgn, RGN_DIFF );
-    }
-
-    CPoint pt{ 0, 0 };
-    wnd_.ClientToScreen( &pt );
-    wnd_parent.ScreenToClient( &pt );
-
-    CRect rc_parent{ rc_child };
-    wnd_.ClientToScreen( &rc_parent );
-    wnd_parent.ScreenToClient( &rc_parent );
-
-    // Force Repaint
-    wnd_.SetWindowRgn( rgn_child, FALSE );
-    wnd_parent.RedrawWindow( &rc_parent, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_UPDATENOW );
-
-    {
-        // Background bitmap
-        CClientDC dc_parent{ wnd_parent };
-        CDC dc_bg{ ::CreateCompatibleDC( dc_parent ) };
-        gdi::ObjectSelector autoBmp( dc_bg, bmpBg_.m_hBitmap );
-
-        // Paint BK
-        dc_bg.BitBlt( rc_child.left, rc_child.top, rc_child.Width(), rc_child.Height(), dc_parent, pt.x, pt.y, SRCCOPY );
-    }
-
-    wnd_.SetWindowRgn( nullptr, FALSE );
-    if ( smp::config::EdgeStyle::NoEdge != settings_.edgeStyle )
-    {
-        wnd_.SendMessage( WM_NCPAINT, 1, 0 );
-    }
-}
-
 bool js_panel_window::LoadScript( bool isFirstLoad )
 {
     pfc::hires_timer timer;
@@ -1615,17 +1527,7 @@ void js_panel_window::OnPaint( HDC dc, const CRect& updateRc )
     {
         if ( settings_.isPseudoTransparent )
         {
-            CDC bgDc{ CreateCompatibleDC( dc ) };
-            gdi::ObjectSelector autoBgBmp( bgDc, bmpBg_.m_hBitmap );
-
-            memDc.BitBlt( updateRc.left,
-                          updateRc.top,
-                          updateRc.Width(),
-                          updateRc.Height(),
-                          bgDc,
-                          updateRc.left,
-                          updateRc.top,
-                          SRCCOPY );
+            uie::win32::paint_background_using_parent(wnd_, memDc, false);
         }
         else
         {
@@ -1699,14 +1601,7 @@ void js_panel_window::OnSizeUser( uint32_t w, uint32_t h )
                                      static_cast<uint32_t>( w ),
                                      static_cast<uint32_t>( h ) );
 
-    if ( settings_.isPseudoTransparent )
-    {
-        EventDispatcher::Get().PutEvent( wnd_, std::make_unique<Event_Basic>( EventId::kWndRepaintBackground ), EventPriority::kRedraw );
-    }
-    else
-    {
-        Repaint();
-    }
+    Repaint();
 }
 
 void js_panel_window::SetCaptureMouseState( bool shouldCapture )

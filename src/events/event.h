@@ -94,7 +94,6 @@ enum class EventId
     kUiFontChanged,
     // window
     kWndPaint,
-    kWndRepaintBackground,
     kWndResize,
     // script
     kScriptEdit,

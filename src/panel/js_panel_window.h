@@ -59,8 +59,6 @@ public:
 
     void Repaint( bool force = false );
     void RepaintRect( const CRect& rc, bool force = false );
-    /// @details Calls Repaint inside
-    void RepaintBackground( const CRect& updateRc );
 
 public: // accessors
     [[nodiscard]] qwr::u8string GetPanelId();
@@ -167,7 +165,6 @@ private:
     uint32_t eventNestedCounter_ = 0;
 
     int32_t hRepaintTimer_ = NULL;   // used only internally
-    bool isBgRepaintNeeded_ = false; // used only internally
     bool isPaintInProgress_ = false; // used only internally
 
     bool isMouseTracked_ = false;              // used only internally
