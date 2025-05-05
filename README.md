@@ -1,0 +1,27 @@
+# 1.62.25.05.05
+
+-Requires at least `foobar2000` `2.0` because new methods from the `SDK` are being used.
+
+-Add `fb.GetAudioChunk` / `FbAudioChunk` interface. See `vu meter` sample.
+
+-Add `utils.GetClipboardText` / `utils.SetClipboardText`.
+
+-Add `plman.GetGUID` / `plman.FindByGUID`.
+
+-Fix `utils.ColourPicker` bugs
+
+-Fix `utils.IsFile` / `utils.IsDirectory` bugs.
+
+-The `on_library_items_changed` callback now has a secondary `fromhook` argument so you can ignore updates that are not tag edits but database updates from components like `foo_playcount`.
+
+```js
+function on_library_items_changed(handles, fromhook) {
+    if (fromhook)
+        return;
+   // react to actual file tag changes here
+}
+```
+
+-Various improvements to handle list iteration methods.
+
+-Various other bug fixes.
