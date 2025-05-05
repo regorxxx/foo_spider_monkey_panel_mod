@@ -152,27 +152,15 @@ void my_initquit::on_selection_changed( metadb_handle_list_cref )
 
 void my_initquit::on_init()
 {
-    if ( static_api_test_t<replaygain_manager_v2>() )
-    {
-        replaygain_manager_v2::get()->add_notify( this );
-    }
-    if ( static_api_test_t<output_manager_v2>() )
-    {
-        output_manager_v2::get()->addCallback( this );
-    }
+    replaygain_manager_v2::get()->add_notify( this );
+    output_manager_v2::get()->addCallback( this );
     ui_selection_manager_v2::get()->register_callback( this, 0 );
 }
 
 void my_initquit::on_quit()
 {
-    if ( static_api_test_t<replaygain_manager_v2>() )
-    {
-        replaygain_manager_v2::get()->remove_notify( this );
-    }
-    if ( static_api_test_t<output_manager_v2>() )
-    {
-        output_manager_v2::get()->removeCallback( this );
-    }
+    replaygain_manager_v2::get()->remove_notify( this );
+    output_manager_v2::get()->removeCallback( this );
     ui_selection_manager_v2::get()->unregister_callback( this );
 }
 

@@ -445,8 +445,6 @@ JSObject* JsFbUtils::GetClipboardContentsWithOpt( size_t optArgCount, uint32_t h
 
 qwr::u8string JsFbUtils::GetDSPPresets()
 {
-    qwr::QwrException::ExpectTrue( static_api_test_t<dsp_config_manager_v2>(), "This method requires foobar2000 v1.4 or later" );
-
     using json = nlohmann::json;
 
     json j = json::array();
@@ -788,8 +786,6 @@ void JsFbUtils::SavePlaylist()
 
 void JsFbUtils::SetDSPPreset( uint32_t idx )
 {
-    qwr::QwrException::ExpectTrue( static_api_test_t<dsp_config_manager_v2>(), "This method requires foobar2000 v1.4 or later" );
-
     auto api = dsp_config_manager_v2::get();
     t_size count = api->get_preset_count();
 
@@ -800,8 +796,6 @@ void JsFbUtils::SetDSPPreset( uint32_t idx )
 
 void JsFbUtils::SetOutputDevice( const std::wstring& output, const std::wstring& device )
 {
-    qwr::QwrException::ExpectTrue( static_api_test_t<output_manager_v2>(), "This method requires foobar2000 v1.4 or later" );
-
     GUID output_id;
     GUID device_id;
     if ( CLSIDFromString( output.c_str(), &output_id ) == NOERROR
