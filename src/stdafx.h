@@ -1,20 +1,13 @@
 #pragma once
+#pragma warning(disable : 4996)
 
-// clang-format off
-// !!! Include order is important here (esp. for Win headers) !!!
-
-// Spider Monkey ESR60 and CUI support only Win7+
+#define _SILENCE_CXX20_U8PATH_DEPRECATION_WARNING
 #define _WIN32_WINNT _WIN32_WINNT_WIN7
 #define WINVER _WIN32_WINNT_WIN7
-
-// Fix std min max conflicts
 #define NOMINMAX
-#include <algorithm>
-namespace Gdiplus
-{
-using std::min;
-using std::max;
-};
+
+#define RECT_CX(rc) ((rc).right - (rc).left)
+#define RECT_CY(rc) ((rc).bottom - (rc).top)
 
 #include <WinSock2.h>
 #include <Windows.h>
@@ -68,28 +61,6 @@ using std::max;
 #   include <columns_ui-sdk/ui_extension.h>
 #pragma warning( pop ) 
 
-#if defined(__clang__)
-
-#define SMP_DO_PRAGMA_(x) _Pragma (#x)
-#define SMP_DO_PRAGMA(x) SMP_DO_PRAGMA_(x)
-
-#define SMP_CLANG_WARNING_PUSH \
-    _Pragma( "clang diagnostic push" )
-
-#define SMP_CLANG_SUPPRESS_WARNING(w) \
-    SMP_DO_PRAGMA(clang diagnostic ignored w)
-
-#define SMP_CLANG_WARNING_POP \
-    _Pragma( "clang diagnostic pop" )
-
-#else
-
-#define SMP_CLANG_WARNING_PUSH
-#define SMP_CLANG_SUPPRESS_WARNING(w)
-#define SMP_CLANG_WARNING_POP
-
-#endif
-
 // 4251: dll interface warning
 #define SMP_MJS_SUPPRESS_WARNINGS_PUSH \
     __pragma( warning( push ) )        \
@@ -97,7 +68,6 @@ using std::max;
 
 #define SMP_MJS_SUPPRESS_WARNINGS_POP \
     __pragma( warning( pop ) )
-
 
 // Mozilla SpiderMonkey
 SMP_MJS_SUPPRESS_WARNINGS_PUSH
