@@ -228,12 +228,20 @@ double JsFbMetadbHandle::get_Length()
 
 qwr::u8string JsFbMetadbHandle::get_Path()
 {
-    return qwr::u8string( file_path_display( metadbHandle_->get_path() ) );
+    return filesystem::g_get_native_path(metadbHandle_->get_path()).get_ptr();
 }
 
 qwr::u8string JsFbMetadbHandle::get_RawPath()
 {
-    return metadbHandle_->get_path();
+    const qwr::u8string rp = metadbHandle_->get_path();
+
+    if (rp.starts_with("file-relative://"))
+    {
+        const auto native = filesystem::g_get_native_path(metadbHandle_->get_path());
+        return fmt::format("file://{}", native.get_ptr());
+    }
+
+    return rp;
 }
 
 uint32_t JsFbMetadbHandle::get_SubSong()
