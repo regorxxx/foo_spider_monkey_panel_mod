@@ -5,7 +5,7 @@
 namespace smp
 {
 
-std::optional<qwr::u8string> LoadStringResource( int resourceId, const char* resourceType )
+std::optional<std::string> LoadStringResource( int resourceId, const char* resourceType )
 {
     puResource puRes = uLoadResource( core_api::get_my_instance(), uMAKEINTRESOURCE( resourceId ), resourceType );
 
@@ -14,7 +14,7 @@ std::optional<qwr::u8string> LoadStringResource( int resourceId, const char* res
         return std::nullopt;
     }
 
-    return qwr::u8string{ static_cast<const char*>( puRes->GetPointer() ), puRes->GetSize() };
+    return std::string{ static_cast<const char*>( puRes->GetPointer() ), puRes->GetSize() };
 }
 
 } // namespace smp

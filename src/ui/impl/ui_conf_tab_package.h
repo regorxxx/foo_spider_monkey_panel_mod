@@ -126,10 +126,10 @@ private:
     bool isSample_;
     std::filesystem::path mainScriptPath_;
 
-    qwr::u8string& scriptName_;
-    qwr::u8string& scriptVersion_;
-    qwr::u8string& scriptAuthor_;
-    qwr::u8string& scriptDescription_;
+    std::string& scriptName_;
+    std::string& scriptVersion_;
+    std::string& scriptAuthor_;
+    std::string& scriptDescription_;
 
     bool& shouldGrabFocus_;
     bool& enableDragDrop_;

@@ -20,14 +20,14 @@ enum class ScriptSourceType : uint8_t
 
 struct ParsedPanelSettings
 {
-    qwr::u8string panelId;
-    std::optional<qwr::u8string> script;
+    std::string panelId;
+    std::optional<std::string> script;
     std::optional<std::filesystem::path> scriptPath;
-    std::optional<qwr::u8string> packageId;
-    qwr::u8string scriptName;
-    qwr::u8string scriptVersion;
-    qwr::u8string scriptAuthor;
-    qwr::u8string scriptDescription;
+    std::optional<std::string> packageId;
+    std::string scriptName;
+    std::string scriptVersion;
+    std::string scriptAuthor;
+    std::string scriptDescription;
     bool isSample = false;
 
     EdgeStyle edgeStyle = EdgeStyle::Default;

@@ -5,7 +5,7 @@
 namespace smp::utils
 {
 
-void LogError( const qwr::u8string& message )
+void LogError( const std::string& message )
 {
     FB2K_console_formatter() << fmt::format(
         SMP_UNDERSCORE_NAME ":\n"
@@ -14,7 +14,7 @@ void LogError( const qwr::u8string& message )
         message );
 }
 
-void LogWarning( const qwr::u8string& message )
+void LogWarning( const std::string& message )
 {
     FB2K_console_formatter() << fmt::format(
         SMP_UNDERSCORE_NAME ":\n"
@@ -23,7 +23,7 @@ void LogWarning( const qwr::u8string& message )
         message );
 }
 
-void LogDebug( const qwr::u8string& message )
+void LogDebug( const std::string& message )
 {
     FB2K_console_formatter() << fmt::format(
         SMP_UNDERSCORE_NAME ":\n"

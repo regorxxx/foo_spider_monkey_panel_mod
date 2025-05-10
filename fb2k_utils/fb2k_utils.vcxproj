@@ -17,8 +17,6 @@
     <ClCompile Include="qwr\fb2k_paths.cpp" />
     <ClCompile Include="qwr\file_helpers.cpp" />
     <ClCompile Include="qwr\hook_handler.cpp" />
-    <ClCompile Include="qwr\pfc_helpers_cfg.cpp" />
-    <ClCompile Include="qwr\pfc_helpers_stream.cpp" />
     <ClCompile Include="qwr\semantic_version.cpp" />
     <ClCompile Include="qwr\string_helpers.cpp" />
     <ClCompile Include="qwr\text_helpers.cpp" />
@@ -36,17 +34,12 @@
     <ClInclude Include="qwr\abort_callback.h" />
     <ClInclude Include="qwr\delayed_executor.h" />
     <ClInclude Include="qwr\error_popup.h" />
-    <ClInclude Include="qwr\fb2k_adv_config.h" />
-    <ClInclude Include="qwr\fb2k_config.h" />
-    <ClInclude Include="qwr\fb2k_config_ui_option.h" />
     <ClInclude Include="qwr\fb2k_paths.h" />
     <ClInclude Include="qwr\file_helpers.h" />
     <ClInclude Include="qwr\final_action.h" />
     <ClInclude Include="qwr\hook_handler.h" />
     <ClInclude Include="qwr\macros.h" />
-    <ClInclude Include="qwr\pfc_helpers_cfg.h" />
     <ClInclude Include="qwr\pfc_helpers_cnt.h" />
-    <ClInclude Include="qwr\pfc_helpers_stream.h" />
     <ClInclude Include="qwr\pfc_helpers_ui.h" />
     <ClInclude Include="qwr\qwr_exception.h" />
     <ClInclude Include="qwr\semantic_version.h" />

@@ -63,8 +63,8 @@ private:
 
     struct KeyWordComparator
     {
-        bool operator()( const qwr::u8string& a,
-                         const qwr::u8string& b ) const;
+        bool operator()( const std::string& a,
+                         const std::string& b ) const;
     };
 
     struct BracePosition
@@ -75,12 +75,12 @@ private:
 
     struct StyledPart
     {
-        StyledPart( qwr::u8string value, int style )
+        StyledPart( std::string value, int style )
             : value( std::move( value ) )
             , style( style )
         {
         }
-        qwr::u8string value;
+        std::string value;
         int style;
     };
 
@@ -88,7 +88,7 @@ private:
     // Operations and Implementation
     Sci_CharacterRange GetSelection();
     int GetCaretInLine();
-    qwr::u8string GetCurrentLine();
+    std::string GetCurrentLine();
     IndentationStatus GetIndentState( int line );
     std::vector<StyledPart> GetStyledParts( int line, std::span<const int> styles, size_t maxParts );
     bool RangeIsAllWhitespace( int start, int end );
@@ -105,10 +105,10 @@ private:
     int IndentOfBlock( int line );
     void AutomaticIndentation( char ch );
     BracePosition FindBraceMatchPos();
-    std::optional<std::vector<qwr::u8string_view>> GetNearestWords( qwr::u8string_view wordPart, std::optional<char> separator = std::nullopt );
-    std::optional<qwr::u8string_view> GetFullDefinitionForWord( qwr::u8string_view word );
+    std::optional<std::vector<std::string_view>> GetNearestWords( std::string_view wordPart, std::optional<char> separator = std::nullopt );
+    std::optional<std::string_view> GetFullDefinitionForWord( std::string_view word );
     void SetIndentation( int line, int indent );
-    std::optional<qwr::u8string> GetPropertyExpanded_Opt( const char* key );
+    std::optional<std::string> GetPropertyExpanded_Opt( const char* key );
 
 private:
     int m_nBraceCount = 0;
@@ -117,10 +117,10 @@ private:
     int m_nLastPosCallTip = 0;
     const int m_nStatementLookback = 10;
 
-    qwr::u8string m_szCurrentCallTipWord;
-    qwr::u8string m_szFunctionDefinition;
+    std::string m_szCurrentCallTipWord;
+    std::string m_szFunctionDefinition;
 
-    std::set<qwr::u8string, KeyWordComparator> m_apis;
+    std::set<std::string, KeyWordComparator> m_apis;
 };
 
 } // namespace smp::ui::sci

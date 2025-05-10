@@ -160,7 +160,7 @@ void CDialogEditorConfig::LoadProps( bool reset )
     }
 }
 
-qwr::u8string CDialogEditorConfig::GetItemTextStr( int nItem, int nSubItem )
+std::string CDialogEditorConfig::GetItemTextStr( int nItem, int nSubItem )
 {
     constexpr size_t kBufferLen = 256;
     std::wstring buffer;

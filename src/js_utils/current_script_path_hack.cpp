@@ -30,7 +30,7 @@ std::optional<std::filesystem::path> GetCurrentScriptPath( JSContext* cx )
         JSErrorReport* pReport = report.report();
         assert( pReport );
 
-        if ( !pReport->filename || qwr::u8string{ pReport->filename }.empty() )
+        if ( !pReport->filename || std::string{ pReport->filename }.empty() )
         {
             return std::nullopt;
         }

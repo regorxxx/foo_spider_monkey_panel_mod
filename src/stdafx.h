@@ -90,15 +90,9 @@ SMP_MJS_SUPPRESS_WARNINGS_POP
 #include <nlohmann/json.hpp>
 
 #include <string>
-namespace qwr
-{// TODO: create a custom type
-    using u8string = std::string;
-    using u8string_view = std::string_view;
-}
 
 // Additional PFC wrappers
 #include <qwr/pfc_helpers_cnt.h>
-#include <qwr/pfc_helpers_stream.h>
 
 #include <qwr/unicode.h>
 #include <qwr/qwr_exception.h>
@@ -108,4 +102,8 @@ namespace qwr
 #include <component_defines.h>
 #include <component_guids.h>
 
-// clang-format on
+inline pfc::string_base& operator<<(pfc::string_base& fmt, const std::string& source)
+{
+    fmt.add_string_(source.c_str());
+    return fmt;
+}

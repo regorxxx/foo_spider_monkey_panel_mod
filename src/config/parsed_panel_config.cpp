@@ -63,7 +63,7 @@ void Parse_Package( const config::PanelSettings_Package& settings, config::Parse
     try
     {
         const auto packageDirRet = config::FindPackage( settings.id );
-        const auto valueOrEmpty = []( const qwr::u8string& str ) -> qwr::u8string {
+        const auto valueOrEmpty = []( const std::string& str ) -> std::string {
             return ( str.empty() ? "<empty>" : str );
         };
         qwr::QwrException::ExpectTrue( packageDirRet.has_value(),
@@ -95,7 +95,7 @@ void Reparse_Package( config::ParsedPanelSettings& parsedSettings )
     try
     {
         const auto packageDirRet = config::FindPackage( packageId );
-        const auto valueOrEmpty = []( const qwr::u8string& str ) -> qwr::u8string {
+        const auto valueOrEmpty = []( const std::string& str ) -> std::string {
             return ( str.empty() ? "<empty>" : str );
         };
         qwr::QwrException::ExpectTrue( packageDirRet.has_value(),

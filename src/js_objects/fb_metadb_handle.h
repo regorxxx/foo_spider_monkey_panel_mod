@@ -39,8 +39,8 @@ public: // methods
     bool Compare( JsFbMetadbHandle* handle );
     JSObject* GetFileInfo();
     void RefreshStats();
-    void SetFirstPlayed( const qwr::u8string& first_played );
-    void SetLastPlayed( const qwr::u8string& last_played );
+    void SetFirstPlayed( const std::string& first_played );
+    void SetLastPlayed( const std::string& last_played );
     void SetLoved( uint32_t loved );
     void SetPlaycount( uint32_t playcount );
     void SetRating( uint32_t rating );
@@ -48,8 +48,8 @@ public: // methods
 public: // props
     int64_t get_FileSize();
     double get_Length();
-    qwr::u8string get_Path();
-    qwr::u8string get_RawPath();
+    std::string get_Path();
+    std::string get_RawPath();
     uint32_t get_SubSong();
 
 private:

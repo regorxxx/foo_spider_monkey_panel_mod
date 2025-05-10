@@ -49,7 +49,7 @@ LRESULT CNameValueEdit::OnCommand( UINT, int id, HWND )
     return 0;
 }
 
-qwr::u8string CNameValueEdit::GetValue()
+std::string CNameValueEdit::GetValue()
 {
     return value_;
 }

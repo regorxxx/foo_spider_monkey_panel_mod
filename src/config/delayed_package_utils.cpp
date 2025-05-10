@@ -92,7 +92,7 @@ void CheckPackageBackups()
         return;
     }
 
-    std::vector<qwr::u8string> backups;
+    std::vector<std::string> backups;
     for ( const auto& backup: fs::directory_iterator( dir ) )
     {
         if ( !fs::is_directory( backup ) )
@@ -235,7 +235,7 @@ void RemovePackages()
 namespace smp::config
 {
 
-bool IsPackageInUse( const qwr::u8string& packageId )
+bool IsPackageInUse( const std::string& packageId )
 {
     try
     {
@@ -247,7 +247,7 @@ bool IsPackageInUse( const qwr::u8string& packageId )
     }
 }
 
-PackageDelayStatus GetPackageDelayStatus( const qwr::u8string& packageId )
+PackageDelayStatus GetPackageDelayStatus( const std::string& packageId )
 {
     try
     {
@@ -271,7 +271,7 @@ PackageDelayStatus GetPackageDelayStatus( const qwr::u8string& packageId )
     }
 }
 
-void ClearPackageDelayStatus( const qwr::u8string& packageId )
+void ClearPackageDelayStatus( const std::string& packageId )
 {
     try
     {
@@ -286,7 +286,7 @@ void ClearPackageDelayStatus( const qwr::u8string& packageId )
     }
 }
 
-void MarkPackageAsToBeRemoved( const qwr::u8string& packageId )
+void MarkPackageAsToBeRemoved( const std::string& packageId )
 {
     ClearPackageDelayStatus( packageId );
     try
@@ -303,7 +303,7 @@ void MarkPackageAsToBeRemoved( const qwr::u8string& packageId )
     }
 }
 
-void MarkPackageAsToBeInstalled( const qwr::u8string& packageId, const std::filesystem::path& packageContent )
+void MarkPackageAsToBeInstalled( const std::string& packageId, const std::filesystem::path& packageContent )
 {
     ClearPackageDelayStatus( packageId );
     try
@@ -319,7 +319,7 @@ void MarkPackageAsToBeInstalled( const qwr::u8string& packageId, const std::file
     }
 }
 
-void MarkPackageAsInUse( const qwr::u8string& packageId )
+void MarkPackageAsInUse( const std::string& packageId )
 {
     try
     {

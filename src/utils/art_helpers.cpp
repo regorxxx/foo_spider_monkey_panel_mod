@@ -70,7 +70,7 @@ void AlbumArtFetchTask::operator()()
 
 void AlbumArtFetchTask::run()
 {
-    qwr::u8string imagePath;
+    std::string imagePath;
     auto bitmap = art::GetBitmapFromMetadbOrEmbed( handle_, options_, &imagePath );
 
     EventDispatcher::Get().PutEvent( hNotifyWnd_,
@@ -121,7 +121,7 @@ std::unique_ptr<Gdiplus::Bitmap> GetBitmapFromAlbumArtData( const album_art_data
 }
 
 /// @details Throws pfc::exception, if art is not found or if aborted
-std::unique_ptr<Gdiplus::Bitmap> ExtractBitmap( album_art_extractor_instance_v2::ptr extractor, const GUID& artTypeGuid, bool onlyGetPath, qwr::u8string* pImagePath, abort_callback& abort )
+std::unique_ptr<Gdiplus::Bitmap> ExtractBitmap( album_art_extractor_instance_v2::ptr extractor, const GUID& artTypeGuid, bool onlyGetPath, std::string* pImagePath, abort_callback& abort )
 {
     album_art_data_ptr data = extractor->query( artTypeGuid, abort );
     std::unique_ptr<Gdiplus::Bitmap> bitmap;
@@ -167,7 +167,7 @@ void EmbedThread::run( threaded_process_status& p_status,
 
     for ( const auto& [i, handle]: ranges::views::enumerate( stlHandleList ) )
     {
-        const qwr::u8string path = handle->get_path();
+        const std::string path = handle->get_path();
         p_status.set_progress( i, stlHandleList.size() );
         p_status.set_item_path( path.c_str() );
 
@@ -230,7 +230,7 @@ const GUID& GetGuidForArtId( uint32_t art_id )
     return *gKnownArtGuids[art_id];
 }
 
-std::unique_ptr<Gdiplus::Bitmap> GetBitmapFromEmbeddedData( const qwr::u8string& rawpath, uint32_t art_id )
+std::unique_ptr<Gdiplus::Bitmap> GetBitmapFromEmbeddedData( const std::string& rawpath, uint32_t art_id )
 {
     const auto extension = pfc::string_extension( rawpath.c_str() );
     const GUID& artTypeGuid = GetGuidForArtId( art_id );
@@ -259,7 +259,7 @@ std::unique_ptr<Gdiplus::Bitmap> GetBitmapFromEmbeddedData( const qwr::u8string&
     return nullptr;
 }
 
-std::unique_ptr<Gdiplus::Bitmap> GetBitmapFromMetadb( const metadb_handle_ptr& handle, const LoadingOptions& options, qwr::u8string* pImagePath )
+std::unique_ptr<Gdiplus::Bitmap> GetBitmapFromMetadb( const metadb_handle_ptr& handle, const LoadingOptions& options, std::string* pImagePath )
 {
     assert( handle.is_valid() );
 
@@ -290,11 +290,11 @@ std::unique_ptr<Gdiplus::Bitmap> GetBitmapFromMetadb( const metadb_handle_ptr& h
     return nullptr;
 }
 
-std::unique_ptr<Gdiplus::Bitmap> GetBitmapFromMetadbOrEmbed( const metadb_handle_ptr& handle, const LoadingOptions& options, qwr::u8string* pImagePath )
+std::unique_ptr<Gdiplus::Bitmap> GetBitmapFromMetadbOrEmbed( const metadb_handle_ptr& handle, const LoadingOptions& options, std::string* pImagePath )
 {
     assert( handle.is_valid() );
 
-    qwr::u8string imagePath;
+    std::string imagePath;
     std::unique_ptr<Gdiplus::Bitmap> bitmap;
 
     try

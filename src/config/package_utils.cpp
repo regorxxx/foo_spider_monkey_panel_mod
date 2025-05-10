@@ -128,14 +128,14 @@ const fs::path& GetRelativePathToMainFile()
     return main;
 }
 
-ParsedPanelSettings GetNewPackageSettings( const qwr::u8string& name )
+ParsedPanelSettings GetNewPackageSettings( const std::string& name )
 {
     ParsedPanelSettings settings;
 
     try
     {
         fs::path packagePath;
-        qwr::u8string id;
+        std::string id;
         do
         {
             const auto guidStr = utils::GuidToStr( utils::GenerateGuid() );
@@ -155,7 +155,7 @@ ParsedPanelSettings GetNewPackageSettings( const qwr::u8string& name )
     return settings;
 }
 
-std::optional<std::filesystem::path> FindPackage( const qwr::u8string& packageId )
+std::optional<std::filesystem::path> FindPackage( const std::string& packageId )
 {
 
     try

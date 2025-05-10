@@ -67,19 +67,19 @@ const JSPropertySpec* JsFbTitleFormat::JsProperties = jsProperties.data();
 const JsPrototypeId JsFbTitleFormat::PrototypeId = JsPrototypeId::FbTitleFormat;
 const JSNative JsFbTitleFormat::JsConstructor = ::FbTitleFormat_Constructor;
 
-JsFbTitleFormat::JsFbTitleFormat( JSContext* cx, const qwr::u8string& expr )
+JsFbTitleFormat::JsFbTitleFormat( JSContext* cx, const std::string& expr )
     : pJsCtx_( cx )
 {
     titleformat_compiler::get()->compile_safe( titleFormatObject_, expr.c_str() );
 }
 
 std::unique_ptr<JsFbTitleFormat>
-JsFbTitleFormat::CreateNative( JSContext* cx, const qwr::u8string& expr )
+JsFbTitleFormat::CreateNative( JSContext* cx, const std::string& expr )
 {
     return std::unique_ptr<JsFbTitleFormat>( new JsFbTitleFormat( cx, expr ) );
 }
 
-size_t JsFbTitleFormat::GetInternalSize( const qwr::u8string& /*expr*/ )
+size_t JsFbTitleFormat::GetInternalSize( const std::string& /*expr*/ )
 {
     return sizeof( titleformat_object );
 }
@@ -89,7 +89,7 @@ titleformat_object::ptr JsFbTitleFormat::GetTitleFormat()
     return titleFormatObject_;
 }
 
-JSObject* JsFbTitleFormat::Constructor( JSContext* cx, const qwr::u8string& expr )
+JSObject* JsFbTitleFormat::Constructor( JSContext* cx, const std::string& expr )
 {
     return JsFbTitleFormat::CreateJs( cx, expr );
 }

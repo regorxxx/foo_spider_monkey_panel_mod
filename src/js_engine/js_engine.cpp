@@ -37,10 +37,10 @@ constexpr size_t kMaxStackLimit = 1024LL * 1024 / 2;
 namespace
 {
 
-void ReportException( const qwr::u8string& errorText )
+void ReportException( const std::string& errorText )
 {
-    const qwr::u8string errorTextPadded = [&errorText]() {
-        qwr::u8string text = "Critical JS engine error: " SMP_NAME_WITH_VERSION;
+    const std::string errorTextPadded = [&errorText]() {
+        std::string text = "Critical JS engine error: " SMP_NAME_WITH_VERSION;
         if ( !errorText.empty() )
         {
             text += "\n";

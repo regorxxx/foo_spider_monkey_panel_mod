@@ -23,7 +23,7 @@ namespace mozjs::convert::to_native::internal
 {
 
 template <class T>
-inline constexpr bool IsJsSimpleConvertableImplV = std::disjunction_v<std::is_fundamental<T>, std::is_same<qwr::u8string, T>, std::is_same<std::wstring, T>, std::is_same<pfc::string8_fast, T>>;
+inline constexpr bool IsJsSimpleConvertableImplV = std::disjunction_v<std::is_fundamental<T>, std::is_same<std::string, T>, std::is_same<std::wstring, T>, std::is_same<pfc::string8_fast, T>>;
 
 template <class T>
 inline constexpr bool IsJsSimpleConvertableV = IsJsSimpleConvertableImplV<std::remove_cv_t<T>>;
@@ -73,7 +73,7 @@ template <>
 double ToSimpleValue<double>( JSContext* cx, const JS::HandleValue& jsValue );
 
 template <>
-qwr::u8string ToSimpleValue<qwr::u8string>( JSContext* cx, const JS::HandleValue& jsValue );
+std::string ToSimpleValue<std::string>( JSContext* cx, const JS::HandleValue& jsValue );
 
 template <>
 std::wstring ToSimpleValue<std::wstring>( JSContext* cx, const JS::HandleValue& jsValue );
@@ -162,7 +162,7 @@ T ToValue( JSContext* cx, const JS::HandleString& jsString )
 }
 
 template <>
-qwr::u8string ToValue( JSContext* cx, const JS::HandleString& jsString );
+std::string ToValue( JSContext* cx, const JS::HandleString& jsString );
 
 template <>
 std::wstring ToValue( JSContext* cx, const JS::HandleString& jsString );

@@ -134,7 +134,7 @@ void JsContainer::Finalize()
     (void)JsEngine::GetInstance().GetGcEngine().TriggerGc();
 }
 
-void JsContainer::Fail( const qwr::u8string& errorText )
+void JsContainer::Fail( const std::string& errorText )
 {
     Finalize();
     if ( JsStatus::EngineFailed != jsStatus_ )
@@ -143,8 +143,8 @@ void JsContainer::Fail( const qwr::u8string& errorText )
     }
 
     assert( pParentPanel_ );
-    const qwr::u8string errorTextPadded = [pParentPanel = pParentPanel_, &errorText]() {
-        qwr::u8string text =
+    const std::string errorTextPadded = [pParentPanel = pParentPanel_, &errorText]() {
+        std::string text =
             fmt::format( "Error: " SMP_NAME_WITH_VERSION " ({})", pParentPanel->GetPanelDescription() );
         if ( !errorText.empty() )
         {
@@ -163,7 +163,7 @@ JsContainer::JsStatus JsContainer::GetStatus() const
     return jsStatus_;
 }
 
-bool JsContainer::ExecuteScript( const qwr::u8string& scriptCode )
+bool JsContainer::ExecuteScript( const std::string& scriptCode )
 {
     assert( pJsCtx_ );
     assert( jsGlobal_.initialized() );
@@ -242,7 +242,7 @@ smp::panel::js_panel_window& JsContainer::GetParentPanel() const
     return *pParentPanel_;
 }
 
-bool JsContainer::InvokeOnDragAction( const qwr::u8string& functionName, const POINTL& pt, uint32_t keyState, panel::DragActionParams& actionParams )
+bool JsContainer::InvokeOnDragAction( const std::string& functionName, const POINTL& pt, uint32_t keyState, panel::DragActionParams& actionParams )
 {
     if ( !IsReadyForCallback() )
     {

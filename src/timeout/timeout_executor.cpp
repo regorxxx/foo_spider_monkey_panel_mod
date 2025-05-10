@@ -16,7 +16,7 @@ namespace
 
 auto GetAllowedEarlyFiringTime()
 {
-    return ( smp::config::advanced::debug_use_custom_timer_engine.GetValue() ? smp::TimerManager_Custom::Get().GetAllowedEarlyFiringTime() : smp::TimerManager_Native::Get().GetAllowedEarlyFiringTime() );
+    return ( smp::config::advanced::debug_use_custom_timer_engine.get() ? smp::TimerManager_Custom::Get().GetAllowedEarlyFiringTime() : smp::TimerManager_Native::Get().GetAllowedEarlyFiringTime() );
 }
 
 } // namespace
@@ -148,7 +148,7 @@ void TimeoutExecutor::ScheduleDelayed( const TimeStamp& targetDeadline, const Ti
     assert( mode_ == Mode::None );
     assert( targetDeadline > ( now + GetAllowedEarlyFiringTime() ) );
 
-    const auto useCustomTimerEngine = config::advanced::debug_use_custom_timer_engine.GetValue();
+    const auto useCustomTimerEngine = config::advanced::debug_use_custom_timer_engine.get();
     if ( pTimer_ && usedCustomTimerEngine_ != useCustomTimerEngine )
     {
         usedCustomTimerEngine_ = useCustomTimerEngine;
@@ -158,7 +158,7 @@ void TimeoutExecutor::ScheduleDelayed( const TimeStamp& targetDeadline, const Ti
 
     if ( !pTimer_ )
     {
-        if ( config::advanced::debug_use_custom_timer_engine.GetValue() )
+        if ( config::advanced::debug_use_custom_timer_engine.get() )
         {
             pTimer_ = TimerManager_Custom::Get().CreateTimer( pTarget_ );
         }

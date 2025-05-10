@@ -115,7 +115,7 @@ T ConvertFileContent( const std::wstring& path, std::string_view content, UINT c
         {
             if ( CP_UTF8 == detectedCodepage )
             {
-                fileContent = qwr::u8string( curPos, curSize );
+                fileContent = std::string( curPos, curSize );
             }
             else
             {
@@ -264,9 +264,9 @@ T ReadFileImpl( const fs::path& path, UINT codepage, bool checkFileExistense )
 namespace qwr::file
 {
 
-qwr::u8string ReadFile( const fs::path& path, UINT codepage, bool checkFileExistense )
+std::string ReadFile( const fs::path& path, UINT codepage, bool checkFileExistense )
 {
-    return ReadFileImpl<qwr::u8string>( path, codepage, checkFileExistense );
+    return ReadFileImpl<std::string>( path, codepage, checkFileExistense );
 }
 
 std::wstring ReadFileW( const fs::path& path, UINT codepage, bool checkFileExistense )
@@ -274,7 +274,7 @@ std::wstring ReadFileW( const fs::path& path, UINT codepage, bool checkFileExist
     return ReadFileImpl<std::wstring>( path, codepage, checkFileExistense );
 }
 
-void WriteFile( const fs::path& path, qwr::u8string_view content, bool write_bom )
+void WriteFile( const fs::path& path, std::string_view content, bool write_bom )
 {
     const int offset = ( write_bom ? sizeof( kBom8 ) : 0 );
     HANDLE hFile = CreateFile( path.wstring().c_str(), GENERIC_READ | GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr );

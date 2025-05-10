@@ -2,7 +2,6 @@
 
 #include "ui_conf_tab_script_source.h"
 
-#include <fb2k/config.h>
 #include <panel/edit_script.h>
 #include <ui/ui_conf.h>
 #include <ui/ui_package_manager.h>
@@ -331,7 +330,7 @@ void CConfigTabScriptSource::OnOpenPackageManager( UINT /*uNotifyCode*/, int /*n
 }
 
 std::optional<config::ParsedPanelSettings>
-CConfigTabScriptSource::OnOpenPackageManagerImpl( const qwr::u8string& packageId )
+CConfigTabScriptSource::OnOpenPackageManagerImpl( const std::string& packageId )
 {
     CDialogPackageManager pkgMgr( packageId );
     pkgMgr.DoModal( m_hWnd );
@@ -392,26 +391,21 @@ void CConfigTabScriptSource::OnEditScriptWith( UINT uNotifyCode, int nID, CWindo
         fdOpts.filterSpec.assign( { { L"Executable files", L"*.exe" } } );
         fdOpts.defaultExtension = L"exe";
 
-        try
+        const auto editorPathOpt = qwr::file::FileDialog( L"Choose text editor", false, fdOpts );
+        if (editorPathOpt)
         {
-            const auto editorPathOpt = qwr::file::FileDialog( L"Choose text editor", false, fdOpts );
-            if ( editorPathOpt )
-            {
-                const fs::path editorPath = *editorPathOpt;
-                qwr::QwrException::ExpectTrue( fs::exists( editorPath ), "Invalid path" );
+            std::error_code ec;
+            const fs::path editorPath = *editorPathOpt;
+            qwr::QwrException::ExpectTrue(fs::is_regular_file(editorPath, ec), "Invalid path");
 
-                smp::config::default_editor = editorPath.u8string();
-            }
-        }
-        catch ( const fs::filesystem_error& e )
-        {
-            qwr::ReportErrorWithPopup( SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide( e.what() ) );
+            const pfc::string8 tmp = qwr::unicode::ToU8(editorPath.native()).c_str();
+            fb2k::configStore::get()->setConfigString("smp.editor.path", tmp);
         }
         break;
     }
     case ID_EDIT_WITH_INTERNAL:
     {
-        smp::config::default_editor = "";
+        fb2k::configStore::get()->deleteConfigString("smp.editor.path");
         break;
     }
     default:
@@ -438,11 +432,11 @@ void CConfigTabScriptSource::InitializeLocalOptions()
 
     path_ = ( settings_.scriptPath && settings_.GetSourceType() == config::ScriptSourceType::File
                   ? settings_.scriptPath->u8string()
-                  : qwr::u8string{} );
+                  : std::string{} );
 
     packageName_ = ( settings_.GetSourceType() == config::ScriptSourceType::Package
                          ? settings_.scriptName
-                         : qwr::u8string{} );
+                         : std::string{} );
 
     sampleIdx_ = [&] {
         if ( settings_.GetSourceType() != config::ScriptSourceType::Sample )

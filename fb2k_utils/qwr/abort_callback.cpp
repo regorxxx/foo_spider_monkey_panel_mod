@@ -93,7 +93,7 @@ abort_callback_event GlobalAbortCallback::get_abort_event() const
     return abortImpl_.get_abort_event();
 }
 
-TimedAbortCallback::TimedAbortCallback( const qwr::u8string& timeoutLogMessage, uint32_t timeoutSeconds )
+TimedAbortCallback::TimedAbortCallback( const std::string& timeoutLogMessage, uint32_t timeoutSeconds )
     : timeoutLogMessage_( timeoutLogMessage )
     , hTimer_( g_timerManager.CreateTimer( timerProc, this, timeoutSeconds ) )
 {
@@ -126,7 +126,7 @@ void CALLBACK TimedAbortCallback::timerProc( PVOID lpParameter, BOOLEAN /*TimerO
 
     if ( !parent.timeoutLogMessage_.empty() )
     {
-        FB2K_console_formatter() << "Timer timeout: " << parent.timeoutLogMessage_;
+        FB2K_console_formatter() << "Timer timeout: " << parent.timeoutLogMessage_.c_str();
     }
 
     parent.hasEnded_ = true;

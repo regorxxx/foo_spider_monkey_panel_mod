@@ -27,7 +27,7 @@ std::basic_string<T> Trim( std::basic_string_view<T> str )
     return std::basic_string<T>{ view.data(), view.size() };
 }
 
-std::vector<qwr::u8string_view> SplitByLines( qwr::u8string_view str );
+std::vector<std::string_view> SplitByLines( std::string_view str );
 
 template <typename T>
 std::vector<std::basic_string_view<T>> Split( std::basic_string_view<T> str, const std::basic_string<T>& separator )

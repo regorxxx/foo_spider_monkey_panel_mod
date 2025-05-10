@@ -22,7 +22,7 @@ class CEditor
 public:
     using SaveCallback = std::function<void()>;
 
-    CEditor( const qwr::u8string& caption, qwr::u8string& text, SaveCallback callback = nullptr );
+    CEditor( const std::string& caption, std::string& text, SaveCallback callback = nullptr );
 
     BEGIN_DLGRESIZE_MAP( CEditor )
         DLGRESIZE_CONTROL( IDC_EDIT, DLSZ_SIZE_X | DLSZ_SIZE_Y )
@@ -80,8 +80,8 @@ private:
 
     SaveCallback callback_;
 
-    qwr::u8string& text_;
-    qwr::u8string caption_;
+    std::string& text_;
+    std::string caption_;
 
     bool isDirty_ = false;
 };

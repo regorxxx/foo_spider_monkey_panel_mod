@@ -24,12 +24,12 @@ enum class SettingsType : uint32_t
 namespace smp::config
 {
 
-PanelProperties PanelProperties::FromJson( const qwr::u8string& jsonString )
+PanelProperties PanelProperties::FromJson( const std::string& jsonString )
 {
     return smp::config::json::DeserializeProperties( jsonString );
 }
 
-qwr::u8string PanelProperties::ToJson() const
+std::string PanelProperties::ToJson() const
 {
     return smp::config::json::SerializeProperties( *this );
 }
@@ -57,16 +57,16 @@ void PanelProperties::Save( stream_writer& writer, abort_callback& abort ) const
     smp::config::json::SaveProperties( writer, abort, *this );
 }
 
-qwr::u8string PanelSettings_InMemory::GetDefaultScript()
+std::string PanelSettings_InMemory::GetDefaultScript()
 {
     puResource puRes = uLoadResource( core_api::get_my_instance(), uMAKEINTRESOURCE( IDR_DEFAULT_SCRIPT ), "SCRIPT" );
     if ( puRes )
     {
-        return qwr::u8string{ static_cast<const char*>( puRes->GetPointer() ), puRes->GetSize() };
+        return std::string{ static_cast<const char*>( puRes->GetPointer() ), puRes->GetSize() };
     }
     else
     {
-        return qwr::u8string{};
+        return std::string{};
     }
 }
 

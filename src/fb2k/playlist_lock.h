@@ -25,7 +25,7 @@ private:
     PlaylistLockManager() = default;
 
 private:
-    std::unordered_map<qwr::u8string, playlist_lock::ptr> knownLocks_;
+    std::unordered_map<std::string, playlist_lock::ptr> knownLocks_;
 };
 
 } // namespace smp

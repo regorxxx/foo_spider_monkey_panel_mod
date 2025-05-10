@@ -326,7 +326,7 @@ JS::Value JsGdiBitmap::GetColourScheme( uint32_t count )
     return jsValue;
 }
 
-qwr::u8string JsGdiBitmap::GetColourSchemeJSON( uint32_t count )
+std::string JsGdiBitmap::GetColourSchemeJSON( uint32_t count )
 {
     using json = nlohmann::json;
     namespace kmeans = smp::utils::kmeans;

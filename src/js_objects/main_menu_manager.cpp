@@ -101,7 +101,7 @@ bool JsMainMenuManager::ExecuteByID( uint32_t id )
     return menuManager_->execute_command( id );
 }
 
-void JsMainMenuManager::Init( const qwr::u8string& root_name )
+void JsMainMenuManager::Init( const std::string& root_name )
 {
     const auto preparedRootName = [&root_name]() {
         // Don't care about UTF8 here: we need exact match

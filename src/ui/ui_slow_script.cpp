@@ -7,7 +7,7 @@ namespace smp::ui
 
 // TODO: add question icon like here - https://www.google.com/search?q=firefox+slow+script+warning&tbm=isch
 
-CDialogSlowScript::CDialogSlowScript( const qwr::u8string& panelName, const qwr::u8string& scriptInfo, CDialogSlowScript::Data& data )
+CDialogSlowScript::CDialogSlowScript( const std::string& panelName, const std::string& scriptInfo, CDialogSlowScript::Data& data )
     : panelName_( panelName )
     , scriptInfo_( scriptInfo )
     , data_( data )
@@ -19,7 +19,7 @@ LRESULT CDialogSlowScript::OnInitDialog( HWND, LPARAM )
     (void)CenterWindow();
 
     const auto text = [&panelName = panelName_, &scriptInfo = scriptInfo_] {
-        qwr::u8string tmp;
+        std::string tmp;
         if ( !panelName.empty() )
         {
             tmp += fmt::format( "Panel: {}", panelName );

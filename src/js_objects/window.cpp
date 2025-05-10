@@ -374,7 +374,7 @@ JSObject* JsWindow::CreateTooltipWithOpt( size_t optArgCount, const std::wstring
     }
 }
 
-void JsWindow::DefinePanel( const qwr::u8string& name, JS::HandleValue options )
+void JsWindow::DefinePanel( const std::string& name, JS::HandleValue options )
 {
     qwr::QwrException::ExpectTrue(
         parentPanel_.GetSettings().GetSourceType() != config::ScriptSourceType::Package,
@@ -391,7 +391,7 @@ void JsWindow::DefinePanel( const qwr::u8string& name, JS::HandleValue options )
     isScriptDefined_ = true;
 }
 
-void JsWindow::DefinePanelWithOpt( size_t optArgCount, const qwr::u8string& name, JS::HandleValue options )
+void JsWindow::DefinePanelWithOpt( size_t optArgCount, const std::string& name, JS::HandleValue options )
 {
     switch ( optArgCount )
     {
@@ -404,7 +404,7 @@ void JsWindow::DefinePanelWithOpt( size_t optArgCount, const qwr::u8string& name
     }
 }
 
-void JsWindow::DefineScript( const qwr::u8string& name, JS::HandleValue options )
+void JsWindow::DefineScript( const std::string& name, JS::HandleValue options )
 {
     if ( isFinalized_ )
     {
@@ -425,7 +425,7 @@ void JsWindow::DefineScript( const qwr::u8string& name, JS::HandleValue options 
     isScriptDefined_ = true;
 }
 
-void JsWindow::DefineScriptWithOpt( size_t optArgCount, const qwr::u8string& name, JS::HandleValue options )
+void JsWindow::DefineScriptWithOpt( size_t optArgCount, const std::string& name, JS::HandleValue options )
 {
     switch ( optArgCount )
     {
@@ -912,11 +912,11 @@ uint32_t JsWindow::get_MinWidth()
     return parentPanel_.MinSize().x;
 }
 
-qwr::u8string JsWindow::get_Name()
+std::string JsWindow::get_Name()
 {
     if ( isFinalized_ )
     {
-        return qwr::u8string{};
+        return std::string{};
     }
 
     return parentPanel_.GetPanelId();
@@ -1048,8 +1048,8 @@ JsWindow::DefineScriptOptions JsWindow::ParseDefineScriptOptions( JS::HandleValu
         qwr::QwrException::ExpectTrue( options.isObject(), "options argument is not an object" );
         JS::RootedObject jsOptions( pJsCtx_, &options.toObject() );
 
-        parsedOptions.author = GetOptionalProperty<qwr::u8string>( pJsCtx_, jsOptions, "author" ).value_or( "" );
-        parsedOptions.version = GetOptionalProperty<qwr::u8string>( pJsCtx_, jsOptions, "version" ).value_or( "" );
+        parsedOptions.author = GetOptionalProperty<std::string>( pJsCtx_, jsOptions, "author" ).value_or( "" );
+        parsedOptions.version = GetOptionalProperty<std::string>( pJsCtx_, jsOptions, "version" ).value_or( "" );
 
         bool hasProperty;
         if ( !JS_HasProperty( pJsCtx_, jsOptions, "features", &hasProperty ) )

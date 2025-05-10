@@ -96,7 +96,7 @@ void js_panel_window::ui_fonts_changed()
     EventDispatcher::Get().PutEvent(wnd_, GenerateEvent_JsCallback(EventId::kUiFontChanged));
 }
 
-void js_panel_window::Fail( const qwr::u8string& errorText )
+void js_panel_window::Fail( const std::string& errorText )
 {
     hasFailed_ = true;
     qwr::ReportErrorWithPopup( SMP_UNDERSCORE_NAME, errorText );
@@ -959,7 +959,7 @@ std::optional<LRESULT> js_panel_window::ProcessInternalSyncMessage( InternalSync
     }
     case InternalSyncMessage::script_fail:
     {
-        Fail( *reinterpret_cast<const qwr::u8string*>( lp ) );
+        Fail( *reinterpret_cast<const std::string*>( lp ) );
         return 0;
     }
     case InternalSyncMessage::prepare_for_exit:
@@ -1178,14 +1178,14 @@ void js_panel_window::ExecuteContextMenu( uint32_t id, uint32_t id_base )
     }
 }
 
-qwr::u8string js_panel_window::GetPanelId()
+std::string js_panel_window::GetPanelId()
 {
     return settings_.panelId;
 }
 
-qwr::u8string js_panel_window::GetPanelDescription( bool includeVersionAndAuthor )
+std::string js_panel_window::GetPanelDescription( bool includeVersionAndAuthor )
 {
-    qwr::u8string ret = fmt::format( "{}", settings_.panelId );
+    std::string ret = fmt::format( "{}", settings_.panelId );
 
     if ( !settings_.scriptName.empty() )
     {
@@ -1246,7 +1246,7 @@ PanelType js_panel_window::GetPanelType() const
     return panelType_;
 }
 
-void js_panel_window::SetSettings_ScriptInfo( const qwr::u8string& scriptName, const qwr::u8string& scriptAuthor, const qwr::u8string& scriptVersion )
+void js_panel_window::SetSettings_ScriptInfo( const std::string& scriptName, const std::string& scriptAuthor, const std::string& scriptVersion )
 {
     assert( settings_.GetSourceType() != config::ScriptSourceType::Package );
 
@@ -1255,7 +1255,7 @@ void js_panel_window::SetSettings_ScriptInfo( const qwr::u8string& scriptName, c
     settings_.scriptVersion = scriptVersion;
 }
 
-void js_panel_window::SetSettings_PanelName( const qwr::u8string& panelName )
+void js_panel_window::SetSettings_PanelName( const std::string& panelName )
 {
     assert( settings_.GetSourceType() != config::ScriptSourceType::Package );
 

@@ -187,7 +187,7 @@ void PlaylistLockManager::RemoveLock( size_t playlistIndex )
         throw qwr::QwrException( "Internal error: playlist with component-owned lock is missing `lock-id` attribute" );
     }
 
-    const auto lockId = qwr::u8string{ lockIdBinary.get_ptr(), lockIdBinary.get_count() };
+    const auto lockId = std::string{ lockIdBinary.get_ptr(), lockIdBinary.get_count() };
     const auto lockIt = knownLocks_.find( lockId );
     qwr::QwrException::ExpectTrue( lockIt != knownLocks_.cend(), "Internal error: component-owned lock is not known by component" );
 

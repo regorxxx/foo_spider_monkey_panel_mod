@@ -8,9 +8,9 @@ namespace smp::config::sci
 
 struct ScintillaProp
 {
-    qwr::u8string key;
-    qwr::u8string defaultval;
-    qwr::u8string val;
+    std::string key;
+    std::string defaultval;
+    std::string val;
 };
 
 using ScintillaPropList = std::vector<ScintillaProp>;
@@ -41,10 +41,10 @@ public:
 private:
     struct StriCmpAscii
     {
-        bool operator()( const qwr::u8string& a, const qwr::u8string& b ) const;
+        bool operator()( const std::string& a, const std::string& b ) const;
     };
 
-    using ScintillaPropValues = std::map<qwr::u8string, qwr::u8string, StriCmpAscii>;
+    using ScintillaPropValues = std::map<std::string, std::string, StriCmpAscii>;
 
 private:
     void init_data( std::span<const DefaultPropValue> p_default );

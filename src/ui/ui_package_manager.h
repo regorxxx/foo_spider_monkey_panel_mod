@@ -39,7 +39,7 @@ public:
         MESSAGE_HANDLER_EX( com::FileDropTarget::GetOnDropMsg(), OnDropFiles )
     END_MSG_MAP()
 
-    CDialogPackageManager( const qwr::u8string& currentPackageId );
+    CDialogPackageManager( const std::string& currentPackageId );
 
     [[nodiscard]] std::optional<config::ParsedPanelSettings> GetPackage() const;
 
@@ -47,7 +47,7 @@ private:
     struct PackageData
     {
         std::wstring displayedName;
-        qwr::u8string id;
+        std::string id;
         std::optional<config::ParsedPanelSettings> parsedSettings;
         std::wstring errorText;
         config::PackageDelayStatus status;
@@ -83,7 +83,7 @@ private:
     bool ConfirmRebootOnPackageInUse();
 
 private:
-    qwr::u8string focusedPackageId_;
+    std::string focusedPackageId_;
     int focusedPackageIdx_ = -1;
     std::array<std::unique_ptr<qwr::ui::IUiDdx>, 1> ddx_;
 

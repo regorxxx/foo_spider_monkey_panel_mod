@@ -29,7 +29,7 @@ WINDOWPLACEMENT g_WindowPlacement{};
 namespace smp::ui
 {
 
-CEditor::CEditor( const qwr::u8string& caption, qwr::u8string& text, SaveCallback callback )
+CEditor::CEditor( const std::string& caption, std::string& text, SaveCallback callback )
     : callback_( callback )
     , text_( text )
     , caption_( caption )
@@ -209,7 +209,7 @@ LRESULT CEditor::OnFileExport( WORD, WORD, HWND )
         return 0;
     }
 
-    qwr::u8string text;
+    std::string text;
     text.resize( sciEditor_.GetTextLength() + 1 );
 
     sciEditor_.GetText( text.data(), text.size() );

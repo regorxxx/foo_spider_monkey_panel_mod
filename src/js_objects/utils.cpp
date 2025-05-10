@@ -162,7 +162,7 @@ size_t JsUtils::GetInternalSize()
     return 0;
 }
 
-bool JsUtils::CheckComponent( const qwr::u8string& name, bool is_dll ) const
+bool JsUtils::CheckComponent( const std::string& name, bool is_dll ) const
 {
     pfc::string8_fast temp;
     for ( service_enum_t<componentversion> e; !e.finished(); ++e )
@@ -186,7 +186,7 @@ bool JsUtils::CheckComponent( const qwr::u8string& name, bool is_dll ) const
     return false;
 }
 
-bool JsUtils::CheckComponentWithOpt( size_t optArgCount, const qwr::u8string& name, bool is_dll ) const
+bool JsUtils::CheckComponentWithOpt( size_t optArgCount, const std::string& name, bool is_dll ) const
 {
     switch ( optArgCount )
     {
@@ -302,14 +302,14 @@ JS::Value JsUtils::FileTest( const std::wstring& path, const std::wstring& mode 
     }
 }
 
-qwr::u8string JsUtils::FormatDuration( double p ) const
+std::string JsUtils::FormatDuration( double p ) const
 {
-    return qwr::u8string( pfc::format_time_ex( p, 0 ) );
+    return std::string( pfc::format_time_ex( p, 0 ) );
 }
 
-qwr::u8string JsUtils::FormatFileSize( uint64_t p ) const
+std::string JsUtils::FormatFileSize( uint64_t p ) const
 {
-    return qwr::u8string( pfc::format_file_size_short( p ) );
+    return std::string( pfc::format_file_size_short( p ) );
 }
 
 void JsUtils::GetAlbumArtAsync( uint32_t hWnd, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load )
@@ -371,7 +371,7 @@ JSObject* JsUtils::GetAlbumArtAsyncV2WithOpt( size_t optArgCount, uint32_t hWnd,
     }
 }
 
-JSObject* JsUtils::GetAlbumArtEmbedded( const qwr::u8string& rawpath, uint32_t art_id )
+JSObject* JsUtils::GetAlbumArtEmbedded( const std::string& rawpath, uint32_t art_id )
 {
     std::unique_ptr<Gdiplus::Bitmap> artImage( smp::art::GetBitmapFromEmbeddedData( rawpath, art_id ) );
     if ( !artImage )
@@ -382,7 +382,7 @@ JSObject* JsUtils::GetAlbumArtEmbedded( const qwr::u8string& rawpath, uint32_t a
     return JsGdiBitmap::CreateJs( pJsCtx_, std::move( artImage ) );
 }
 
-JSObject* JsUtils::GetAlbumArtEmbeddedWithOpt( size_t optArgCount, const qwr::u8string& rawpath, uint32_t art_id )
+JSObject* JsUtils::GetAlbumArtEmbeddedWithOpt( size_t optArgCount, const std::string& rawpath, uint32_t art_id )
 {
     switch ( optArgCount )
     {
@@ -423,11 +423,11 @@ JSObject* JsUtils::GetAlbumArtV2WithOpt( size_t optArgCount, JsFbMetadbHandle* h
     }
 }
 
-qwr::u8string JsUtils::GetClipboardText() const
+std::string JsUtils::GetClipboardText() const
 {
     pfc::string8 text;
     uGetClipboardString( text );
-    return qwr::u8string( text );
+    return std::string( text );
 }
 
 uint64_t JsUtils::GetFileSize( const std::wstring& path ) const
@@ -440,7 +440,7 @@ uint64_t JsUtils::GetFileSize( const std::wstring& path ) const
     return {};
 }
 
-JSObject* JsUtils::GetPackageInfo( const qwr::u8string& packageId ) const
+JSObject* JsUtils::GetPackageInfo( const std::string& packageId ) const
 {
     const auto packagePathOpt = config::FindPackage( packageId );
     if ( !packagePathOpt )
@@ -463,7 +463,7 @@ JSObject* JsUtils::GetPackageInfo( const qwr::u8string& packageId ) const
     return jsObject;
 }
 
-qwr::u8string JsUtils::GetPackagePath( const qwr::u8string& packageId ) const
+std::string JsUtils::GetPackagePath( const std::string& packageId ) const
 {
     const auto packagePathOpt = config::FindPackage( packageId );
     qwr::QwrException::ExpectTrue( packagePathOpt.has_value(), "Unknown package: {}", packageId );
@@ -484,16 +484,16 @@ uint32_t JsUtils::GetSystemMetrics( uint32_t index ) const
     return ::GetSystemMetrics( index );
 }
 
-JS::Value JsUtils::Glob( const qwr::u8string& pattern, uint32_t exc_mask, uint32_t inc_mask )
+JS::Value JsUtils::Glob( const std::string& pattern, uint32_t exc_mask, uint32_t inc_mask )
 {
-    std::vector<qwr::u8string> files;
+    std::vector<std::string> files;
     {
         const auto wPattern = qwr::unicode::ToWide( pattern );
 
         std::unique_ptr<uFindFile> ff( uFindFirstFile( pattern.c_str() ) );
         if ( ff )
         {
-            const qwr::u8string dir( pattern.c_str(), pfc::scan_filename( pattern.c_str() ) );
+            const std::string dir( pattern.c_str(), pfc::scan_filename( pattern.c_str() ) );
             do
             {
                 const DWORD attr = ff->GetAttributes();
@@ -518,7 +518,7 @@ JS::Value JsUtils::Glob( const qwr::u8string& pattern, uint32_t exc_mask, uint32
     return jsValue;
 }
 
-JS::Value JsUtils::GlobWithOpt( size_t optArgCount, const qwr::u8string& pattern, uint32_t exc_mask, uint32_t inc_mask )
+JS::Value JsUtils::GlobWithOpt( size_t optArgCount, const std::string& pattern, uint32_t exc_mask, uint32_t inc_mask )
 {
     switch ( optArgCount )
     {
@@ -533,7 +533,7 @@ JS::Value JsUtils::GlobWithOpt( size_t optArgCount, const qwr::u8string& pattern
     }
 }
 
-qwr::u8string JsUtils::InputBox( uint32_t hWnd, const qwr::u8string& prompt, const qwr::u8string& caption, const qwr::u8string& def, bool error_on_cancel )
+std::string JsUtils::InputBox( uint32_t hWnd, const std::string& prompt, const std::string& caption, const std::string& def, bool error_on_cancel )
 {
     (void)hWnd;
     const HWND hPanel = GetPanelHwndForCurrentGlobal( pJsCtx_ );
@@ -559,7 +559,7 @@ qwr::u8string JsUtils::InputBox( uint32_t hWnd, const qwr::u8string& prompt, con
     return def;
 }
 
-qwr::u8string JsUtils::InputBoxWithOpt( size_t optArgCount, uint32_t hWnd, const qwr::u8string& prompt, const qwr::u8string& caption, const qwr::u8string& def, bool error_on_cancel )
+std::string JsUtils::InputBoxWithOpt( size_t optArgCount, uint32_t hWnd, const std::string& prompt, const std::string& caption, const std::string& def, bool error_on_cancel )
 {
     switch ( optArgCount )
     {
@@ -686,7 +686,7 @@ std::wstring JsUtils::ReadTextFileWithOpt( size_t optArgCount, const std::wstrin
     }
 }
 
-void JsUtils::SetClipboardText( const qwr::u8string& text )
+void JsUtils::SetClipboardText( const std::string& text )
 {
     uSetClipboardString( text.c_str() );
 }
@@ -760,7 +760,7 @@ bool JsUtils::WriteINI( const std::wstring& filename, const std::wstring& sectio
     return WritePrivateProfileString( section.c_str(), key.c_str(), val.c_str(), filename.c_str() );
 }
 
-bool JsUtils::WriteTextFile( const std::wstring& filename, const qwr::u8string& content, bool write_bom )
+bool JsUtils::WriteTextFile( const std::wstring& filename, const std::string& content, bool write_bom )
 {
     qwr::QwrException::ExpectTrue( !filename.empty(), "Invalid filename" );
 
@@ -775,7 +775,7 @@ bool JsUtils::WriteTextFile( const std::wstring& filename, const qwr::u8string& 
     }
 }
 
-bool JsUtils::WriteTextFileWithOpt( size_t optArgCount, const std::wstring& filename, const qwr::u8string& content, bool write_bom )
+bool JsUtils::WriteTextFileWithOpt( size_t optArgCount, const std::wstring& filename, const std::string& content, bool write_bom )
 {
     switch ( optArgCount )
     {
@@ -788,7 +788,7 @@ bool JsUtils::WriteTextFileWithOpt( size_t optArgCount, const std::wstring& file
     }
 }
 
-qwr::u8string JsUtils::get_Version() const
+std::string JsUtils::get_Version() const
 {
     return SMP_VERSION;
 }

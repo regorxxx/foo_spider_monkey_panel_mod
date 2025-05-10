@@ -32,12 +32,12 @@ public:
     static size_t GetInternalSize( const metadb_info_container::ptr& containerInfo );
 
 public:
-    int32_t InfoFind( const qwr::u8string& name );
-    qwr::u8string InfoName( uint32_t index );
-    qwr::u8string InfoValue( uint32_t index );
-    int32_t MetaFind( const qwr::u8string& name );
-    qwr::u8string MetaName( uint32_t index );
-    qwr::u8string MetaValue( uint32_t index, uint32_t valueIndex );
+    int32_t InfoFind( const std::string& name );
+    std::string InfoName( uint32_t index );
+    std::string InfoValue( uint32_t index );
+    int32_t MetaFind( const std::string& name );
+    std::string MetaName( uint32_t index );
+    std::string MetaValue( uint32_t index, uint32_t valueIndex );
     uint32_t MetaValueCount( uint32_t index );
 
 public:

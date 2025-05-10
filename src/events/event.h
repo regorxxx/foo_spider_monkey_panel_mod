@@ -106,7 +106,7 @@ enum class EventId
     kTimer
 };
 
-const std::unordered_map<EventId, qwr::u8string> kCallbackIdToName = {
+const std::unordered_map<EventId, std::string> kCallbackIdToName = {
     { EventId::kFbAlwaysOnTopChanged, "always_on_top_changed" },
     { EventId::kFbCursorFollowPlaybackChanged, "cursor_follow_playback_changed" },
     { EventId::kFbDspPresetChanged, "dsp_preset_changed" },

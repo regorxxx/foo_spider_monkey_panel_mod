@@ -290,12 +290,12 @@ JSObject* JsFbUtils::CreateMainMenuManager()
     return JsMainMenuManager::CreateJs( pJsCtx_ );
 }
 
-JSObject* JsFbUtils::CreateProfiler( const qwr::u8string& name )
+JSObject* JsFbUtils::CreateProfiler( const std::string& name )
 {
     return JsFbProfiler::Constructor( pJsCtx_, name );
 }
 
-JSObject* JsFbUtils::CreateProfilerWithOpt( size_t optArgCount, const qwr::u8string& name )
+JSObject* JsFbUtils::CreateProfilerWithOpt( size_t optArgCount, const std::string& name )
 {
     switch ( optArgCount )
     {
@@ -443,7 +443,7 @@ JSObject* JsFbUtils::GetClipboardContentsWithOpt( size_t optArgCount, uint32_t h
     }
 }
 
-qwr::u8string JsFbUtils::GetDSPPresets()
+std::string JsFbUtils::GetDSPPresets()
 {
     using json = nlohmann::json;
 
@@ -522,7 +522,7 @@ JSObject* JsFbUtils::GetNowPlaying()
     return JsFbMetadbHandle::CreateJs( pJsCtx_, metadb );
 }
 
-qwr::u8string JsFbUtils::GetOutputDevices()
+std::string JsFbUtils::GetOutputDevices()
 {
     using json = nlohmann::json;
 
@@ -532,9 +532,9 @@ qwr::u8string JsFbUtils::GetOutputDevices()
     outputCoreConfig_t config{};
     api->getCoreConfig( config );
 
-    api->listDevices( [&j, &config]( const qwr::u8string& name, const GUID& output_id, const GUID& device_id ) {
-        const qwr::u8string output_string = fmt::format( "{{{}}}", pfc::print_guid( output_id ).get_ptr() );
-        const qwr::u8string device_string = fmt::format( "{{{}}}", pfc::print_guid( device_id ).get_ptr() );
+    api->listDevices( [&j, &config]( const std::string& name, const GUID& output_id, const GUID& device_id ) {
+        const std::string output_string = fmt::format( "{{{}}}", pfc::print_guid( output_id ).get_ptr() );
+        const std::string device_string = fmt::format( "{{{}}}", pfc::print_guid( device_id ).get_ptr() );
 
         j.push_back(
             { { "name", name },
@@ -546,7 +546,7 @@ qwr::u8string JsFbUtils::GetOutputDevices()
     return j.dump( 2 );
 }
 
-JSObject* JsFbUtils::GetQueryItems( JsFbMetadbHandleList* handles, const qwr::u8string& query )
+JSObject* JsFbUtils::GetQueryItems( JsFbMetadbHandleList* handles, const std::string& query )
 {
     qwr::QwrException::ExpectTrue( handles, "handles argument is null" );
 
@@ -620,7 +620,7 @@ bool JsFbUtils::IsLibraryEnabled()
     return library_manager::get()->is_library_enabled();
 }
 
-bool JsFbUtils::IsMainMenuCommandChecked( const qwr::u8string& command )
+bool JsFbUtils::IsMainMenuCommandChecked( const std::string& command )
 {
     const auto status = utils::GetMainmenuCommandStatusByName( command );
     return ( mainmenu_commands::flag_checked & status
@@ -669,7 +669,7 @@ void JsFbUtils::Random()
     standard_commands::main_random();
 }
 
-void JsFbUtils::RegisterMainMenuCommand( uint32_t id, const qwr::u8string& name, const std::optional<qwr::u8string>& description )
+void JsFbUtils::RegisterMainMenuCommand( uint32_t id, const std::string& name, const std::optional<std::string>& description )
 {
     const HWND hPanel = GetPanelHwndForCurrentGlobal( pJsCtx_ );
     qwr::QwrException::ExpectTrue( hPanel, "Method called before fb2k was initialized completely" );
@@ -677,7 +677,7 @@ void JsFbUtils::RegisterMainMenuCommand( uint32_t id, const qwr::u8string& name,
     DynamicMainMenuManager::Get().RegisterCommand( hPanel, id, name, description );
 }
 
-void JsFbUtils::RegisterMainMenuCommandWithOpt( size_t optArgCount, uint32_t id, const qwr::u8string& name, const std::optional<qwr::u8string>& description )
+void JsFbUtils::RegisterMainMenuCommandWithOpt( size_t optArgCount, uint32_t id, const std::string& name, const std::optional<std::string>& description )
 {
     switch ( optArgCount )
     {
@@ -695,7 +695,7 @@ void JsFbUtils::Restart()
     standard_commands::main_restart();
 }
 
-bool JsFbUtils::RunContextCommand( const qwr::u8string& command, uint32_t flags )
+bool JsFbUtils::RunContextCommand( const std::string& command, uint32_t flags )
 {
     metadb_handle_list dummy_list;
     try
@@ -709,7 +709,7 @@ bool JsFbUtils::RunContextCommand( const qwr::u8string& command, uint32_t flags 
     }
 }
 
-bool JsFbUtils::RunContextCommandWithOpt( size_t optArgCount, const qwr::u8string& command, uint32_t flags )
+bool JsFbUtils::RunContextCommandWithOpt( size_t optArgCount, const std::string& command, uint32_t flags )
 {
     switch ( optArgCount )
     {
@@ -722,7 +722,7 @@ bool JsFbUtils::RunContextCommandWithOpt( size_t optArgCount, const qwr::u8strin
     }
 }
 
-bool JsFbUtils::RunContextCommandWithMetadb( const qwr::u8string& command, JS::HandleValue handle, uint32_t flags )
+bool JsFbUtils::RunContextCommandWithMetadb( const std::string& command, JS::HandleValue handle, uint32_t flags )
 {
     qwr::QwrException::ExpectTrue( handle.isObject(), "handle argument is invalid" );
 
@@ -753,7 +753,7 @@ bool JsFbUtils::RunContextCommandWithMetadb( const qwr::u8string& command, JS::H
     }
 }
 
-bool JsFbUtils::RunContextCommandWithMetadbWithOpt( size_t optArgCount, const qwr::u8string& command, JS::HandleValue handle, uint32_t flags )
+bool JsFbUtils::RunContextCommandWithMetadbWithOpt( size_t optArgCount, const std::string& command, JS::HandleValue handle, uint32_t flags )
 {
     switch ( optArgCount )
     {
@@ -766,7 +766,7 @@ bool JsFbUtils::RunContextCommandWithMetadbWithOpt( size_t optArgCount, const qw
     }
 }
 
-bool JsFbUtils::RunMainMenuCommand( const qwr::u8string& command )
+bool JsFbUtils::RunMainMenuCommand( const std::string& command )
 {
     try
     {
@@ -811,19 +811,19 @@ void JsFbUtils::ShowConsole()
     standard_commands::run_main( guid_main_show_console );
 }
 
-void JsFbUtils::ShowLibrarySearchUI( const qwr::u8string& query )
+void JsFbUtils::ShowLibrarySearchUI( const std::string& query )
 {
     library_search_ui::get()->show( query.c_str() );
 }
 
-void JsFbUtils::ShowPopupMessage( const qwr::u8string& msg, const qwr::u8string& title )
+void JsFbUtils::ShowPopupMessage( const std::string& msg, const std::string& title )
 {
     fb2k::inMainThread( [msg, title] {
         popup_message::g_show( msg.c_str(), title.c_str() );
     } );
 }
 
-void JsFbUtils::ShowPopupMessageWithOpt( size_t optArgCount, const qwr::u8string& msg, const qwr::u8string& title )
+void JsFbUtils::ShowPopupMessageWithOpt( size_t optArgCount, const std::string& msg, const std::string& title )
 {
     switch ( optArgCount )
     {
@@ -846,7 +846,7 @@ void JsFbUtils::Stop()
     standard_commands::main_stop();
 }
 
-JSObject* JsFbUtils::TitleFormat( const qwr::u8string& expression )
+JSObject* JsFbUtils::TitleFormat( const std::string& expression )
 {
     return JsFbTitleFormat::Constructor( pJsCtx_, expression );
 }
@@ -879,7 +879,7 @@ bool JsFbUtils::get_AlwaysOnTop()
     return config_object::g_get_data_bool_simple( standard_config_objects::bool_ui_always_on_top, false );
 }
 
-qwr::u8string JsFbUtils::get_ComponentPath()
+std::string JsFbUtils::get_ComponentPath()
 {
     return ( qwr::path::Component() / "" ).u8string();
 }
@@ -889,7 +889,7 @@ bool JsFbUtils::get_CursorFollowPlayback()
     return config_object::g_get_data_bool_simple( standard_config_objects::bool_cursor_follows_playback, false );
 }
 
-qwr::u8string JsFbUtils::get_FoobarPath()
+std::string JsFbUtils::get_FoobarPath()
 {
     return ( qwr::path::Foobar2000() / "" ).u8string();
 }
@@ -919,7 +919,7 @@ double JsFbUtils::get_PlaybackTime()
     return playback_control::get()->playback_get_position();
 }
 
-qwr::u8string JsFbUtils::get_ProfilePath()
+std::string JsFbUtils::get_ProfilePath()
 {
     return ( qwr::path::Profile() / "" ).u8string();
 }
@@ -936,7 +936,7 @@ bool JsFbUtils::get_StopAfterCurrent()
     return playback_control::get()->get_stop_after_current();
 }
 
-qwr::u8string JsFbUtils::get_Version()
+std::string JsFbUtils::get_Version()
 {
     return core_version_info_v2::get()->get_version_as_text();
 }

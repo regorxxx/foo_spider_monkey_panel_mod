@@ -2,7 +2,6 @@
 
 #include "edit_text.h"
 
-#include <fb2k/config.h>
 #include <panel/modal_blocking_scope.h>
 #include <ui/ui_edit_in_progress.h>
 #include <ui/ui_editor.h>
@@ -23,23 +22,14 @@ std::filesystem::path GetFixedEditorPath()
 {
     namespace fs = std::filesystem;
 
-    try
-    {
-        const auto editorPath = fs::u8path( static_cast<const qwr::u8string&>( smp::config::default_editor ) );
-        if ( editorPath.empty() || !fs::exists( editorPath ) )
-        {
-            smp::config::default_editor = "";
-            return fs::path{};
-        }
-        else
-        {
-            return editorPath;
-        }
-    }
-    catch ( const fs::filesystem_error& e )
-    {
-        throw qwr::QwrException( e );
-    }
+    const std::string tmp = fb2k::configStore::get()->getConfigString("smp.editor.path")->c_str();
+    const auto editorPath = fs::path(qwr::unicode::ToWide(tmp));
+
+    std::error_code ec;
+    if (fs::is_regular_file(editorPath))
+        return editorPath;
+
+    return fs::path();
 }
 
 void NotifyParentPanel( HWND hParent )
@@ -90,7 +80,7 @@ bool EditTextFileExternal( HWND hParent, const std::filesystem::path& file, cons
     }
 }
 
-void EditTextInternal( HWND hParent, qwr::u8string& text, bool isPanelScript )
+void EditTextInternal( HWND hParent, std::string& text, bool isPanelScript )
 {
     modal::ConditionalModalScope scope( hParent, isPanelScript );
     smp::ui::CEditor dlg( "Temporary file", text, [&] {  
@@ -101,7 +91,7 @@ void EditTextInternal( HWND hParent, qwr::u8string& text, bool isPanelScript )
     dlg.DoModal( hParent );
 }
 
-void EditTextExternal( HWND hParent, qwr::u8string& text, const std::filesystem::path& pathToEditor, bool isPanelScript )
+void EditTextExternal( HWND hParent, std::string& text, const std::filesystem::path& pathToEditor, bool isPanelScript )
 {
     namespace fs = std::filesystem;
 
@@ -177,7 +167,7 @@ void EditTextFile( HWND hParent, const std::filesystem::path& file, bool isPanel
     }
 }
 
-void EditText( HWND hParent, qwr::u8string& text, bool isPanelScript )
+void EditText( HWND hParent, std::string& text, bool isPanelScript )
 {
     const auto editorPath = GetFixedEditorPath();
     if ( editorPath.empty() )

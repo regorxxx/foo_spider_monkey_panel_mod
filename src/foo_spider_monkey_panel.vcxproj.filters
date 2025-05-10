@@ -273,9 +273,6 @@
     <ClCompile Include="utils\edit_text.cpp">
       <Filter>utils</Filter>
     </ClCompile>
-    <ClCompile Include="fb2k\config.cpp">
-      <Filter>fb2k</Filter>
-    </ClCompile>
     <ClCompile Include="ui\scintilla\sci_config.cpp">
       <Filter>ui\scintilla</Filter>
     </ClCompile>
@@ -737,9 +734,6 @@
     </ClInclude>
     <ClInclude Include="utils\edit_text.h">
       <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="fb2k\config.h">
-      <Filter>fb2k</Filter>
     </ClInclude>
     <ClInclude Include="ui\scintilla\sci_config.h">
       <Filter>ui\scintilla</Filter>

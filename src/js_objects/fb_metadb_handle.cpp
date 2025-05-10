@@ -146,7 +146,7 @@ void JsFbMetadbHandle::RefreshStats()
     }
 }
 
-void JsFbMetadbHandle::SetFirstPlayed( const qwr::u8string& first_played )
+void JsFbMetadbHandle::SetFirstPlayed( const std::string& first_played )
 {
     if ( metadb_index_hash hash;
          stats::HashHandle( metadbHandle_, hash ) )
@@ -160,7 +160,7 @@ void JsFbMetadbHandle::SetFirstPlayed( const qwr::u8string& first_played )
     }
 }
 
-void JsFbMetadbHandle::SetLastPlayed( const qwr::u8string& last_played )
+void JsFbMetadbHandle::SetLastPlayed( const std::string& last_played )
 {
     if ( metadb_index_hash hash;
          stats::HashHandle( metadbHandle_, hash ) )
@@ -226,14 +226,14 @@ double JsFbMetadbHandle::get_Length()
     return metadbHandle_->get_length();
 }
 
-qwr::u8string JsFbMetadbHandle::get_Path()
+std::string JsFbMetadbHandle::get_Path()
 {
     return filesystem::g_get_native_path(metadbHandle_->get_path()).get_ptr();
 }
 
-qwr::u8string JsFbMetadbHandle::get_RawPath()
+std::string JsFbMetadbHandle::get_RawPath()
 {
-    const qwr::u8string rp = metadbHandle_->get_path();
+    const std::string rp = metadbHandle_->get_path();
 
     if (rp.starts_with("file-relative://"))
     {

@@ -275,7 +275,7 @@ JSObject* JsGlobalObject::CreateNative( JSContext* cx, JsContainer& parentContai
     return jsObj;
 }
 
-void JsGlobalObject::Fail( const qwr::u8string& errorText )
+void JsGlobalObject::Fail( const std::string& errorText )
 {
     parentContainer_.Fail( errorText );
 }
@@ -319,7 +319,7 @@ void JsGlobalObject::ClearTimeout( uint32_t timeoutId )
     pJsWindow_->ClearInterval( timeoutId );
 }
 
-void JsGlobalObject::IncludeScript( const qwr::u8string& path, JS::HandleValue options )
+void JsGlobalObject::IncludeScript( const std::string& path, JS::HandleValue options )
 {
     const auto allSearchPaths = [&] {
         std::vector<fs::path> paths;
@@ -360,7 +360,7 @@ void JsGlobalObject::IncludeScript( const qwr::u8string& path, JS::HandleValue o
     }
 }
 
-void JsGlobalObject::IncludeScriptWithOpt( size_t optArgCount, const qwr::u8string& path, JS::HandleValue options )
+void JsGlobalObject::IncludeScriptWithOpt( size_t optArgCount, const std::string& path, JS::HandleValue options )
 {
     switch ( optArgCount )
     {

@@ -7,8 +7,8 @@ struct Fields
 {
     uint32_t playcount = 0;
     uint32_t loved = 0;
-    qwr::u8string first_played;
-    qwr::u8string last_played;
+    std::string first_played;
+    std::string last_played;
     uint32_t rating = 0;
 };
 

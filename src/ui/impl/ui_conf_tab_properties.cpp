@@ -122,7 +122,7 @@ LRESULT CConfigTabProperties::OnPinItemChanged( LPNMHDR pnmh )
                     arg = var.dblVal;
                 }
             }
-            else if constexpr ( std::is_same_v<T, qwr::u8string> )
+            else if constexpr ( std::is_same_v<T, std::string> )
             {
                 var.ChangeType( VT_BSTR );
                 arg = qwr::unicode::ToU8( std::wstring_view{ var.bstrVal ? var.bstrVal : L"" } );
@@ -210,7 +210,10 @@ LRESULT CConfigTabProperties::OnImportBnClicked( WORD, WORD, HWND )
         const auto extension = path.extension();
         if ( extension == ".json" )
         {
-            properties_ = PanelProperties::FromJson( qwr::pfc_x::ReadRawString( *io, abort ) );
+            pfc::string8 str;
+            io->read_string(str, abort);
+
+            properties_ = PanelProperties::FromJson(str.get_ptr());
         }
         else if ( extension == ".smp" )
         {
@@ -290,7 +293,7 @@ LRESULT CConfigTabProperties::OnExportBnClicked( WORD, WORD, HWND )
         file_ptr io;
         filesystem::g_open_write_new( io, path.u8string().c_str(), abort );
 
-        qwr::pfc_x::WriteStringRaw( *io, properties_.ToJson(), abort );
+        io->write_string(properties_.ToJson().c_str(), abort);
     }
     catch ( const pfc::exception& e )
     {
@@ -333,7 +336,7 @@ void CConfigTabProperties::UpdateUiFromData()
                 }();
                 return PropCreateSimple( name.c_str(), strNumber.c_str() );
             }
-            else if constexpr ( std::is_same_v<T, qwr::u8string> )
+            else if constexpr ( std::is_same_v<T, std::string> )
             {
                 return PropCreateSimple( name.c_str(), qwr::unicode::ToWide( arg ).c_str() );
             }

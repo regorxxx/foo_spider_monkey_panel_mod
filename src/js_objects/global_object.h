@@ -31,7 +31,7 @@ public:
     static JSObject* CreateNative( JSContext* cx, JsContainer& parentContainer );
 
 public:
-    void Fail( const qwr::u8string& errorText );
+    void Fail( const std::string& errorText );
 
     [[nodiscard]] GlobalHeapManager& GetHeapManager() const;
 
@@ -44,8 +44,8 @@ public: // methods
     void ClearInterval( uint32_t intervalId );
     void ClearTimeout( uint32_t timeoutId );
 
-    void IncludeScript( const qwr::u8string& path, JS::HandleValue options = JS::UndefinedHandleValue );
-    void IncludeScriptWithOpt( size_t optArgCount, const qwr::u8string& path, JS::HandleValue options );
+    void IncludeScript( const std::string& path, JS::HandleValue options = JS::UndefinedHandleValue );
+    void IncludeScriptWithOpt( size_t optArgCount, const std::string& path, JS::HandleValue options );
     uint32_t SetInterval( JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs = JS::HandleValueArray{ JS::UndefinedHandleValue } );
     uint32_t SetIntervalWithOpt( size_t optArgCount, JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs );
     uint32_t SetTimeout( JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs );

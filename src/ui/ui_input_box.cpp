@@ -9,7 +9,7 @@
 namespace smp::ui
 {
 
-CInputBox::CInputBox( qwr::u8string_view prompt, qwr::u8string_view caption, qwr::u8string_view value )
+CInputBox::CInputBox( std::string_view prompt, std::string_view caption, std::string_view value )
     : prompt_( prompt )
     , caption_( caption )
     , value_( value )
@@ -52,7 +52,7 @@ LRESULT CInputBox::OnCommand( UINT /*codeNotify*/, int id, HWND /*hwndCtl*/ )
     return 0;
 }
 
-qwr::u8string CInputBox::GetValue()
+std::string CInputBox::GetValue()
 {
     return value_;
 }

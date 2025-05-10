@@ -21,11 +21,11 @@ namespace
 
 using namespace mozjs;
 
-qwr::u8string ParseJsValue( JSContext* cx, JS::HandleValue jsValue, JS::MutableHandleObjectVector curObjects, uint32_t& logDepth, bool isParentObject );
+std::string ParseJsValue( JSContext* cx, JS::HandleValue jsValue, JS::MutableHandleObjectVector curObjects, uint32_t& logDepth, bool isParentObject );
 
-qwr::u8string ParseJsArray( JSContext* cx, JS::HandleObject jsObject, JS::MutableHandleObjectVector curObjects, uint32_t& logDepth )
+std::string ParseJsArray( JSContext* cx, JS::HandleObject jsObject, JS::MutableHandleObjectVector curObjects, uint32_t& logDepth )
 {
-    qwr::u8string output;
+    std::string output;
 
     output += "[";
 
@@ -55,9 +55,9 @@ qwr::u8string ParseJsArray( JSContext* cx, JS::HandleObject jsObject, JS::Mutabl
     return output;
 }
 
-qwr::u8string ParseJsObject( JSContext* cx, JS::HandleObject jsObject, JS::MutableHandleObjectVector curObjects, uint32_t& logDepth )
+std::string ParseJsObject( JSContext* cx, JS::HandleObject jsObject, JS::MutableHandleObjectVector curObjects, uint32_t& logDepth )
 {
-    qwr::u8string output;
+    std::string output;
 
     {
         JS::RootedObject jsUnwrappedObject( cx, jsObject );
@@ -98,7 +98,7 @@ qwr::u8string ParseJsObject( JSContext* cx, JS::HandleObject jsObject, JS::Mutab
         else
         {
             jsIdValue = js::IdToValue( jsId );
-            output += convert::to_native::ToValue<qwr::u8string>( cx, jsIdValue );
+            output += convert::to_native::ToValue<std::string>( cx, jsIdValue );
             output += "=";
             output += ParseJsValue( cx, jsValue, curObjects, logDepth, true );
             if ( i != length - 1 || hasFunctions )
@@ -118,9 +118,9 @@ qwr::u8string ParseJsObject( JSContext* cx, JS::HandleObject jsObject, JS::Mutab
     return output;
 }
 
-qwr::u8string ParseJsValue( JSContext* cx, JS::HandleValue jsValue, JS::MutableHandleObjectVector curObjects, uint32_t& logDepth, bool isParentObject )
+std::string ParseJsValue( JSContext* cx, JS::HandleValue jsValue, JS::MutableHandleObjectVector curObjects, uint32_t& logDepth, bool isParentObject )
 {
-    qwr::u8string output;
+    std::string output;
 
     ++logDepth;
     qwr::final_action autoDecrement( [&logDepth] { --logDepth; } );
@@ -133,7 +133,7 @@ qwr::u8string ParseJsValue( JSContext* cx, JS::HandleValue jsValue, JS::MutableH
         {
             output += "\"";
         }
-        output += convert::to_native::ToValue<qwr::u8string>( cx, jsValue );
+        output += convert::to_native::ToValue<std::string>( cx, jsValue );
         if ( showQuotes )
         {
             output += "\"";
@@ -187,14 +187,14 @@ qwr::u8string ParseJsValue( JSContext* cx, JS::HandleValue jsValue, JS::MutableH
     return output;
 }
 
-std::optional<qwr::u8string> ParseLogArgs( JSContext* cx, JS::CallArgs& args )
+std::optional<std::string> ParseLogArgs( JSContext* cx, JS::CallArgs& args )
 {
     if ( !args.length() )
     {
         return std::nullopt;
     }
 
-    qwr::u8string outputString;
+    std::string outputString;
     JS::RootedObjectVector curObjects( cx );
     uint32_t logDepth = 0;
     for ( size_t i = 0; i < args.length(); ++i )

@@ -10,10 +10,10 @@ namespace smp::config
 [[nodiscard]] const std::filesystem::path& GetRelativePathToMainFile();
 
 /// @throw qwr::QwrException
-[[nodiscard]] std::optional<std::filesystem::path> FindPackage( const qwr::u8string& packageId );
+[[nodiscard]] std::optional<std::filesystem::path> FindPackage( const std::string& packageId );
 
 /// @throw qwr::QwrException
-[[nodiscard]] ParsedPanelSettings GetNewPackageSettings( const qwr::u8string& name );
+[[nodiscard]] ParsedPanelSettings GetNewPackageSettings( const std::string& name );
 
 /// @throw qwr::QwrException
 [[nodiscard]] ParsedPanelSettings GetPackageSettingsFromPath( const std::filesystem::path& packagePath );

@@ -80,8 +80,8 @@ class UiDdx_TextEdit final
 public:
     using value_type = typename T;
 
-    static_assert( std::is_convertible_v<T, qwr::u8string> );
-    static_assert( std::is_assignable_v<T&, qwr::u8string> );
+    static_assert( std::is_convertible_v<T, std::string> );
+    static_assert( std::is_assignable_v<T&, std::string> );
 
 public:
     UiDdx_TextEdit( T& value, int controlId )
@@ -120,11 +120,11 @@ public:
         const auto& value = [&] {
             if constexpr ( std::is_convertible_v<decltype( value_ ), pfc::string8_fast> )
             {
-                return qwr::u8string( static_cast<pfc::string8_fast>( value_ ).c_str() );
+                return std::string( static_cast<pfc::string8_fast>( value_ ).c_str() );
             }
             else
             {
-                return static_cast<qwr::u8string>( value_ );
+                return static_cast<std::string>( value_ );
             }
         }();
 

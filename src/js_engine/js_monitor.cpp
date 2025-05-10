@@ -32,7 +32,7 @@ namespace mozjs
 {
 
 JsMonitor::JsMonitor()
-    : slowScriptLimit_( smp::config::advanced::performance_max_runtime.GetValue() )
+    : slowScriptLimit_( smp::config::advanced::performance_max_runtime.get() )
 { // JsMonitor might be created before fb2k is fully initialized
     fb2k::inMainThread( [&hFb2k = hFb2k_] { hFb2k = core_api::get_main_window(); } );
 }
@@ -197,7 +197,7 @@ bool JsMonitor::OnInterrupt()
 
         smp::ui::CDialogSlowScript::Data dlgData;
         {
-            qwr::u8string panelName;
+            std::string panelName;
             HWND parentHwnd;
             switch ( pContainer->GetStatus() )
             {
@@ -218,7 +218,7 @@ bool JsMonitor::OnInterrupt()
                 parentHwnd = GetActiveWindow();
             }
 
-            qwr::u8string scriptInfo;
+            std::string scriptInfo;
             JS::AutoFilename filename;
             unsigned lineno;
             if ( !JS::DescribeScriptedCaller( pJsCtx_, &filename, &lineno ) )

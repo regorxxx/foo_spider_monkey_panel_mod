@@ -44,7 +44,7 @@ PanelSettings LoadSettings( stream_reader& reader, abort_callback& abort )
         reader.skip_object( sizeof( false ), abort ); // skip "disable before"
         reader.read_object_t( payload.shouldGrabFocus, abort );
         reader.skip_object( sizeof( WINDOWPLACEMENT ), abort ); // skip WINDOWPLACEMENT
-        payload.script = qwr::pfc_x::ReadString( reader, abort );
+        payload.script = reader.read_string(abort).get_ptr();
         reader.read_object_t( panelSettings.isPseudoTransparent, abort );
 
         panelSettings.payload = payload;
@@ -87,7 +87,7 @@ void SaveSettings( stream_writer& writer, abort_callback& abort, const PanelSett
             WINDOWPLACEMENT dummy{};
             writer.write_object( &dummy, sizeof( dummy ), abort ); // skip WINDOWPLACEMENT
         }
-        qwr::pfc_x::WriteString( writer, payload.script, abort );
+        writer.write_string(payload.script, abort);
         writer.write_object_t( settings.isPseudoTransparent, abort );
     }
     catch ( const pfc::exception& e )
@@ -111,7 +111,7 @@ PanelProperties LoadProperties( stream_reader& reader, abort_callback& abort )
 
             mozjs::SerializedJsValue serializedValue;
 
-            const qwr::u8string u8PropName = qwr::pfc_x::ReadString( reader, abort );
+            const std::string u8PropName = reader.read_string(abort).get_ptr();
 
             uint32_t valueType;
             reader.read_lendian_t( valueType, abort );
@@ -141,7 +141,7 @@ PanelProperties LoadProperties( stream_reader& reader, abort_callback& abort )
             }
             case JsValueType::pt_string:
             {
-                serializedValue = qwr::pfc_x::ReadString( reader, abort );
+                serializedValue = reader.read_string(abort).get_ptr();
                 break;
             }
             default:
@@ -170,7 +170,7 @@ void SaveProperties( stream_writer& writer, abort_callback& abort, const PanelPr
 
         for ( const auto& [name, pValue]: properties.values )
         {
-            qwr::pfc_x::WriteString( writer, qwr::unicode::ToU8( name ), abort );
+            writer.write_string(qwr::unicode::ToU8(name), abort);
 
             const auto& serializedValue = *pValue;
 
@@ -188,7 +188,7 @@ void SaveProperties( stream_writer& writer, abort_callback& abort, const PanelPr
                 {
                     return JsValueType::pt_double;
                 }
-                else if constexpr ( std::is_same_v<T, qwr::u8string> )
+                else if constexpr ( std::is_same_v<T, std::string> )
                 {
                     return JsValueType::pt_string;
                 }
@@ -203,9 +203,9 @@ void SaveProperties( stream_writer& writer, abort_callback& abort, const PanelPr
 
             std::visit( [&writer, &abort]( auto&& arg ) {
                 using T = std::decay_t<decltype( arg )>;
-                if constexpr ( std::is_same_v<T, qwr::u8string> )
+                if constexpr ( std::is_same_v<T, std::string> )
                 {
-                    qwr::pfc_x::WriteString( writer, arg, abort );
+                    writer.write_string(arg, abort );
                 }
                 else
                 {

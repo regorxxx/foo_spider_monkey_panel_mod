@@ -30,7 +30,7 @@ private:
 class TimedAbortCallback : public abort_callback
 {
 public:
-    TimedAbortCallback( const qwr::u8string& timeoutLogMessage = {}, uint32_t timeoutSeconds = 5 );
+    TimedAbortCallback( const std::string& timeoutLogMessage = {}, uint32_t timeoutSeconds = 5 );
     TimedAbortCallback( const TimedAbortCallback& ) = delete;
     ~TimedAbortCallback();
     TimedAbortCallback& operator=( const TimedAbortCallback& ) = delete;
@@ -42,7 +42,7 @@ public:
     static void CALLBACK timerProc( PVOID lpParameter, BOOLEAN /*TimerOrWaitFired*/ );
 
 private:
-    const qwr::u8string timeoutLogMessage_;
+    const std::string timeoutLogMessage_;
 
     pfc::event abortEvent_;
     HANDLE hTimer_ = nullptr;

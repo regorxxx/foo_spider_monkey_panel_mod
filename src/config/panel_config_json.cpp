@@ -150,7 +150,7 @@ PanelSettings LoadSettings( stream_reader& reader, abort_callback& abort )
     {
         PanelSettings panelSettings;
 
-        const auto jsonMain = json::parse( qwr::pfc_x::ReadString( reader, abort ) );
+        const auto jsonMain = json::parse(reader.read_string(abort).get_ptr());
         if ( !jsonMain.is_object() )
         {
             throw qwr::QwrException( "Corrupted serialized settings: not a JSON object" );
@@ -328,7 +328,7 @@ void SaveSettings( stream_writer& writer, abort_callback& abort, const PanelSett
         jsonMain.push_back( { "edgeStyle", static_cast<uint8_t>( settings.edgeStyle ) } );
         jsonMain.push_back( { "isPseudoTransparent", settings.isPseudoTransparent } );
 
-        qwr::pfc_x::WriteString( writer, jsonMain.dump( 2 ), abort );
+        writer.write_string(jsonMain.dump(2), abort);
     }
     catch ( const json::exception& e )
     {
@@ -348,7 +348,7 @@ PanelProperties LoadProperties( stream_reader& reader, abort_callback& abort )
 {
     try
     {
-        return DeserializeProperties( qwr::pfc_x::ReadString( reader, abort ) );
+        return DeserializeProperties(reader.read_string(abort).get_ptr());
     }
     catch ( const pfc::exception& e )
     {
@@ -360,7 +360,7 @@ void SaveProperties( stream_writer& writer, abort_callback& abort, const PanelPr
 {
     try
     {
-        qwr::pfc_x::WriteString( writer, SerializeProperties( properties ), abort );
+        writer.write_string(SerializeProperties(properties), abort);
     }
     catch ( const pfc::exception& e )
     {
@@ -368,7 +368,7 @@ void SaveProperties( stream_writer& writer, abort_callback& abort, const PanelPr
     }
 }
 
-PanelProperties DeserializeProperties( const qwr::u8string& str )
+PanelProperties DeserializeProperties( const std::string& str )
 {
     using json = nlohmann::json;
 
@@ -382,7 +382,7 @@ PanelProperties DeserializeProperties( const qwr::u8string& str )
     }
 }
 
-qwr::u8string SerializeProperties( const PanelProperties& properties )
+std::string SerializeProperties( const PanelProperties& properties )
 {
     using json = nlohmann::json;
 

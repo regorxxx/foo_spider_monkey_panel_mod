@@ -43,7 +43,7 @@ private:
     LRESULT OnPropNMDblClk( LPNMHDR pnmh );
 
     void LoadProps( bool reset = false );
-    qwr::u8string GetItemTextStr( int nItem, int nSubItem );
+    std::string GetItemTextStr( int nItem, int nSubItem );
 
 private:
     CListViewCtrl propertiesListView_;

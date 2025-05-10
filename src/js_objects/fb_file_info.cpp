@@ -93,39 +93,39 @@ size_t JsFbFileInfo::GetInternalSize( const metadb_info_container::ptr& /*contai
     return sizeof( file_info_impl );
 }
 
-int32_t JsFbFileInfo::InfoFind( const qwr::u8string& name )
+int32_t JsFbFileInfo::InfoFind( const std::string& name )
 {
     return fileInfo_.info_find_ex( name.c_str(), name.length() );
 }
 
-qwr::u8string JsFbFileInfo::InfoName( uint32_t index )
+std::string JsFbFileInfo::InfoName( uint32_t index )
 {
     qwr::QwrException::ExpectTrue( index < fileInfo_.info_get_count(), "Index is out of bounds" );
 
     return fileInfo_.info_enum_name( index );
 }
 
-qwr::u8string JsFbFileInfo::InfoValue( uint32_t index )
+std::string JsFbFileInfo::InfoValue( uint32_t index )
 {
     qwr::QwrException::ExpectTrue( index < fileInfo_.info_get_count(), "Index is out of bounds" );
 
     return fileInfo_.info_enum_value( index );
 }
 
-int32_t JsFbFileInfo::MetaFind( const qwr::u8string& name )
+int32_t JsFbFileInfo::MetaFind( const std::string& name )
 {
     const t_size idx = fileInfo_.meta_find_ex( name.c_str(), name.length() );
     return ( ( idx == pfc_infinite ) ? -1 : static_cast<int32_t>( idx ) );
 }
 
-qwr::u8string JsFbFileInfo::MetaName( uint32_t index )
+std::string JsFbFileInfo::MetaName( uint32_t index )
 {
     qwr::QwrException::ExpectTrue( index < fileInfo_.meta_get_count(), "Index is out of bounds" );
 
     return fileInfo_.meta_enum_name( index );
 }
 
-qwr::u8string JsFbFileInfo::MetaValue( uint32_t infoIndex, uint32_t valueIndex )
+std::string JsFbFileInfo::MetaValue( uint32_t infoIndex, uint32_t valueIndex )
 {
     qwr::QwrException::ExpectTrue( infoIndex < fileInfo_.meta_get_count(), "Index is out of bounds" );
     qwr::QwrException::ExpectTrue( valueIndex < fileInfo_.meta_enum_value_count( infoIndex ), "Index is out of bounds" );

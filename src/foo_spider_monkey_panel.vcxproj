@@ -107,7 +107,6 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     <ClCompile Include="events\event_timer.cpp" />
     <ClCompile Include="events\task_controller.cpp" />
     <ClCompile Include="fb2k\advanced_config.cpp" />
-    <ClCompile Include="fb2k\config.cpp" />
     <ClCompile Include="fb2k\fb2k_callbacks.cpp" />
     <ClCompile Include="fb2k\mainmenu.cpp" />
     <ClCompile Include="fb2k\mainmenu_dynamic.cpp" />
@@ -262,7 +261,6 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     <ClInclude Include="events\event_timer.h" />
     <ClInclude Include="events\task_controller.h" />
     <ClInclude Include="fb2k\advanced_config.h" />
-    <ClInclude Include="fb2k\config.h" />
     <ClInclude Include="fb2k\mainmenu_dynamic.h" />
     <ClInclude Include="fb2k\playlist_lock.h" />
     <ClInclude Include="fb2k\selection_holder_helper.h" />

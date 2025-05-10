@@ -226,7 +226,7 @@ void JsFbPlaylistManager::AddLocations( uint32_t playlistIndex, JS::HandleValue 
     qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "playlistIndex is invalid");
 
     pfc::string_list_impl location_list;
-    convert::to_native::ProcessArray<qwr::u8string>(
+    convert::to_native::ProcessArray<std::string>(
         pJsCtx_,
         locations,
         [&location_list]( const auto& location ) { location_list.add_item( location.c_str() ); } );
@@ -271,7 +271,7 @@ void JsFbPlaylistManager::ClearPlaylistSelection( uint32_t playlistIndex )
     playlist_manager::get()->playlist_clear_selection( playlistIndex );
 }
 
-uint32_t JsFbPlaylistManager::CreateAutoPlaylist( uint32_t playlistIndex, const qwr::u8string& name, const qwr::u8string& query, const qwr::u8string& sort, uint32_t flags )
+uint32_t JsFbPlaylistManager::CreateAutoPlaylist( uint32_t playlistIndex, const std::string& name, const std::string& query, const std::string& sort, uint32_t flags )
 {
     const uint32_t upos = CreatePlaylist( playlistIndex, name );
     assert( pfc_infinite != upos );
@@ -288,7 +288,7 @@ uint32_t JsFbPlaylistManager::CreateAutoPlaylist( uint32_t playlistIndex, const 
     }
 }
 
-uint32_t JsFbPlaylistManager::CreateAutoPlaylistWithOpt( size_t optArgCount, uint32_t playlistIndex, const qwr::u8string& name, const qwr::u8string& query, const qwr::u8string& sort, uint32_t flags )
+uint32_t JsFbPlaylistManager::CreateAutoPlaylistWithOpt( size_t optArgCount, uint32_t playlistIndex, const std::string& name, const std::string& query, const std::string& sort, uint32_t flags )
 {
     switch ( optArgCount )
     {
@@ -303,7 +303,7 @@ uint32_t JsFbPlaylistManager::CreateAutoPlaylistWithOpt( size_t optArgCount, uin
     }
 }
 
-uint32_t JsFbPlaylistManager::CreatePlaylist( uint32_t playlistIndex, const qwr::u8string& name )
+uint32_t JsFbPlaylistManager::CreatePlaylist( uint32_t playlistIndex, const std::string& name )
 {
     auto api = playlist_manager::get();
 
@@ -320,7 +320,7 @@ uint32_t JsFbPlaylistManager::CreatePlaylist( uint32_t playlistIndex, const qwr:
     return upos;
 }
 
-uint32_t JsFbPlaylistManager::DuplicatePlaylist( uint32_t from, const qwr::u8string& name )
+uint32_t JsFbPlaylistManager::DuplicatePlaylist( uint32_t from, const std::string& name )
 {
     auto api = playlist_manager_v4::get();
 
@@ -343,7 +343,7 @@ uint32_t JsFbPlaylistManager::DuplicatePlaylist( uint32_t from, const qwr::u8str
     return upos;
 }
 
-uint32_t JsFbPlaylistManager::DuplicatePlaylistWithOpt( size_t optArgCount, uint32_t from, const qwr::u8string& name )
+uint32_t JsFbPlaylistManager::DuplicatePlaylistWithOpt( size_t optArgCount, uint32_t from, const std::string& name )
 {
     switch ( optArgCount )
     {
@@ -366,13 +366,13 @@ bool JsFbPlaylistManager::ExecutePlaylistDefaultAction( uint32_t playlistIndex, 
     return playlist_manager::get()->playlist_execute_default_action( playlistIndex, playlistItemIndex );
 }
 
-int32_t JsFbPlaylistManager::FindByGUID(const qwr::u8string& str)
+int32_t JsFbPlaylistManager::FindByGUID(const std::string& str)
 {
     const auto guid = pfc::GUID_from_text(str.c_str());
     return static_cast<int32_t>(playlist_manager_v5::get()->find_playlist_by_guid(guid));
 }
 
-uint32_t JsFbPlaylistManager::FindOrCreatePlaylist( const qwr::u8string& name, bool unlocked )
+uint32_t JsFbPlaylistManager::FindOrCreatePlaylist( const std::string& name, bool unlocked )
 {
     auto api = playlist_manager::get();
 
@@ -403,7 +403,7 @@ int32_t JsFbPlaylistManager::FindPlaybackQueueItemIndex( JsFbMetadbHandle* handl
     return ( pfc_infinite == upos ? -1 : static_cast<int32_t>( upos ) );
 }
 
-int32_t JsFbPlaylistManager::FindPlaylist( const qwr::u8string& name )
+int32_t JsFbPlaylistManager::FindPlaylist( const std::string& name )
 {
     const uint32_t upos = playlist_manager::get()->find_playlist( name.c_str(), name.length() );
     return ( pfc_infinite == upos ? -1 : static_cast<int32_t>( upos ) );
@@ -414,7 +414,7 @@ void JsFbPlaylistManager::FlushPlaybackQueue()
     playlist_manager::get()->queue_flush();
 }
 
-qwr::u8string JsFbPlaylistManager::GetGUID(uint32_t playlistIndex)
+std::string JsFbPlaylistManager::GetGUID(uint32_t playlistIndex)
 {
     const auto api = playlist_manager_v5::get();
 
@@ -498,7 +498,7 @@ JS::Value JsFbPlaylistManager::GetPlaylistLockedActions( uint32_t playlistIndex 
 
     qwr::QwrException::ExpectTrue( playlistIndex < api->get_playlist_count(), "Index is out of bounds" );
 
-    static std::unordered_map<int, qwr::u8string> maskToAction = {
+    static std::unordered_map<int, std::string> maskToAction = {
         { playlist_lock::filter_add, "AddItems" },
         { playlist_lock::filter_remove, "RemoveItems" },
         { playlist_lock::filter_reorder, "ReorderItems" },
@@ -698,7 +698,7 @@ bool JsFbPlaylistManager::RemovePlaylistSwitch( uint32_t playlistIndex )
     return playlist_manager::get()->remove_playlist_switch( playlistIndex );
 }
 
-bool JsFbPlaylistManager::RenamePlaylist( uint32_t playlistIndex, const qwr::u8string& name )
+bool JsFbPlaylistManager::RenamePlaylist( uint32_t playlistIndex, const std::string& name )
 {
     return playlist_manager::get()->playlist_rename( playlistIndex, name.c_str(), name.length() );
 }
@@ -734,7 +734,7 @@ void JsFbPlaylistManager::SetPlaylistLockedActions( uint32_t playlistIndex, JS::
     uint32_t newLockMask = 0;
     if ( lockedActions.isObject() )
     {
-        static std::unordered_map<qwr::u8string, int> actionToMask = {
+        static std::unordered_map<std::string, int> actionToMask = {
             { "AddItems", playlist_lock::filter_add },
             { "RemoveItems", playlist_lock::filter_remove },
             { "ReorderItems", playlist_lock::filter_reorder },
@@ -744,7 +744,7 @@ void JsFbPlaylistManager::SetPlaylistLockedActions( uint32_t playlistIndex, JS::
             { "ExecuteDefaultAction", playlist_lock::filter_default_action }
         };
 
-        const auto lockedActionsVec = convert::to_native::ToValue<std::vector<qwr::u8string>>( pJsCtx_, lockedActions );
+        const auto lockedActionsVec = convert::to_native::ToValue<std::vector<std::string>>( pJsCtx_, lockedActions );
         for ( const auto& action: lockedActionsVec )
         {
             qwr::QwrException::ExpectTrue( actionToMask.count( action ), "Unknown action name: {}", action );
@@ -817,12 +817,12 @@ bool JsFbPlaylistManager::ShowAutoPlaylistUI( uint32_t playlistIndex )
     return true;
 }
 
-bool JsFbPlaylistManager::SortByFormat( uint32_t playlistIndex, const qwr::u8string& pattern, bool selOnly )
+bool JsFbPlaylistManager::SortByFormat( uint32_t playlistIndex, const std::string& pattern, bool selOnly )
 {
     return playlist_manager::get()->playlist_sort_by_format( playlistIndex, pattern.empty() ? nullptr : pattern.c_str(), selOnly );
 }
 
-bool JsFbPlaylistManager::SortByFormatWithOpt( size_t optArgCount, uint32_t playlistIndex, const qwr::u8string& pattern, bool selOnly )
+bool JsFbPlaylistManager::SortByFormatWithOpt( size_t optArgCount, uint32_t playlistIndex, const std::string& pattern, bool selOnly )
 {
     switch ( optArgCount )
     {
@@ -835,7 +835,7 @@ bool JsFbPlaylistManager::SortByFormatWithOpt( size_t optArgCount, uint32_t play
     }
 }
 
-bool JsFbPlaylistManager::SortByFormatV2( uint32_t playlistIndex, const qwr::u8string& pattern, int8_t direction )
+bool JsFbPlaylistManager::SortByFormatV2( uint32_t playlistIndex, const std::string& pattern, int8_t direction )
 {
     auto api = playlist_manager::get();
 
@@ -852,7 +852,7 @@ bool JsFbPlaylistManager::SortByFormatV2( uint32_t playlistIndex, const qwr::u8s
     return api->playlist_reorder_items( playlistIndex, order.data(), order.size() );
 }
 
-bool JsFbPlaylistManager::SortByFormatV2WithOpt( size_t optArgCount, uint32_t playlistIndex, const qwr::u8string& pattern, int8_t direction )
+bool JsFbPlaylistManager::SortByFormatV2WithOpt( size_t optArgCount, uint32_t playlistIndex, const std::string& pattern, int8_t direction )
 {
     switch ( optArgCount )
     {
@@ -879,7 +879,7 @@ void JsFbPlaylistManager::SortPlaylistsByName( int8_t direction )
     for ( size_t i = 0; i < count; ++i )
     {
         api->playlist_get_name( i, temp );
-        data.emplace_back( qwr::u8string_view{ temp.c_str(), temp.length() }, i );
+        data.emplace_back( std::string_view{ temp.c_str(), temp.length() }, i );
     }
 
     std::sort( data.begin(), data.end(), (direction > 0 ? smp::utils::StrCmpLogicalCmp<1> : smp::utils::StrCmpLogicalCmp<-1>));

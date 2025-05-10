@@ -103,10 +103,10 @@ double ToSimpleValue( JSContext* cx, const JS::HandleValue& jsValue )
 }
 
 template <>
-qwr::u8string ToSimpleValue( JSContext* cx, const JS::HandleValue& jsValue )
+std::string ToSimpleValue( JSContext* cx, const JS::HandleValue& jsValue )
 {
     JS::RootedString jsString( cx, JS::ToString( cx, jsValue ) );
-    return ToValue<qwr::u8string>( cx, jsString );
+    return ToValue<std::string>( cx, jsString );
 }
 
 template <>
@@ -137,7 +137,7 @@ namespace mozjs::convert::to_native
 {
 
 template <>
-qwr::u8string ToValue( JSContext* cx, const JS::HandleString& jsString )
+std::string ToValue( JSContext* cx, const JS::HandleString& jsString )
 {
     return qwr::unicode::ToU8( ToValue<std::wstring>( cx, jsString ) );
 }

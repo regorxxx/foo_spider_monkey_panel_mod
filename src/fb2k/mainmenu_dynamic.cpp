@@ -18,10 +18,10 @@ class MainMenuNodeCommand_PanelCommand : public mainmenu_node_command
 {
 public:
     MainMenuNodeCommand_PanelCommand( HWND panelHwnd,
-                                      const qwr::u8string& panelName,
+                                      const std::string& panelName,
                                       uint32_t commandId,
-                                      const qwr::u8string& commandName,
-                                      const std::optional<qwr::u8string>& commandDescription );
+                                      const std::string& commandName,
+                                      const std::optional<std::string>& commandDescription );
 
     void get_display( pfc::string_base& text, t_uint32& flags ) override;
     void execute( service_ptr_t<service_base> callback ) override;
@@ -30,17 +30,17 @@ public:
 
 private:
     const HWND panelHwnd_;
-    const qwr::u8string panelName_;
+    const std::string panelName_;
     const uint32_t commandId_;
-    const qwr::u8string commandName_;
-    const std::optional<qwr::u8string> commandDescriptionOpt_;
+    const std::string commandName_;
+    const std::optional<std::string> commandDescriptionOpt_;
 };
 
 class MainMenuNodeGroup_PanelCommands : public mainmenu_node_group
 {
 public:
     MainMenuNodeGroup_PanelCommands( HWND panelHwnd,
-                                     const qwr::u8string& panelName,
+                                     const std::string& panelName,
                                      const std::unordered_map<uint32_t, DynamicMainMenuManager::CommandData>& idToCommand );
     void get_display( pfc::string_base& text, t_uint32& flags ) override;
     t_size get_children_count() override;
@@ -48,7 +48,7 @@ public:
 
 private:
     const smp::DynamicMainMenuManager::PanelData panelData_;
-    const qwr::u8string panelName_;
+    const std::string panelName_;
     std::vector<mainmenu_node::ptr> commandNodes_;
 };
 
@@ -87,10 +87,10 @@ namespace
 {
 
 MainMenuNodeCommand_PanelCommand::MainMenuNodeCommand_PanelCommand( HWND panelHwnd,
-                                                                    const qwr::u8string& panelName,
+                                                                    const std::string& panelName,
                                                                     uint32_t commandId,
-                                                                    const qwr::u8string& commandName,
-                                                                    const std::optional<qwr::u8string>& commandDescription )
+                                                                    const std::string& commandName,
+                                                                    const std::optional<std::string>& commandDescription )
     : panelHwnd_( panelHwnd )
     , panelName_( panelName )
     , commandId_( commandId )
@@ -136,7 +136,7 @@ bool MainMenuNodeCommand_PanelCommand::get_description( pfc::string_base& out )
 }
 
 MainMenuNodeGroup_PanelCommands::MainMenuNodeGroup_PanelCommands( HWND panelHwnd,
-                                                                  const qwr::u8string& panelName,
+                                                                  const std::string& panelName,
                                                                   const std::unordered_map<uint32_t, DynamicMainMenuManager::CommandData>& idToCommand )
     : panelName_( panelName )
 {
@@ -270,7 +270,7 @@ DynamicMainMenuManager& DynamicMainMenuManager::Get()
     return dmmm;
 }
 
-void DynamicMainMenuManager::RegisterPanel( HWND hWnd, const qwr::u8string& panelName )
+void DynamicMainMenuManager::RegisterPanel( HWND hWnd, const std::string& panelName )
 {
     assert( !panels_.contains( hWnd ) );
     panels_.try_emplace( hWnd, PanelData{ panelName } );
@@ -282,7 +282,7 @@ void DynamicMainMenuManager::UnregisterPanel( HWND hWnd )
     panels_.erase( hWnd );
 }
 
-void DynamicMainMenuManager::RegisterCommand( HWND hWnd, uint32_t id, const qwr::u8string& name, const std::optional<qwr::u8string>& description )
+void DynamicMainMenuManager::RegisterCommand( HWND hWnd, uint32_t id, const std::string& name, const std::optional<std::string>& description )
 {
     assert( panels_.contains( hWnd ) );
 

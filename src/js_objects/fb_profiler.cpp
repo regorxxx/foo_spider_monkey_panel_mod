@@ -64,7 +64,7 @@ const JSPropertySpec* JsFbProfiler::JsProperties = jsProperties.data();
 const JsPrototypeId JsFbProfiler::PrototypeId = JsPrototypeId::FbProfiler;
 const JSNative JsFbProfiler::JsConstructor = ::FbProfiler_Constructor;
 
-JsFbProfiler::JsFbProfiler( JSContext* cx, const qwr::u8string& name )
+JsFbProfiler::JsFbProfiler( JSContext* cx, const std::string& name )
     : pJsCtx_( cx )
     , name_( name )
 {
@@ -72,22 +72,22 @@ JsFbProfiler::JsFbProfiler( JSContext* cx, const qwr::u8string& name )
 }
 
 std::unique_ptr<JsFbProfiler>
-JsFbProfiler::CreateNative( JSContext* cx, const qwr::u8string& name )
+JsFbProfiler::CreateNative( JSContext* cx, const std::string& name )
 {
     return std::unique_ptr<JsFbProfiler>( new JsFbProfiler( cx, name ) );
 }
 
-size_t JsFbProfiler::GetInternalSize( const qwr::u8string& name )
+size_t JsFbProfiler::GetInternalSize( const std::string& name )
 {
     return name.length();
 }
 
-JSObject* JsFbProfiler::Constructor( JSContext* cx, const qwr::u8string& name )
+JSObject* JsFbProfiler::Constructor( JSContext* cx, const std::string& name )
 {
     return JsFbProfiler::CreateJs( cx, name );
 }
 
-JSObject* JsFbProfiler::ConstructorWithOpt( JSContext* cx, size_t optArgCount, const qwr::u8string& name )
+JSObject* JsFbProfiler::ConstructorWithOpt( JSContext* cx, size_t optArgCount, const std::string& name )
 {
     switch ( optArgCount )
     {
@@ -100,9 +100,9 @@ JSObject* JsFbProfiler::ConstructorWithOpt( JSContext* cx, size_t optArgCount, c
     }
 }
 
-void JsFbProfiler::Print( const qwr::u8string& additionalMsg, bool printComponentInfo )
+void JsFbProfiler::Print( const std::string& additionalMsg, bool printComponentInfo )
 {
-    qwr::u8string msg;
+    std::string msg;
     if ( printComponentInfo )
     {
         msg += SMP_NAME_WITH_VERSION ": ";
@@ -122,7 +122,7 @@ void JsFbProfiler::Print( const qwr::u8string& additionalMsg, bool printComponen
     FB2K_console_formatter() << msg;
 }
 
-void JsFbProfiler::PrintWithOpt( size_t optArgCount, const qwr::u8string& additionalMsg, bool printComponentInfo )
+void JsFbProfiler::PrintWithOpt( size_t optArgCount, const std::string& additionalMsg, bool printComponentInfo )
 {
     switch ( optArgCount )
     {

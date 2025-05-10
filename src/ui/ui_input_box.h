@@ -10,7 +10,7 @@ class CInputBox
     , public CDialogResize<CInputBox>
 {
 public:
-    CInputBox( qwr::u8string_view prompt, qwr::u8string_view caption, qwr::u8string_view value = "" );
+    CInputBox( std::string_view prompt, std::string_view caption, std::string_view value = "" );
 
     BEGIN_DLGRESIZE_MAP( CInputBox )
         DLGRESIZE_CONTROL( IDC_INPUT_PROMPT, DLSZ_SIZE_X | DLSZ_SIZE_Y )
@@ -32,15 +32,15 @@ public:
 
     LRESULT OnInitDialog( HWND hwndFocus, LPARAM lParam );
     LRESULT OnCommand( UINT codeNotify, int id, HWND hwndCtl );
-    qwr::u8string GetValue();
+    std::string GetValue();
 
 private:
     void AdjustPromptControlToFit();
 
 private:
-    qwr::u8string prompt_;
-    qwr::u8string caption_;
-    qwr::u8string value_;
+    std::string prompt_;
+    std::string caption_;
+    std::string value_;
 };
 
 } // namespace smp::ui

@@ -355,7 +355,7 @@ void JsFbMetadbHandleList::AddRange( JsFbMetadbHandleList* handles )
     metadbHandleList_.add_items( handles->GetHandleList() );
 }
 
-void JsFbMetadbHandleList::AttachImage( const qwr::u8string& image_path, uint32_t art_id )
+void JsFbMetadbHandleList::AttachImage( const std::string& image_path, uint32_t art_id )
 {
     t_size count = metadbHandleList_.get_count();
     if ( !count )
@@ -640,7 +640,7 @@ void JsFbMetadbHandleList::Sort()
     metadbHandleList_.sort_by_pointer_remove_duplicates();
 }
 
-void JsFbMetadbHandleList::UpdateFileInfoFromJSON( const qwr::u8string& str )
+void JsFbMetadbHandleList::UpdateFileInfoFromJSON( const std::string& str )
 {
     const auto count = metadbHandleList_.get_count();
 

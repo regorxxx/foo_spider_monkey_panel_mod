@@ -24,11 +24,11 @@ void Execute_JsWithSehStackTrace( JSContext* cx, F&& func, Args&&... args )
 
 } // namespace internal
 
-[[nodiscard]] qwr::u8string JsErrorToText( JSContext* cx );
+[[nodiscard]] std::string JsErrorToText( JSContext* cx );
 void ExceptionToJsError( JSContext* cx );
-[[nodiscard]] qwr::u8string ExceptionToText( JSContext* cx );
+[[nodiscard]] std::string ExceptionToText( JSContext* cx );
 void SuppressException( JSContext* cx );
-void PrependTextToJsError( JSContext* cx, const qwr::u8string& text );
+void PrependTextToJsError( JSContext* cx, const std::string& text );
 
 template <typename F, typename... Args>
 [[nodiscard]] bool Execute_JsSafe( JSContext* cx, std::string_view functionName, F&& func, Args&&... args )

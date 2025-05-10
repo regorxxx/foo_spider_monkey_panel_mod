@@ -164,7 +164,7 @@ StrCmpLogicalCmpData::StrCmpLogicalCmpData( const std::wstring& textId, size_t i
     // additional space is needed for StrCmpLogicalW bug workaround
 }
 
-StrCmpLogicalCmpData::StrCmpLogicalCmpData( const qwr::u8string_view& textId, size_t index )
+StrCmpLogicalCmpData::StrCmpLogicalCmpData( const std::string_view& textId, size_t index )
     : textId( fmt::format( L" {}", qwr::unicode::ToWide( textId ) ) )
     , index( index )
 {

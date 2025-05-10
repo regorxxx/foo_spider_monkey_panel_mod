@@ -3,7 +3,6 @@
 #include "ui_conf_tab_package.h"
 
 #include <config/package_utils.h>
-#include <fb2k/config.h>
 #include <ui/ui_conf.h>
 #include <ui/ui_input_box.h>
 #include <utils/edit_text.h>
@@ -371,26 +370,21 @@ void CConfigTabPackage::OnEditScriptWith( UINT uNotifyCode, int nID, CWindow wnd
         fdOpts.filterSpec.assign( { { L"Executable files", L"*.exe" } } );
         fdOpts.defaultExtension = L"exe";
 
-        try
+        const auto editorPathOpt = qwr::file::FileDialog( L"Choose text editor", false, fdOpts );
+        if (editorPathOpt)
         {
-            const auto editorPathOpt = qwr::file::FileDialog( L"Choose text editor", false, fdOpts );
-            if ( editorPathOpt )
-            {
-                const fs::path editorPath = *editorPathOpt;
-                qwr::QwrException::ExpectTrue( fs::exists( editorPath ), "Invalid path" );
+            std::error_code ec;
+            const fs::path editorPath = *editorPathOpt;
+            qwr::QwrException::ExpectTrue(fs::is_regular_file(editorPath, ec), "Invalid path");
 
-                smp::config::default_editor = editorPath.u8string();
-            }
-        }
-        catch ( const fs::filesystem_error& e )
-        {
-            qwr::ReportErrorWithPopup( SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide( e.what() ) );
+            const pfc::string8 tmp = qwr::unicode::ToU8(editorPath.native()).c_str();
+            fb2k::configStore::get()->setConfigString("smp.editor.path", tmp);
         }
         break;
     }
     case ID_EDIT_WITH_INTERNAL:
     {
-        config::default_editor = "";
+        fb2k::configStore::get()->deleteConfigString("smp.editor.path");
         break;
     }
     default:

@@ -21,7 +21,7 @@ PanelProperties LoadProperties( stream_reader& reader, abort_callback& abort )
         {
             (void)i;
 
-            const qwr::u8string u8propName = qwr::string::Trim<char>( qwr::pfc_x::ReadString( reader, abort ) );
+            const std::string u8propName = qwr::string::Trim<char>(reader.read_string(abort).get_ptr());
 
             VARTYPE vt;
             reader.read_lendian_t( vt, abort );
@@ -89,7 +89,7 @@ PanelProperties LoadProperties( stream_reader& reader, abort_callback& abort )
             }
             case VT_BSTR:
             {
-                serializedValue = qwr::pfc_x::ReadString( reader, abort );
+                serializedValue = reader.read_string(abort).get_ptr();
                 break;
             }
             default:
