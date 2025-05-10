@@ -89,30 +89,6 @@ LRESULT js_panel_window_cui::on_message( HWND hwnd, UINT msg, WPARAM wp, LPARAM 
             return 0;
         break;
     }
-    case WM_CREATE:
-    {
-        try
-        {
-            static_api_ptr_t<cui::fonts::manager>()->register_common_callback( this );
-            static_api_ptr_t<cui::colours::manager>()->register_common_callback( this );
-        }
-        catch ( const exception_service_extension_not_found& )
-        {
-        }
-        break;
-    }
-    case WM_DESTROY:
-    {
-        try
-        {
-            static_api_ptr_t<cui::fonts::manager>()->deregister_common_callback( this );
-            static_api_ptr_t<cui::colours::manager>()->deregister_common_callback( this );
-        }
-        catch ( const exception_service_extension_not_found& )
-        {
-        }
-        break;
-    }
     case static_cast<UINT>( smp::MiscMessage::size_limit_changed ):
     {
         notify_size_limit_changed( wp );
@@ -170,20 +146,6 @@ void js_panel_window_cui::get_config( stream_writer* writer, abort_callback& abo
 void js_panel_window_cui::get_name( pfc::string_base& out ) const
 {
     out = SMP_NAME;
-}
-
-void js_panel_window_cui::on_bool_changed( t_size ) const
-{
-}
-
-void js_panel_window_cui::on_colour_changed( t_size ) const
-{
-    EventDispatcher::Get().PutEvent( t_parent::GetHWND(), GenerateEvent_JsCallback( EventId::kUiColoursChanged ) );
-}
-
-void js_panel_window_cui::on_font_changed( t_size ) const
-{
-    EventDispatcher::Get().PutEvent( t_parent::GetHWND(), GenerateEvent_JsCallback( EventId::kUiFontChanged ) );
 }
 
 void js_panel_window_cui::set_config( stream_reader* reader, t_size size, abort_callback& abort )

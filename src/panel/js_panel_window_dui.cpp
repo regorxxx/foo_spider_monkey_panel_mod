@@ -247,14 +247,6 @@ void js_panel_window_dui::notify( const GUID& p_what, t_size, const void*, t_siz
     {
         notify_is_edit_mode_changed( uiCallback_->is_edit_mode_enabled() );
     }
-    else if ( p_what == ui_element_notify_font_changed )
-    {
-        EventDispatcher::Get().PutEvent( t_parent::GetHWND(), GenerateEvent_JsCallback( EventId::kUiFontChanged ) );
-    }
-    else if ( p_what == ui_element_notify_colors_changed )
-    {
-        EventDispatcher::Get().PutEvent( t_parent::GetHWND(), GenerateEvent_JsCallback( EventId::kUiColoursChanged ) );
-    }
 }
 
 void js_panel_window_dui::set_configuration( ui_element_config::ptr data )

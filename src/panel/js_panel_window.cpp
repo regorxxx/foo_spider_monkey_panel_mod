@@ -86,6 +86,16 @@ ui_helpers::container_window::class_data& js_panel_window::get_class_data() cons
     return my_class_data;
 }
 
+void js_panel_window::ui_colors_changed()
+{
+    EventDispatcher::Get().PutEvent(wnd_, GenerateEvent_JsCallback(EventId::kUiColoursChanged));
+}
+
+void js_panel_window::ui_fonts_changed()
+{
+    EventDispatcher::Get().PutEvent(wnd_, GenerateEvent_JsCallback(EventId::kUiFontChanged));
+}
+
 void js_panel_window::Fail( const qwr::u8string& errorText )
 {
     hasFailed_ = true;

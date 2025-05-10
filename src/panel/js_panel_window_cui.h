@@ -8,8 +8,6 @@ namespace smp::panel
 class js_panel_window_cui
     : public js_panel_window
     , public uie::window
-    , public cui::fonts::common_callback
-    , public cui::colours::common_callback
 {
 public:
     js_panel_window_cui();
@@ -33,13 +31,6 @@ protected:
     void get_config( stream_writer* writer, abort_callback& abort ) const override;
     void get_name( pfc::string_base& out ) const override;
     void set_config( stream_reader* reader, t_size size, abort_callback& abort ) override;
-
-    // cui::colours::common_callback
-    void on_colour_changed( t_size mask ) const override;
-    void on_bool_changed( t_size mask ) const override;
-
-    // cui::fonts::common_callback
-    void on_font_changed( t_size mask ) const override;
 
 private:
     // js_panel_window

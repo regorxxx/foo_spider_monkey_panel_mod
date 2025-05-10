@@ -36,14 +36,17 @@ enum class PanelType : uint8_t
     DUI = 1
 };
 
-class js_panel_window
-    : public ui_helpers::container_window
+class js_panel_window : public ui_helpers::container_window, public ui_config_callback_impl
 {
 public:
     js_panel_window( PanelType instanceType );
     virtual ~js_panel_window();
 
 public:
+    // ui_config_callback_impl
+    void ui_colors_changed() override;
+    void ui_fonts_changed() override;
+
     // ui_helpers::container_window
     [[nodiscard]] class_data& get_class_data() const override;
 
