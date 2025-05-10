@@ -1,3 +1,9 @@
+# 1.62.25.05.10
+- `foobar2000` `2.25` preview has changed the behaviour of `FbMetadbHandle` `RawPath` if you
+have a portable install and music files on the same drive. Any code that checks `startsWith("file://")`
+will fail because the `RawPath` now starts with `file-relative://`. This release restores the old
+behaviour.
+
 # 1.62.25.05.05
 
 -Requires at least `foobar2000` `2.0` because new methods from the `SDK` are being used.
