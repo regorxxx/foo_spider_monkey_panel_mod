@@ -615,27 +615,16 @@ bool JsFbPlaylistManager::IsUndoAvailable( uint32_t playlistIndex )
 bool JsFbPlaylistManager::MovePlaylist( uint32_t from, uint32_t to )
 {
     auto api = playlist_manager::get();
-    const size_t playlistCount = api->get_playlist_count();
-    if ( from >= playlistCount || to >= playlistCount )
+    const auto count = api->get_playlist_count();
+
+    if (from < count && to < count && from != to)
     {
-        return false;
+        auto sort_order = CustomSort::order(count);
+        pfc::create_move_items_permutation(sort_order.get_ptr(), count, pfc::bit_array_one(from), static_cast<int>(to - from));
+        return api->reorder(sort_order.get_ptr(), count);
     }
-    if ( from == to )
-    { // Nothing to do here
-        return true;
-    }
-
-    auto order = ranges::views::indices( playlistCount ) | ranges::to_vector;
-
-    const int8_t inc = ( from < to ) ? 1 : -1;
-    for ( uint32_t i = from; i != to; i += inc )
-    {
-        order[i] = i + inc;
-    }
-
-    order[to] = from;
-
-    return api->reorder( order.data(), order.size() );
+    
+    return false;
 }
 
 bool JsFbPlaylistManager::MovePlaylistSelection( uint32_t playlistIndex, int32_t delta )
@@ -868,24 +857,23 @@ bool JsFbPlaylistManager::SortByFormatV2WithOpt( size_t optArgCount, uint32_t pl
 void JsFbPlaylistManager::SortPlaylistsByName( int8_t direction )
 {
     auto api = playlist_manager::get();
-    const size_t count = api->get_playlist_count();
+    const auto count = api->get_playlist_count();
 
-    std::vector<smp::utils::StrCmpLogicalCmpData> data;
-    data.reserve( count );
+    pfc::array_t<CustomSort::Item> items;
+    items.set_size(count);
 
-    pfc::string8_fastalloc temp;
-    temp.prealloc( 512 );
+    pfc::string8_fastalloc name;
+    name.prealloc(512);
 
-    for ( size_t i = 0; i < count; ++i )
+    for (auto&& [index, item] : ranges::views::enumerate(items))
     {
-        api->playlist_get_name( i, temp );
-        data.emplace_back( std::string_view{ temp.c_str(), temp.length() }, i );
+        api->playlist_get_name(index, name);
+        item.index = index;
+        item.text = pfc::wideFromUTF8(name);
     }
 
-    std::sort( data.begin(), data.end(), (direction > 0 ? smp::utils::StrCmpLogicalCmp<1> : smp::utils::StrCmpLogicalCmp<-1>));
-
-    const auto order = data | ranges::views::transform( []( const auto& elem ) { return elem.index; } ) | ranges::to_vector;
-    api->reorder( order.data(), order.size() );
+    auto order = CustomSort::sort(items, direction);
+    api->reorder(order.get_ptr(), count);
 }
 
 void JsFbPlaylistManager::SortPlaylistsByNameWithOpt( size_t optArgCount, int8_t direction )

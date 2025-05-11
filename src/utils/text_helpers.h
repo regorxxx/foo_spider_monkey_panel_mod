@@ -16,27 +16,43 @@ struct WrappedTextLine
 };
 [[nodiscard]] std::vector<WrappedTextLine> WrapText( HDC hdc, const std::wstring& text, size_t maxWidth );
 
-struct StrCmpLogicalCmpData
-{
-    StrCmpLogicalCmpData( const std::wstring& textId, size_t index );
-    StrCmpLogicalCmpData( const std::string_view& textId, size_t index );
-
-    std::wstring textId; ///< if set manually (not via ctor), must be prepended with ` ` for StrCmpLogicalW bug workaround
-    size_t index;
-};
-
-template <int8_t direction = 1>
-bool StrCmpLogicalCmp( const StrCmpLogicalCmpData& a, const StrCmpLogicalCmpData& b )
-{
-    int ret = direction * StrCmpLogicalW( a.textId.c_str(), b.textId.c_str() );
-    if ( !ret )
-    {
-        return ( a.index < b.index );
-    }
-    else
-    {
-        return ( ret < 0 );
-    }
 }
 
-} // namespace smp::utils
+namespace CustomSort
+{
+    struct Item
+    {
+        pfc::wstringLite text;
+        size_t index{};
+    };
+
+    using Order = pfc::array_t<size_t>;
+
+    template <int32_t direction>
+    static bool sort_compare(const Item& a, const Item& b)
+    {
+        const auto ret = direction * StrCmpLogicalW(a.text, b.text);
+
+        if (ret == 0)
+            return a.index < b.index;
+
+        return ret < 0;
+    }
+
+    static Order order(size_t count)
+    {
+        Order sort_order;
+        sort_order.set_size(count);
+        std::iota(sort_order.begin(), sort_order.end(), size_t{});
+        return sort_order;
+    }
+
+    static Order sort(pfc::array_t<Item>& items, int32_t direction = 1)
+    {
+        std::ranges::sort(items, direction > 0 ? sort_compare<1> : sort_compare<-1>);
+
+        auto sort_order = order(items.get_count());
+        std::ranges::transform(items, sort_order.begin(), [](const Item& item) { return item.index; });
+        return sort_order;
+    }
+}

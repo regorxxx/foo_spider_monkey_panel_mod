@@ -45,20 +45,21 @@
 
 /// Restore some windowsx.h macros
 #ifndef SelectFont
-#    define SelectFont(hdc, hfont) ((HFONT)SelectObject((hdc), (HGDIOBJ)(HFONT)(hfont)))
+#define SelectFont(hdc, hfont) ((HFONT)SelectObject((hdc), (HGDIOBJ)(HFONT)(hfont)))
 #endif
 #ifndef SelectBitmap
-#    define SelectBitmap(hdc, hbm) ((HBITMAP)SelectObject((hdc), (HGDIOBJ)(HBITMAP)(hbm)))
+#define SelectBitmap(hdc, hbm) ((HBITMAP)SelectObject((hdc), (HGDIOBJ)(HBITMAP)(hbm)))
 #endif
 
 // foobar2000 SDK
 #pragma warning( push, 0 )
-#   include <foobar2000/SDK/foobar2000.h>
+#include <foobar2000/SDK/foobar2000.h>
+#include <pfc/string-conv-lite.h>
 #pragma warning( pop ) 
 
 // Columns UI SDK
 #pragma warning( push, 0 )
-#   include <columns_ui-sdk/ui_extension.h>
+#include <columns_ui-sdk/ui_extension.h>
 #pragma warning( pop ) 
 
 // 4251: dll interface warning
@@ -78,20 +79,15 @@ SMP_MJS_SUPPRESS_WARNINGS_POP
 // fmt
 #define FMT_HEADER_ONLY
 #include <fmt/format.h>
-/// wchar_t support
 #include <fmt/xchar.h>
 
 // range v3
 #include <range/v3/all.hpp>
 
 // json
-/// Enable extended diagnostics
 #define JSON_DIAGNOSTICS 1
 #include <nlohmann/json.hpp>
 
-#include <string>
-
-// Additional PFC wrappers
 #include <qwr/pfc_helpers_cnt.h>
 
 #include <qwr/unicode.h>

@@ -157,18 +157,4 @@ std::vector<WrappedTextLine> WrapText( HDC hdc, const std::wstring& text, size_t
     return lines;
 }
 
-StrCmpLogicalCmpData::StrCmpLogicalCmpData( const std::wstring& textId, size_t index )
-    : textId( fmt::format( L" {}", textId ) )
-    , index( index )
-{
-    // additional space is needed for StrCmpLogicalW bug workaround
-}
-
-StrCmpLogicalCmpData::StrCmpLogicalCmpData( const std::string_view& textId, size_t index )
-    : textId( fmt::format( L" {}", qwr::unicode::ToWide( textId ) ) )
-    , index( index )
-{
-    // additional space is needed for StrCmpLogicalW bug workaround
-}
-
 } // namespace smp::utils
