@@ -13,7 +13,6 @@
 #include <qwr/file_helpers.h>
 #include <qwr/final_action.h>
 #include <qwr/type_traits.h>
-#include <qwr/ui_centered_message_box.h>
 #include <qwr/winapi_error_helpers.h>
 
 #include <filesystem>
@@ -632,23 +631,23 @@ bool CConfigTabScriptSource::RequestConfirmationForReset()
         }
         else
         {
-            const int iRet = qwr::ui::MessageBoxCentered(
+            const int iRet = popup_message_v3::get()->messageBox(
                 *this,
-                L"!!! Changing script type will reset all panel settings !!!\n"
-                L"!!! Your whole script will be unrecoverably lost !!!\n\n"
-                L"Are you sure?",
-                L"Changing script type",
+                "!!! Changing script type will reset all panel settings !!!\n"
+                "!!! Your whole script will be unrecoverably lost !!!\n\n"
+                "Are you sure?",
+                "Changing script type",
                 MB_YESNO | MB_ICONWARNING );
             return ( IDYES == iRet );
         }
     }
     else
     {
-        const int iRet = qwr::ui::MessageBoxCentered(
+        const int iRet = popup_message_v3::get()->messageBox(
             *this,
-            L"!!! Changing script type will reset all panel settings !!!\n\n"
-            L"Are you sure?",
-            L"Changing script type",
+            "!!! Changing script type will reset all panel settings !!!\n\n"
+            "Are you sure?",
+            "Changing script type",
             MB_YESNO | MB_ICONWARNING );
         if ( iRet != IDYES )
         {
@@ -657,10 +656,10 @@ bool CConfigTabScriptSource::RequestConfirmationForReset()
 
         if ( sourceTypeId_ == IDC_RADIO_SRC_PACKAGE && parent_.HasChanged() )
         {
-            const int iRet = qwr::ui::MessageBoxCentered(
+            const int iRet = popup_message_v3::get()->messageBox(
                 *this,
-                L"Do you want to save your changes to package?",
-                TEXT( SMP_NAME ),
+                "Do you want to save your changes to package?",
+                SMP_NAME,
                 MB_ICONWARNING | MB_SETFOREGROUND | MB_YESNOCANCEL );
             switch ( iRet )
             {
@@ -685,11 +684,11 @@ bool CConfigTabScriptSource::RequestConfirmationOnPackageChange()
     assert( settings_.packageId );
     assert( sourceTypeId_ == IDC_RADIO_SRC_PACKAGE );
 
-    const int iRet = qwr::ui::MessageBoxCentered(
+    const int iRet = popup_message_v3::get()->messageBox(
         *this,
-        L"!!! Changing package will reset all panel settings !!!\n\n"
-        L"Are you sure?",
-        L"Changing script type",
+        "!!! Changing package will reset all panel settings !!!\n\n"
+        "Are you sure?",
+        "Changing script type",
         MB_YESNO | MB_ICONWARNING );
     if ( iRet != IDYES )
     {
@@ -698,7 +697,7 @@ bool CConfigTabScriptSource::RequestConfirmationOnPackageChange()
 
     if ( parent_.HasChanged() )
     {
-        const int iRet = qwr::ui::MessageBoxCentered( m_hWnd, L"Do you want to save your changes to package?", TEXT( SMP_NAME ), MB_ICONWARNING | MB_SETFOREGROUND | MB_YESNOCANCEL );
+        const int iRet = popup_message_v3::get()->messageBox( m_hWnd, "Do you want to save your changes to package?", SMP_NAME, MB_ICONWARNING | MB_SETFOREGROUND | MB_YESNOCANCEL );
         switch ( iRet )
         {
         case IDYES:

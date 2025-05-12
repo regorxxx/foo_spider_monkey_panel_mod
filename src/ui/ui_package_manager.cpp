@@ -12,7 +12,6 @@
 #include <qwr/fb2k_paths.h>
 #include <qwr/file_helpers.h>
 #include <qwr/final_action.h>
-#include <qwr/ui_centered_message_box.h>
 #include <qwr/winapi_error_helpers.h>
 
 #include <filesystem>
@@ -121,10 +120,10 @@ void CDialogPackageManager::OnNewPackage( UINT /*uNotifyCode*/, int /*nID*/, CWi
         curName = dlg.GetValue();
         if ( curName.empty() )
         {
-            qwr::ui::MessageBoxCentered(
+            popup_message_v3::get()->messageBox(
                 *this,
-                L"Can't create package with empty name",
-                L"Creating new package",
+                "Can't create package with empty name",
+                "Creating new package",
                 MB_OK | MB_ICONWARNING );
             continue;
         }
@@ -158,8 +157,8 @@ void CDialogPackageManager::OnDeletePackage( UINT /*uNotifyCode*/, int /*nID*/, 
 
     assert( focusedPackageIdx_ >= 0 && static_cast<size_t>( focusedPackageIdx_ ) < packages_.size() );
 
-    const int iRet = qwr::ui::MessageBoxCentered(
-        *this, L"Are you sure you want to delete the package?", L"Deleting package", MB_YESNO );
+    const int iRet = popup_message_v3::get()->messageBox(
+        *this, "Are you sure you want to delete the package?", "Deleting package", MB_YESNO );
     if ( iRet != IDYES )
     {
         return;
@@ -693,16 +692,14 @@ bool CDialogPackageManager::ConfirmPackageOverwrite( const std::filesystem::path
     {
         const auto oldSettings = config::GetPackageSettingsFromPath( oldPackagePath );
 
-        const int iRet = qwr::ui::MessageBoxCentered(
+        const int iRet = popup_message_v3::get()->messageBox(
             *this,
-            qwr::unicode::ToWide(
-                fmt::format( "Another version of this package is present:\n"
+            fmt::format( "Another version of this package is present:\n"
                              "old: '{}' vs new: '{}'\n\n"
                              "Do you want to update?",
                              oldSettings.scriptVersion.empty() ? "<none>" : oldSettings.scriptVersion,
-                             newSettings.scriptVersion.empty() ? "<none>" : newSettings.scriptVersion ) )
-                .c_str(),
-            L"Importing package",
+                             newSettings.scriptVersion.empty() ? "<none>" : newSettings.scriptVersion ).c_str(),
+            "Importing package",
             MB_YESNO );
         if ( iRet != IDYES )
         {
@@ -711,16 +708,14 @@ bool CDialogPackageManager::ConfirmPackageOverwrite( const std::filesystem::path
 
         if ( oldSettings.scriptName != newSettings.scriptName )
         {
-            const int iRet = qwr::ui::MessageBoxCentered(
+            const int iRet = popup_message_v3::get()->messageBox(
                 *this,
-                qwr::unicode::ToWide(
-                    fmt::format( "Currently installed package has a different name from the new one:\n"
+                fmt::format( "Currently installed package has a different name from the new one:\n"
                                  "old: '{}' vs new: '{}'\n\n"
                                  "Do you want to continue?",
                                  oldSettings.scriptName.empty() ? "<none>" : oldSettings.scriptName,
-                                 newSettings.scriptName.empty() ? "<none>" : newSettings.scriptName ) )
-                    .c_str(),
-                L"Importing package",
+                                 newSettings.scriptName.empty() ? "<none>" : newSettings.scriptName ).c_str(),
+                "Importing package",
                 MB_YESNO | MB_ICONWARNING );
             if ( iRet != IDYES )
             {
@@ -732,11 +727,11 @@ bool CDialogPackageManager::ConfirmPackageOverwrite( const std::filesystem::path
     {
         // old package might be broken and unparseable,
         // but we still need to confirm
-        const int iRet = qwr::ui::MessageBoxCentered(
+        const int iRet = popup_message_v3::get()->messageBox(
             *this,
-            L"Another version of this package is present.\n"
-            L"Do you want to update?",
-            L"Importing package",
+            "Another version of this package is present.\n"
+            "Do you want to update?",
+            "Importing package",
             MB_YESNO );
         if ( iRet != IDYES )
         {
@@ -749,11 +744,11 @@ bool CDialogPackageManager::ConfirmPackageOverwrite( const std::filesystem::path
 
 bool CDialogPackageManager::ConfirmRebootOnPackageInUse()
 {
-    const int iRet = qwr::ui::MessageBoxCentered(
+    const int iRet = popup_message_v3::get()->messageBox(
         *this,
-        L"The package is currently in use. Changes will be applied on the next foobar2000 start.\n"
-        L"Do you want to restart foobar2000 now?",
-        L"Changing package",
+        "The package is currently in use. Changes will be applied on the next foobar2000 start.\n"
+        "Do you want to restart foobar2000 now?",
+        "Changing package",
         MB_YESNO );
     return ( iRet == IDYES );
 }

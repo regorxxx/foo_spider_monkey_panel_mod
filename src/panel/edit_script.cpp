@@ -6,7 +6,6 @@
 #include <utils/edit_text.h>
 
 #include <qwr/error_popup.h>
-#include <qwr/ui_centered_message_box.h>
 #include <qwr/winapi_error_helpers.h>
 
 namespace fs = std::filesystem;
@@ -22,14 +21,15 @@ void EditScript( HWND hParent, config::ParsedPanelSettings& settings )
         {
         case config::ScriptSourceType::Sample:
         {
-            const int iRet = qwr::ui::MessageBoxCentered(
+            const int iRet = popup_message_v3::get()->messageBox(
                 hParent,
-                L"Are you sure?\n\n"
-                L"You are trying to edit a sample script.\n"
-                L"Any changes performed to the script will be applied to every panel that are using this sample.\n"
-                L"These changes will also be lost when updating the component.",
-                L"Editing script",
+                "Are you sure?\n\n"
+                "You are trying to edit a sample script.\n"
+                "Any changes performed to the script will be applied to every panel that are using this sample.\n"
+                "These changes will also be lost when updating the component.",
+                "Editing script",
                 MB_YESNO | MB_ICONWARNING );
+
             if ( iRet != IDYES )
             {
                 break;
@@ -78,14 +78,15 @@ void EditPackageScript( HWND hParent, const std::filesystem::path& script, const
         assert( settings.GetSourceType() == config::ScriptSourceType::Package );
         if ( settings.isSample )
         {
-            const int iRet = qwr::ui::MessageBoxCentered(
+            const int iRet = popup_message_v3::get()->messageBox(
                 hParent,
-                L"Are you sure?\n\n"
-                L"You are trying to edit a sample script.\n"
-                L"Any changes performed to the script will be applied to every panel that are using this sample.\n"
-                L"These changes will also be lost when updating the component.",
-                L"Editing script",
+                "Are you sure?\n\n"
+                "You are trying to edit a sample script.\n"
+                "Any changes performed to the script will be applied to every panel that are using this sample.\n"
+                "These changes will also be lost when updating the component.",
+                "Editing script",
                 MB_YESNO | MB_ICONWARNING );
+
             if ( iRet != IDYES )
             {
                 return;

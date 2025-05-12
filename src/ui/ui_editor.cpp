@@ -11,7 +11,6 @@
 #include <qwr/fb2k_paths.h>
 #include <qwr/file_helpers.h>
 #include <qwr/pfc_helpers_ui.h>
-#include <qwr/ui_centered_message_box.h>
 
 namespace
 {
@@ -100,9 +99,9 @@ LRESULT CEditor::OnCloseCmd( WORD, WORD wID, HWND )
     {
         if ( sciEditor_.GetModify() )
         {
-            const int ret = qwr::ui::MessageBoxCentered( *this,
-                                                         L"Do you want to apply your changes?",
-                                                         qwr::unicode::ToWide( caption_ ).c_str(),
+            const int ret = popup_message_v3::get()->messageBox( *this,
+                                                         "Do you want to apply your changes?",
+                                                         caption_.c_str(),
                                                          MB_ICONWARNING | MB_SETFOREGROUND | MB_YESNOCANCEL );
             switch ( ret )
             {
@@ -187,9 +186,9 @@ LRESULT CEditor::OnFileImport( WORD, WORD, HWND )
     catch ( const qwr::QwrException& e )
     {
         const auto errorMsg = fmt::format( "Failed to read file: {}", e.what() );
-        (void)qwr::ui::MessageBoxCentered( *this,
-                                           qwr::unicode::ToWide( errorMsg ).c_str(),
-                                           qwr::unicode::ToWide( caption_ ).c_str(),
+        popup_message_v3::get()->messageBox( *this,
+                                           errorMsg.c_str(),
+                                           caption_.c_str(),
                                            MB_ICONWARNING | MB_SETFOREGROUND );
     }
 
@@ -238,7 +237,7 @@ LRESULT CEditor::OnHelp( WORD, WORD, HWND )
 
 LRESULT CEditor::OnAbout( WORD, WORD, HWND )
 {
-    (void)qwr::ui::MessageBoxCentered( *this, TEXT( SMP_ABOUT ), L"About Spider Monkey Panel", MB_SETFOREGROUND );
+    popup_message_v3::get()->messageBox( *this, SMP_ABOUT, "About Spider Monkey Panel", MB_SETFOREGROUND );
     return 0;
 }
 

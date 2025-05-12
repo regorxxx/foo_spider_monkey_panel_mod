@@ -11,7 +11,6 @@
 #include <qwr/error_popup.h>
 #include <qwr/file_helpers.h>
 #include <qwr/final_action.h>
-#include <qwr/ui_centered_message_box.h>
 #include <qwr/winapi_error_helpers.h>
 
 namespace fs = std::filesystem;
@@ -182,10 +181,10 @@ void CConfigTabPackage::OnNewScript( UINT uNotifyCode, int nID, CWindow wndCtl )
 
                 if ( fs::exists( path ) )
                 {
-                    qwr::ui::MessageBoxCentered(
+                    popup_message_v3::get()->messageBox(
                         *this,
-                        L"File with this name already exists!",
-                        L"Creating file",
+                        "File with this name already exists!",
+                        "Creating file",
                         MB_OK | MB_ICONWARNING );
                 }
                 else
@@ -329,14 +328,15 @@ void CConfigTabPackage::OnEditScript( UINT uNotifyCode, int nID, CWindow wndCtl 
     {
         if ( isSample_ )
         {
-            const int iRet = qwr::ui::MessageBoxCentered(
+            const int iRet = popup_message_v3::get()->messageBox(
                 *this,
-                L"Are you sure?\n\n"
-                L"You are trying to edit a sample script.\n"
-                L"Any changes performed to the script will be applied to every panel that are using this sample.\n"
-                L"These changes will also be lost when updating the component.",
-                L"Editing script",
+                "Are you sure?\n\n"
+                "You are trying to edit a sample script.\n"
+                "Any changes performed to the script will be applied to every panel that are using this sample.\n"
+                "These changes will also be lost when updating the component.",
+                "Editing script",
                 MB_YESNO );
+
             if ( iRet != IDYES )
             {
                 return;
@@ -582,15 +582,16 @@ void CConfigTabPackage::AddFile( const std::filesystem::path& path )
             const auto newFile = ( file == path ? newPath : newPath / fs::relative( file, path ) );
             if ( fs::exists( newFile ) )
             {
-                const int iRet = qwr::ui::MessageBoxCentered(
+                const int iRet = popup_message_v3::get()->messageBox(
                     *this,
-                    fmt::format( L"File already exists:\n"
-                                 L"{}\n\n"
-                                 L"Do you want to rewrite it?",
-                                 newFile.wstring() )
+                    fmt::format( "File already exists:\n"
+                                 "{}\n\n"
+                                 "Do you want to rewrite it?",
+                                 newFile.u8string() )
                         .c_str(),
-                    L"Adding file",
+                    "Adding file",
                     MB_YESNO | MB_ICONWARNING );
+
                 if ( IDYES != iRet )
                 {
                     continue;
