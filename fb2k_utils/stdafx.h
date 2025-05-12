@@ -1,11 +1,8 @@
 #pragma once
-#define _SILENCE_CXX20_U8PATH_DEPRECATION_WARNING
-
-// Support only Windows 7 and newer
 #define _WIN32_WINNT _WIN32_WINNT_WIN7
 #define WINVER _WIN32_WINNT_WIN7
-
 #define NOMINMAX
+
 #include <WinSock2.h>
 #include <windows.h>
 
