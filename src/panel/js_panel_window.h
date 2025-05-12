@@ -36,7 +36,7 @@ enum class PanelType : uint8_t
     DUI = 1
 };
 
-class js_panel_window : public ui_helpers::container_window, public ui_config_callback_impl
+class js_panel_window : public ui_config_callback_impl
 {
 public:
     js_panel_window( PanelType instanceType );
@@ -46,9 +46,6 @@ public:
     // ui_config_callback_impl
     void ui_colors_changed() override;
     void ui_fonts_changed() override;
-
-    // ui_helpers::container_window
-    [[nodiscard]] class_data& get_class_data() const override;
 
     void ReloadScript();
     void LoadSettings( stream_reader& reader, t_size size, abort_callback& abort, bool reloadPanel = true );
@@ -95,8 +92,7 @@ public: // accessors
 protected:
     virtual void notify_size_limit_changed( LPARAM lp ) = 0;
 
-    // ui_helpers::container_window
-    LRESULT on_message( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp ) override;
+    LRESULT OnMessage(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
     void EditScript();
     void ShowConfigure( HWND parent, ui::CDialogConf::Tab tab = ui::CDialogConf::Tab::def );

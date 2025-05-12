@@ -10,6 +10,14 @@
 #include <com_objects/internal/handle.h>
 #include <utils/image_helpers.h>
 
+/// Restore some windowsx.h macros
+#ifndef SelectFont
+#define SelectFont(hdc, hfont) ((HFONT)SelectObject((hdc), (HGDIOBJ)(HFONT)(hfont)))
+#endif
+#ifndef SelectBitmap
+#define SelectBitmap(hdc, hbm) ((HBITMAP)SelectObject((hdc), (HGDIOBJ)(HBITMAP)(hbm)))
+#endif
+
 namespace uih
 {
 // Ripped from win32_helpers.cpp

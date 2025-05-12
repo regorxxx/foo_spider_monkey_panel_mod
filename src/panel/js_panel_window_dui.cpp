@@ -7,61 +7,7 @@
 #include <events/event_js_callback.h>
 #include <utils/colour_helpers.h>
 
-namespace
-{
-
-// Just because I don't want to include the helpers
-template <typename TImpl>
-class my_ui_element_impl : public ui_element
-{
-public:
-    GUID get_guid() override
-    {
-        return TImpl::g_get_guid();
-    }
-    GUID get_subclass() override
-    {
-        return TImpl::g_get_subclass();
-    }
-    void get_name( pfc::string_base& out ) override
-    {
-        TImpl::g_get_name( out );
-    }
-    ui_element_instance::ptr instantiate( HWND parent, ui_element_config::ptr cfg, ui_element_instance_callback::ptr callback ) override
-    {
-        PFC_ASSERT( cfg->get_guid() == get_guid() );
-        service_nnptr_t<ui_element_instance_impl_helper> item = fb2k::service_new<ui_element_instance_impl_helper>( cfg, callback );
-        item->initialize_window( parent );
-        return item;
-    }
-    ui_element_config::ptr get_default_configuration() override
-    {
-        return TImpl::g_get_default_configuration();
-    }
-    ui_element_children_enumerator_ptr enumerate_children( ui_element_config::ptr ) override
-    {
-        return nullptr;
-    }
-    bool get_description( pfc::string_base& out ) override
-    {
-        out = TImpl::g_get_description();
-        return true;
-    }
-
-private:
-    class ui_element_instance_impl_helper : public TImpl
-    {
-    public:
-        ui_element_instance_impl_helper( ui_element_config::ptr cfg, ui_element_instance_callback::ptr callback )
-            : TImpl( cfg, callback )
-        {
-        }
-    };
-};
-
-service_factory_t<my_ui_element_impl<smp::panel::js_panel_window_dui>> g_js_panel_window_dui;
-
-} // namespace
+#include <foobar2000/helpers/atl-misc.h>
 
 namespace smp::panel
 {
@@ -69,14 +15,8 @@ namespace smp::panel
 js_panel_window_dui::js_panel_window_dui( ui_element_config::ptr cfg, ui_element_instance_callback::ptr callback )
     : js_panel_window( PanelType::DUI )
     , uiCallback_( callback )
-    , isEditMode_( callback->is_edit_mode_enabled() )
 {
     set_configuration( cfg );
-}
-
-js_panel_window_dui::~js_panel_window_dui()
-{
-    t_parent::destroy();
 }
 
 GUID js_panel_window_dui::g_get_guid()
@@ -182,41 +122,30 @@ HFONT js_panel_window_dui::GetFont( unsigned type, const GUID& guid )
     return ( guidToQuery != pfc::guid_null ? uiCallback_->query_font_ex( guidToQuery ) : nullptr );
 }
 
-HWND js_panel_window_dui::get_wnd()
+BOOL js_panel_window_dui::ProcessWindowMessage(HWND wnd, uint32_t msg, WPARAM wp, LPARAM lp, LRESULT& lres, DWORD)
 {
-    return t_parent::get_wnd();
-}
-
-LRESULT js_panel_window_dui::on_message( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp )
-{
-    switch ( msg )
+    switch (msg)
     {
     case WM_RBUTTONUP:
     case WM_RBUTTONDOWN:
     case WM_RBUTTONDBLCLK:
     case WM_CONTEXTMENU:
     {
-        if ( isEditMode_ )
+        if (uiCallback_->is_edit_mode_enabled())
         {
-            return DefWindowProc( hwnd, msg, wp, lp );
+            return FALSE;
         }
         break;
     }
-    case static_cast<UINT>( smp::MiscMessage::size_limit_changed ):
+    case static_cast<UINT>(smp::MiscMessage::size_limit_changed):
     {
-        notify_size_limit_changed( wp );
-        return 0;
+        notify_size_limit_changed(wp);
+        return FALSE;
     }
-    default:
-        break;
     }
 
-    return t_parent::on_message( hwnd, msg, wp, lp );
-}
-
-bool js_panel_window_dui::edit_mode_context_menu_get_description( unsigned, unsigned, pfc::string_base& )
-{
-    return false;
+    lres = OnMessage(wnd, msg, wp, lp);
+    return TRUE;
 }
 
 bool js_panel_window_dui::edit_mode_context_menu_test( const POINT&, bool )
@@ -241,26 +170,17 @@ void js_panel_window_dui::edit_mode_context_menu_command( const POINT&, bool, un
     ExecuteContextMenu( p_id, p_id_base );
 }
 
-void js_panel_window_dui::notify( const GUID& p_what, t_size, const void*, t_size )
-{
-    if ( p_what == ui_element_notify_edit_mode_changed )
-    {
-        notify_is_edit_mode_changed( uiCallback_->is_edit_mode_enabled() );
-    }
-}
-
 void js_panel_window_dui::set_configuration( ui_element_config::ptr data )
 {
     ui_element_config_parser parser( data );
 
-    LoadSettings( parser.m_stream, parser.get_remaining(), fb2k::noAbort,
-                  // FIX: If window already created, DUI won't destroy it and create it again.
-                  !!t_parent::GetHWND() );
+    // FIX: If window already created, DUI won't destroy it and create it again.
+    LoadSettings( parser.m_stream, parser.get_remaining(), fb2k::noAbort, !!GetHWND() );
 }
 
 void js_panel_window_dui::initialize_window( HWND parent )
 {
-    create( parent );
+    Create(parent);
 }
 
 void js_panel_window_dui::notify_size_limit_changed( LPARAM )
@@ -268,9 +188,9 @@ void js_panel_window_dui::notify_size_limit_changed( LPARAM )
     uiCallback_->on_min_max_info_change();
 }
 
-void js_panel_window_dui::notify_is_edit_mode_changed( bool enabled )
-{
-    isEditMode_ = enabled;
-}
+
+class impl : public ui_element_impl<js_panel_window_dui> {};
+
+FB2K_SERVICE_FACTORY(impl);
 
 } // namespace smp::panel

@@ -1,6 +1,4 @@
 #pragma once
-#pragma warning(disable : 4996)
-
 #define _WIN32_WINNT _WIN32_WINNT_WIN7
 #define WINVER _WIN32_WINNT_WIN7
 #define NOMINMAX
@@ -10,8 +8,9 @@
 
 #include <WinSock2.h>
 #include <Windows.h>
+#include <windowsx.h>
 #pragma warning( push, 0 )
-#   include <GdiPlus.h>
+#include <GdiPlus.h>
 #pragma warning( pop ) 
 
 // COM objects
@@ -25,10 +24,6 @@
 // Generates wrappers for COM listed above
 #include <ComDef.h>
 
-// ATL/WTL
-/// atlstr.h (includes atlbase.h) must be included first for CString to LPTSTR conversion to work.
-/// windowsx.h must be included first to avoid conflicts.
-#include <windowsx.h>
 #include <atlstr.h> 
 #include <atlapp.h>
 #include <atlcom.h>
@@ -42,14 +37,6 @@
 #include <atltypes.h>
 #include <atlwin.h>
 
-/// Restore some windowsx.h macros
-#ifndef SelectFont
-#define SelectFont(hdc, hfont) ((HFONT)SelectObject((hdc), (HGDIOBJ)(HFONT)(hfont)))
-#endif
-#ifndef SelectBitmap
-#define SelectBitmap(hdc, hbm) ((HBITMAP)SelectObject((hdc), (HGDIOBJ)(HBITMAP)(hbm)))
-#endif
-
 // foobar2000 SDK
 #pragma warning( push, 0 )
 #include <foobar2000/SDK/foobar2000.h>
@@ -59,7 +46,7 @@
 // Columns UI SDK
 #pragma warning( push, 0 )
 #include <columns_ui-sdk/ui_extension.h>
-#pragma warning( pop ) 
+#pragma warning( pop )
 
 // 4251: dll interface warning
 #define SMP_MJS_SUPPRESS_WARNINGS_PUSH \

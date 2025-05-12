@@ -65,27 +65,6 @@ js_panel_window::~js_panel_window()
 {
 }
 
-ui_helpers::container_window::class_data& js_panel_window::get_class_data() const
-{
-    static class_data my_class_data = {
-        TEXT( SMP_WINDOW_CLASS_NAME ),
-        L"",
-        0,
-        false,
-        false,
-        0,
-        WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
-        ConvertEdgeStyleToNativeFlags( settings_.edgeStyle ),
-        CS_DBLCLKS,
-        true,
-        true,
-        true,
-        IDC_ARROW
-    };
-
-    return my_class_data;
-}
-
 void js_panel_window::ui_colors_changed()
 {
     EventDispatcher::Get().PutEvent(wnd_, GenerateEvent_JsCallback(EventId::kUiColoursChanged));
@@ -222,7 +201,7 @@ bool js_panel_window::IsPanelIdOverridenByScript() const
     return isPanelIdOverridenByScript_;
 }
 
-LRESULT js_panel_window::on_message( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp )
+LRESULT js_panel_window::OnMessage( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp )
 {
     // According to MSDN:
     ////

@@ -53,31 +53,6 @@ HFONT js_panel_window_cui::GetFont( unsigned type, const GUID& guid )
     return nullptr;
 }
 
-HWND js_panel_window_cui::create_or_transfer_window( HWND parent, const uie::window_host_ptr& host, const ui_helpers::window_position_t& p_position )
-{
-    if ( m_host.is_valid() )
-    {
-        ShowWindow( t_parent::GetHWND(), SW_HIDE );
-        SetParent( t_parent::GetHWND(), parent );
-        m_host->relinquish_ownership( t_parent::GetHWND() );
-        m_host = host;
-
-        SetWindowPos( t_parent::GetHWND(), nullptr, p_position.x, p_position.y, p_position.cx, p_position.cy, SWP_NOZORDER );
-    }
-    else
-    {
-        m_host = host; //store interface to host
-        create( parent, this, p_position );
-    }
-
-    return get_wnd();
-}
-
-HWND js_panel_window_cui::get_wnd() const
-{
-    return t_parent::get_wnd();
-}
-
 LRESULT js_panel_window_cui::on_message( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp )
 {
     switch ( msg )
@@ -98,7 +73,7 @@ LRESULT js_panel_window_cui::on_message( HWND hwnd, UINT msg, WPARAM wp, LPARAM 
         break;
     }
 
-    return t_parent::on_message( hwnd, msg, wp, lp );
+    return OnMessage( hwnd, msg, wp, lp );
 }
 
 bool js_panel_window_cui::have_config_popup() const
@@ -127,12 +102,6 @@ unsigned js_panel_window_cui::get_type() const
     return uie::type_toolbar | uie::type_panel;
 }
 
-void js_panel_window_cui::destroy_window()
-{
-    destroy();
-    m_host.release();
-}
-
 void js_panel_window_cui::get_category( pfc::string_base& out ) const
 {
     out = "Panels";
@@ -153,9 +122,14 @@ void js_panel_window_cui::set_config( stream_reader* reader, t_size size, abort_
     LoadSettings( *reader, size, abort, false );
 }
 
+uie::container_window_v3_config js_panel_window_cui::get_window_config()
+{
+    return { TEXT(SMP_WINDOW_CLASS_NAME), false, CS_DBLCLKS };
+}
+
 void js_panel_window_cui::notify_size_limit_changed( LPARAM lp )
 {
-    m_host->on_size_limit_change( t_parent::GetHWND(), lp );
+    get_host()->on_size_limit_change( GetHWND(), lp );
 }
 
 } // namespace smp::panel
