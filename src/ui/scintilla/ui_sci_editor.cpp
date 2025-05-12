@@ -494,7 +494,8 @@ void CScriptEditorCtrl::ReadAPI()
     {
         try
         {
-            const auto content = qwr::file::ReadFile( fs::u8path( std::string{ file.data(), file.size() } ), CP_UTF8 );
+            const auto path = std::string(file.data(), file.size());
+            const auto content = qwr::file::ReadFile(qwr::unicode::ToWide(path), CP_UTF8 );
             readApi( content );
         }
         catch ( const qwr::QwrException& e )

@@ -36,7 +36,7 @@ public:
 
     void reset();
     void export_to_file( const wchar_t* filename );
-    void import_from_file( const char* filename );
+    void import_from_file(const std::filesystem::path& path);
 
 private:
     struct StriCmpAscii

@@ -338,7 +338,8 @@ void JsGlobalObject::IncludeScript( const std::string& path, JS::HandleValue opt
         return paths;
     }();
 
-    const auto fsPath = ::FindSuitableFileForInclude( fs::u8path( path ), allSearchPaths );
+    const auto wpath = qwr::unicode::ToWide(path);
+    const auto fsPath = ::FindSuitableFileForInclude(fs::path(path), allSearchPaths );
 
     const auto parsedOptions = ParseIncludeOptions( options );
 

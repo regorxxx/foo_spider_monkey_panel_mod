@@ -104,7 +104,7 @@ void CDialogEditorConfig::OnButtonImportBnClicked( WORD, WORD, HWND )
     }
 
     const auto path = path_opt->lexically_normal();
-    config::sci::props.import_from_file( path.u8string().c_str() );
+    config::sci::props.import_from_file(path);
 
     LoadProps();
 }

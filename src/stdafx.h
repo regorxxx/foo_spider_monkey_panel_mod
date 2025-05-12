@@ -1,7 +1,6 @@
 #pragma once
 #pragma warning(disable : 4996)
 
-#define _SILENCE_CXX20_U8PATH_DEPRECATION_WARNING
 #define _WIN32_WINNT _WIN32_WINNT_WIN7
 #define WINVER _WIN32_WINNT_WIN7
 #define NOMINMAX

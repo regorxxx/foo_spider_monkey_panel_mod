@@ -180,25 +180,26 @@ PanelSettings LoadSettings( stream_reader& reader, abort_callback& abort )
         }
         case ScriptType::SimpleFile:
         {
-            const auto path = fs::u8path( jsonPayload.at( "path" ).get<std::string>() ).lexically_normal();
+            const auto wpath = qwr::unicode::ToWide(jsonPayload.at("path").get<std::string>());
+            const auto fsPath = fs::path(wpath).lexically_normal();
             const auto fullPath = [&] {
                 switch ( jsonPayload.at( "locationType" ).get<LocationType>() )
                 {
                 case LocationType::Component:
                 {
-                    return ( qwr::path::Component() / path );
+                    return ( qwr::path::Component() / fsPath);
                 }
                 case LocationType::Fb2k:
                 {
-                    return ( qwr::path::Foobar2000() / path );
+                    return ( qwr::path::Foobar2000() / fsPath);
                 }
                 case LocationType::Profile:
                 {
-                    return ( qwr::path::Profile() / path );
+                    return ( qwr::path::Profile() / fsPath);
                 }
                 case LocationType::Full:
                 {
-                    return path;
+                    return fsPath;
                 }
                 default:
                     throw qwr::QwrException( "Corrupted serialized settings: unknown file location type" );
@@ -268,10 +269,10 @@ void SaveSettings( stream_writer& writer, abort_callback& abort, const PanelSett
             }
             else if constexpr ( std::is_same_v<T, smp::config::PanelSettings_File> )
             {
-                const auto [path, locationType] = [&path = data.path] {
+                const auto [path, locationType] = [wpath = qwr::unicode::ToWide(data.path)] {
                     try
                     {
-                        auto fsPath = fs::u8path( path ).lexically_normal();
+                        auto fsPath = fs::path(wpath).lexically_normal();
 
                         const auto isSubpath = []( const auto& path, const auto& base ) {
                             return ( path.wstring().find( base.lexically_normal().wstring() ) == 0 );

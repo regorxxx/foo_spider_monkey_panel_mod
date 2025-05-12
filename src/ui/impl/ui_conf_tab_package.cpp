@@ -262,7 +262,7 @@ void CConfigTabPackage::OnRenameFile( UINT uNotifyCode, int nID, CWindow wndCtl 
 
     auto& filepath = files_[focusedFileIdx_];
 
-    CInputBox dlg( "Enter new file name", "Rename file", filepath.filename().u8string().c_str() );
+    CInputBox dlg("Enter new file name", "Rename file", filepath.filename().u8string().c_str());
     if ( dlg.DoModal( m_hWnd ) != IDOK )
     {
         return;
@@ -270,7 +270,8 @@ void CConfigTabPackage::OnRenameFile( UINT uNotifyCode, int nID, CWindow wndCtl 
 
     try
     {
-        const auto newFilePath = filepath.parent_path() / fs::u8path( dlg.GetValue() );
+        const auto wValue = qwr::unicode::ToWide(dlg.GetValue());
+        const auto newFilePath = filepath.parent_path() / fs::path(wValue);
         fs::rename( filepath, newFilePath );
         filepath = newFilePath;
 

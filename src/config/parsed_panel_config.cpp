@@ -32,7 +32,8 @@ void Parse_File( const config::PanelSettings_File& settings, config::ParsedPanel
 {
     try
     {
-        parsedSettings.scriptPath = fs::u8path( settings.path );
+        const auto wpath = qwr::unicode::ToWide(settings.path);
+        parsedSettings.scriptPath = fs::path(wpath);
     }
     catch ( const fs::filesystem_error& e )
     {

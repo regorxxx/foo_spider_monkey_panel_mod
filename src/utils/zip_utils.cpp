@@ -83,6 +83,8 @@ void ZipPacker::AddFolder( const fs::path& srcFolder, const std::string& destFol
 {
     try
     {
+        const auto wdestFolderName = qwr::unicode::ToWide(destFolderName);
+
         for ( const auto& it: fs::recursive_directory_iterator( srcFolder ) )
         {
             if ( it.is_directory() )
@@ -91,9 +93,9 @@ void ZipPacker::AddFolder( const fs::path& srcFolder, const std::string& destFol
             }
 
             fs::path dstFilePath = fs::relative( it.path(), srcFolder );
-            if ( !destFolderName.empty() )
+            if ( !wdestFolderName.empty() )
             {
-                dstFilePath = fs::u8path( destFolderName ) / dstFilePath;
+                dstFilePath = fs::path(wdestFolderName) / dstFilePath;
             }
             AddFile( it.path(), dstFilePath.u8string() );
         }
