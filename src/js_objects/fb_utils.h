@@ -89,6 +89,7 @@ public:
     void SetOutputDevice(const std::wstring& output, const std::wstring& device);
     void ShowConsole();
     void ShowLibrarySearchUI(const std::string& query);
+    void ShowPictureViewer(const std::wstring& image_path);
     void ShowPopupMessage(const std::string& msg, const std::string& title = "Spider Monkey Panel");
     void ShowPopupMessageWithOpt(size_t optArgCount, const std::string& msg, const std::string& title);
     void ShowPreferences();

@@ -99,6 +99,7 @@ MJS_DEFINE_JS_FN_FROM_NATIVE(SetDSPPreset, JsFbUtils::SetDSPPreset)
 MJS_DEFINE_JS_FN_FROM_NATIVE(SetOutputDevice, JsFbUtils::SetOutputDevice)
 MJS_DEFINE_JS_FN_FROM_NATIVE(ShowConsole, JsFbUtils::ShowConsole)
 MJS_DEFINE_JS_FN_FROM_NATIVE(ShowLibrarySearchUI, JsFbUtils::ShowLibrarySearchUI)
+MJS_DEFINE_JS_FN_FROM_NATIVE(ShowPictureViewer, JsFbUtils::ShowPictureViewer)
 MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(ShowPopupMessage, JsFbUtils::ShowPopupMessage, JsFbUtils::ShowPopupMessageWithOpt, 1)
 MJS_DEFINE_JS_FN_FROM_NATIVE(ShowPreferences, JsFbUtils::ShowPreferences)
 MJS_DEFINE_JS_FN_FROM_NATIVE(Stop, JsFbUtils::Stop)
@@ -154,6 +155,7 @@ constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
         JS_FN("SetOutputDevice", SetOutputDevice, 2, kDefaultPropsFlags),
         JS_FN("ShowConsole", ShowConsole, 0, kDefaultPropsFlags),
         JS_FN("ShowLibrarySearchUI", ShowLibrarySearchUI, 1, kDefaultPropsFlags),
+        JS_FN("ShowPictureViewer", ShowPictureViewer, 1, kDefaultPropsFlags),
         JS_FN("ShowPopupMessage", ShowPopupMessage, 1, kDefaultPropsFlags),
         JS_FN("ShowPreferences", ShowPreferences, 0, kDefaultPropsFlags),
         JS_FN("Stop", Stop, 0, kDefaultPropsFlags),
@@ -814,6 +816,27 @@ void JsFbUtils::ShowConsole()
 void JsFbUtils::ShowLibrarySearchUI(const std::string& query)
 {
     library_search_ui::get()->show(query.c_str());
+}
+
+void JsFbUtils::ShowPictureViewer(const std::wstring& image_path)
+{
+    pfc::com_ptr_t<IStream> stream;
+    if FAILED(SHCreateStreamOnFileEx(image_path.data(), STGM_READ | STGM_SHARE_DENY_WRITE, GENERIC_READ, FALSE, nullptr, stream.receive_ptr()))
+        return;
+
+    STATSTG stats{};
+    if FAILED(stream->Stat(&stats, STATFLAG_DEFAULT))
+        return;
+
+    const auto size = stats.cbSize.LowPart;
+    auto data = fb2k::service_new<album_art_data_impl>();
+    data->set_size(size);
+    ULONG bytes_read{};
+
+    if SUCCEEDED(stream->Read(data->get_ptr(), size, &bytes_read))
+    {
+        fb2k::imageViewer::get()->show(core_api::get_main_window(), data);
+    }
 }
 
 void JsFbUtils::ShowPopupMessage(const std::string& msg, const std::string& title)
