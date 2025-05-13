@@ -1,7 +1,8 @@
-# dev version
+# 1.62.25.05.13
 -Add `FbMetadbHandleList` `SaveAs`. Saves using native `.fpl`
 format so you should use that as the file extension. The
 parent folder must already exist.
+
 -Add `fb.ShowPictureViewer(image_path)`. This uses the image
 viewer built in to `foobar2000`.
 
