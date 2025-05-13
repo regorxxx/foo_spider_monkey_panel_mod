@@ -73,6 +73,7 @@ MJS_DEFINE_JS_FN_FROM_NATIVE(Remove, JsFbMetadbHandleList::Remove);
 MJS_DEFINE_JS_FN_FROM_NATIVE(RemoveAll, JsFbMetadbHandleList::RemoveAll);
 MJS_DEFINE_JS_FN_FROM_NATIVE(RemoveById, JsFbMetadbHandleList::RemoveById);
 MJS_DEFINE_JS_FN_FROM_NATIVE(RemoveRange, JsFbMetadbHandleList::RemoveRange);
+MJS_DEFINE_JS_FN_FROM_NATIVE(SaveAs, JsFbMetadbHandleList::SaveAs);
 MJS_DEFINE_JS_FN_FROM_NATIVE(Sort, JsFbMetadbHandleList::Sort);
 MJS_DEFINE_JS_FN_FROM_NATIVE(UpdateFileInfoFromJSON, JsFbMetadbHandleList::UpdateFileInfoFromJSON);
 
@@ -105,6 +106,7 @@ constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
         JS_FN("RemoveAttachedImages", RemoveAttachedImages, 0, kDefaultPropsFlags),
         JS_FN("RemoveById", RemoveById, 1, kDefaultPropsFlags),
         JS_FN("RemoveRange", RemoveRange, 2, kDefaultPropsFlags),
+        JS_FN("SaveAs", SaveAs, 1, kDefaultPropsFlags),
         JS_FN("Sort", Sort, 0, kDefaultPropsFlags),
         JS_FN("UpdateFileInfoFromJSON", UpdateFileInfoFromJSON, 1, kDefaultPropsFlags),
         JS_SYM_FN(iterator, CreateIterator, 0, kDefaultPropsFlags),
@@ -594,6 +596,15 @@ void JsFbMetadbHandleList::RemoveById(uint32_t index)
 void JsFbMetadbHandleList::RemoveRange(uint32_t from, uint32_t count)
 {
     metadbHandleList_.remove_from_idx(from, count);
+}
+
+void JsFbMetadbHandleList::SaveAs(const std::string& path)
+{
+	try
+	{
+		playlist_loader::g_save_playlist(path.c_str(), metadbHandleList_, fb2k::noAbort);
+	}
+	catch (...) {}
 }
 
 void JsFbMetadbHandleList::Sort()

@@ -85,6 +85,7 @@ public: // methods
     void RemoveAttachedImages();
     void RemoveById(uint32_t index);
     void RemoveRange(uint32_t from, uint32_t count);
+    void SaveAs(const std::string& path);
     void Sort();
     void UpdateFileInfoFromJSON(const std::string& str);
 

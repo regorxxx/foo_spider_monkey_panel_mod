@@ -1,3 +1,8 @@
+# dev version
+-Add `FbMetadbHandleList` `SaveAs`. Saves using native `.fpl`
+format so you should use that as the file extension. The
+parent folder must already exist.
+
 # 1.62.25.05.10
 - `foobar2000` `2.25` preview has changed the behaviour of `FbMetadbHandle` `RawPath` if you
 have a portable install and music files on the same drive. Any code that checks `startsWith("file://")`
