@@ -5,31 +5,31 @@
 namespace smp::utils
 {
 
-void LogError( const std::string& message )
+void LogError(const std::string& message)
 {
     FB2K_console_formatter() << fmt::format(
         SMP_UNDERSCORE_NAME ":\n"
                             "Error:\n"
                             "{}\n ",
-        message );
+        message);
 }
 
-void LogWarning( const std::string& message )
+void LogWarning(const std::string& message)
 {
     FB2K_console_formatter() << fmt::format(
         SMP_UNDERSCORE_NAME ":\n"
                             "Warning:\n"
                             "{}\n",
-        message );
+        message);
 }
 
-void LogDebug( const std::string& message )
+void LogDebug(const std::string& message)
 {
     FB2K_console_formatter() << fmt::format(
         SMP_UNDERSCORE_NAME ":\n"
                             "Debug:\n"
                             "{}\n",
-        message );
+        message);
 }
 
 } // namespace smp::utils

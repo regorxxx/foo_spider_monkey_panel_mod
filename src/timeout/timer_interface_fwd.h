@@ -24,10 +24,10 @@ class ITimer
 public:
     virtual ~ITimer() = default;
 
-    virtual void Start( TimerNotifyTask& task, const TimeStamp& when ) = 0;
-    virtual void Cancel( bool waitForDestruction ) = 0;
+    virtual void Start(TimerNotifyTask& task, const TimeStamp& when) = 0;
+    virtual void Cancel(bool waitForDestruction) = 0;
 
-    virtual void Fire( uint64_t generation ) = 0;
+    virtual void Fire(uint64_t generation) = 0;
 
     virtual [[nodiscard]] PanelTarget& Target() const = 0;
     virtual [[nodiscard]] const TimeStamp& When() const = 0;

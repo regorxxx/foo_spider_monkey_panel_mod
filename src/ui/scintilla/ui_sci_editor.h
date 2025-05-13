@@ -28,29 +28,29 @@ class CScriptEditorCtrl
 public:
     CScriptEditorCtrl();
 
-    BEGIN_MSG_MAP( CScriptEditorCtrl )
-        CHAIN_MSG_MAP( CScintillaGotoImpl )
-        CHAIN_MSG_MAP_ALT( CScintillaFindReplaceImpl<CScriptEditorCtrl>, 1 )
-        MESSAGE_HANDLER( WM_KEYDOWN, OnKeyDown )
-        REFLECTED_NOTIFY_CODE_HANDLER_EX( SCN_UPDATEUI, OnUpdateUI )
-        REFLECTED_NOTIFY_CODE_HANDLER_EX( SCN_CHARADDED, OnCharAdded )
-        REFLECTED_NOTIFY_CODE_HANDLER_EX( SCN_ZOOM, OnZoom )
-        REFLECTED_COMMAND_CODE_HANDLER_EX( SCEN_CHANGE, OnChange )
+    BEGIN_MSG_MAP(CScriptEditorCtrl)
+        CHAIN_MSG_MAP(CScintillaGotoImpl)
+        CHAIN_MSG_MAP_ALT(CScintillaFindReplaceImpl<CScriptEditorCtrl>, 1)
+        MESSAGE_HANDLER(WM_KEYDOWN, OnKeyDown)
+        REFLECTED_NOTIFY_CODE_HANDLER_EX(SCN_UPDATEUI, OnUpdateUI)
+        REFLECTED_NOTIFY_CODE_HANDLER_EX(SCN_CHARADDED, OnCharAdded)
+        REFLECTED_NOTIFY_CODE_HANDLER_EX(SCN_ZOOM, OnZoom)
+        REFLECTED_COMMAND_CODE_HANDLER_EX(SCEN_CHANGE, OnChange)
     END_MSG_MAP()
 
-    LRESULT OnKeyDown( UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled );
-    LRESULT OnUpdateUI( LPNMHDR pnmn );
-    LRESULT OnCharAdded( LPNMHDR pnmh );
-    LRESULT OnZoom( LPNMHDR pnmn );
-    LRESULT OnChange( UINT uNotifyCode, int nID, HWND wndCtl );
+    LRESULT OnKeyDown(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnUpdateUI(LPNMHDR pnmn);
+    LRESULT OnCharAdded(LPNMHDR pnmh);
+    LRESULT OnZoom(LPNMHDR pnmn);
+    LRESULT OnChange(UINT uNotifyCode, int nID, HWND wndCtl);
 
-    bool ProcessKey( uint32_t vk );
+    bool ProcessKey(uint32_t vk);
 
     void ReadAPI();
     void SetJScript();
-    void SetContent( const char* text, bool clear_undo_buffer = false );
+    void SetContent(const char* text, bool clear_undo_buffer = false);
     void ReloadScintillaSettings();
-    BOOL SubclassWindow( HWND hWnd );
+    BOOL SubclassWindow(HWND hWnd);
 
 private:
     enum class IndentationStatus
@@ -63,8 +63,8 @@ private:
 
     struct KeyWordComparator
     {
-        bool operator()( const std::string& a,
-                         const std::string& b ) const;
+        bool operator()(const std::string& a,
+                         const std::string& b) const;
     };
 
     struct BracePosition
@@ -75,9 +75,9 @@ private:
 
     struct StyledPart
     {
-        StyledPart( std::string value, int style )
-            : value( std::move( value ) )
-            , style( style )
+        StyledPart(std::string value, int style)
+            : value(std::move(value))
+            , style(style)
         {
         }
         std::string value;
@@ -89,10 +89,10 @@ private:
     Sci_CharacterRange GetSelection();
     int GetCaretInLine();
     std::string GetCurrentLine();
-    IndentationStatus GetIndentState( int line );
-    std::vector<StyledPart> GetStyledParts( int line, std::span<const int> styles, size_t maxParts );
-    bool RangeIsAllWhitespace( int start, int end );
-    std::optional<DWORD> GetPropertyColor( const char* key );
+    IndentationStatus GetIndentState(int line);
+    std::vector<StyledPart> GetStyledParts(int line, std::span<const int> styles, size_t maxParts);
+    bool RangeIsAllWhitespace(int start, int end);
+    std::optional<DWORD> GetPropertyColor(const char* key);
     void Init();
     void RestoreDefaultStyle();
     void TrackWidth();
@@ -100,15 +100,15 @@ private:
     void AutoMarginWidth();
     bool StartCallTip();
     void ContinueCallTip();
-    void FillFunctionDefinition( int pos = -1 );
+    void FillFunctionDefinition(int pos = -1);
     bool StartAutoComplete();
-    int IndentOfBlock( int line );
-    void AutomaticIndentation( char ch );
+    int IndentOfBlock(int line);
+    void AutomaticIndentation(char ch);
     BracePosition FindBraceMatchPos();
-    std::optional<std::vector<std::string_view>> GetNearestWords( std::string_view wordPart, std::optional<char> separator = std::nullopt );
-    std::optional<std::string_view> GetFullDefinitionForWord( std::string_view word );
-    void SetIndentation( int line, int indent );
-    std::optional<std::string> GetPropertyExpanded_Opt( const char* key );
+    std::optional<std::vector<std::string_view>> GetNearestWords(std::string_view wordPart, std::optional<char> separator = std::nullopt);
+    std::optional<std::string_view> GetFullDefinitionForWord(std::string_view word);
+    void SetIndentation(int line, int indent);
+    std::optional<std::string> GetPropertyExpanded_Opt(const char* key);
 
 private:
     int m_nBraceCount = 0;

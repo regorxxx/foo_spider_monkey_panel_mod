@@ -19,15 +19,15 @@ namespace fs = std::filesystem;
 namespace smp::ui
 {
 
-CConfigTabProperties::CConfigTabProperties( CDialogConf& parent, config::PanelProperties& properties )
-    : parent_( parent )
-    , properties_( properties )
+CConfigTabProperties::CConfigTabProperties(CDialogConf& parent, config::PanelProperties& properties)
+    : parent_(parent)
+    , properties_(properties)
 {
 }
 
-HWND CConfigTabProperties::CreateTab( HWND hParent )
+HWND CConfigTabProperties::CreateTab(HWND hParent)
 {
-    return Create( hParent );
+    return Create(hParent);
 }
 
 ATL::CDialogImplBase& CConfigTabProperties::Dialog()
@@ -55,89 +55,89 @@ void CConfigTabProperties::Revert()
 
 void CConfigTabProperties::Refresh()
 {
-    if ( m_hWnd )
+    if (m_hWnd)
     { // might be called while tab is inactive
         UpdateUiFromData();
     }
 }
 
-LRESULT CConfigTabProperties::OnInitDialog( HWND, LPARAM )
+LRESULT CConfigTabProperties::OnInitDialog(HWND, LPARAM)
 {
-    DlgResize_Init( false, false, WS_CHILD );
+    DlgResize_Init(false, false, WS_CHILD);
 
     // Subclassing
-    propertyListCtrl_.SubclassWindow( GetDlgItem( IDC_LIST_PROPERTIES ) );
-    propertyListCtrl_.ModifyStyle( 0, LBS_SORT | LBS_HASSTRINGS );
-    propertyListCtrl_.SetExtendedListStyle( PLS_EX_SORTED | PLS_EX_XPLOOK );
+    propertyListCtrl_.SubclassWindow(GetDlgItem(IDC_LIST_PROPERTIES));
+    propertyListCtrl_.ModifyStyle(0, LBS_SORT | LBS_HASSTRINGS);
+    propertyListCtrl_.SetExtendedListStyle(PLS_EX_SORTED | PLS_EX_XPLOOK);
 
-    CWindow{ GetDlgItem( IDC_DEL ) }.EnableWindow( propertyListCtrl_.GetCurSel() != -1 );
+    CWindow{ GetDlgItem(IDC_DEL) }.EnableWindow(propertyListCtrl_.GetCurSel() != -1);
 
     UpdateUiFromData();
 
     return TRUE; // set focus to default control
 }
 
-LRESULT CConfigTabProperties::OnPinItemChanged( LPNMHDR pnmh )
+LRESULT CConfigTabProperties::OnPinItemChanged(LPNMHDR pnmh)
 {
     auto pnpi = (LPNMPROPERTYITEM)pnmh;
 
     const auto hasChanged = [pnpi, &properties = properties_]() {
         auto& propValues = properties.values;
 
-        if ( !propValues.contains( pnpi->prop->GetName() ) )
+        if (!propValues.contains(pnpi->prop->GetName()))
         {
             return false;
         }
 
-        auto& val = *propValues.at( pnpi->prop->GetName() );
+        auto& val = *propValues.at(pnpi->prop->GetName());
         _variant_t var;
 
-        if ( !pnpi->prop->GetValue( &var ) )
+        if (!pnpi->prop->GetValue(&var))
         {
             return false;
         }
 
-        return std::visit( [&var]( auto& arg ) {
-            using T = std::decay_t<decltype( arg )>;
+        return std::visit([&var](auto& arg) {
+            using T = std::decay_t<decltype(arg)>;
             const auto prevArgValue = arg;
-            if constexpr ( std::is_same_v<T, bool> )
+            if constexpr (std::is_same_v<T, bool>)
             {
-                var.ChangeType( VT_BOOL );
-                arg = static_cast<bool>( var.boolVal );
+                var.ChangeType(VT_BOOL);
+                arg = static_cast<bool>(var.boolVal);
             }
-            else if constexpr ( std::is_same_v<T, int32_t> )
+            else if constexpr (std::is_same_v<T, int32_t>)
             {
-                var.ChangeType( VT_I4 );
-                arg = static_cast<int32_t>( var.lVal );
+                var.ChangeType(VT_I4);
+                arg = static_cast<int32_t>(var.lVal);
             }
-            else if constexpr ( std::is_same_v<T, double> )
+            else if constexpr (std::is_same_v<T, double>)
             {
-                if ( VT_BSTR == var.vt )
+                if (VT_BSTR == var.vt)
                 {
-                    arg = std::stod( var.bstrVal );
+                    arg = std::stod(var.bstrVal);
                 }
                 else
                 {
-                    var.ChangeType( VT_R8 );
+                    var.ChangeType(VT_R8);
                     arg = var.dblVal;
                 }
             }
-            else if constexpr ( std::is_same_v<T, std::string> )
+            else if constexpr (std::is_same_v<T, std::string>)
             {
-                var.ChangeType( VT_BSTR );
-                arg = qwr::unicode::ToU8( std::wstring_view{ var.bstrVal ? var.bstrVal : L"" } );
+                var.ChangeType(VT_BSTR);
+                arg = qwr::unicode::ToU8(std::wstring_view{ var.bstrVal ? var.bstrVal : L"" });
             }
             else
             {
-                static_assert( qwr::always_false_v<T>, "non-exhaustive visitor!" );
+                static_assert(qwr::always_false_v<T>, "non-exhaustive visitor!");
             }
 
-            return ( prevArgValue != arg );
+            return (prevArgValue != arg);
         },
-                           val );
+                           val);
     }();
 
-    if ( hasChanged )
+    if (hasChanged)
     {
         parent_.OnDataChanged();
     }
@@ -145,13 +145,13 @@ LRESULT CConfigTabProperties::OnPinItemChanged( LPNMHDR pnmh )
     return 0;
 }
 
-LRESULT CConfigTabProperties::OnSelChanged( LPNMHDR )
+LRESULT CConfigTabProperties::OnSelChanged(LPNMHDR)
 {
     UpdateUiDelButton();
     return 0;
 }
 
-LRESULT CConfigTabProperties::OnClearAllBnClicked( WORD, WORD, HWND )
+LRESULT CConfigTabProperties::OnClearAllBnClicked(WORD, WORD, HWND)
 {
     properties_.values.clear();
 
@@ -162,17 +162,17 @@ LRESULT CConfigTabProperties::OnClearAllBnClicked( WORD, WORD, HWND )
     return 0;
 }
 
-LRESULT CConfigTabProperties::OnDelBnClicked( WORD, WORD, HWND )
+LRESULT CConfigTabProperties::OnDelBnClicked(WORD, WORD, HWND)
 {
-    if ( int idx = propertyListCtrl_.GetCurSel();
-         idx >= 0 )
+    if (int idx = propertyListCtrl_.GetCurSel();
+         idx >= 0)
     {
-        HPROPERTY hproperty = propertyListCtrl_.GetProperty( idx );
+        HPROPERTY hproperty = propertyListCtrl_.GetProperty(idx);
         std::wstring name = hproperty->GetName();
 
-        properties_.values.erase( name );
+        properties_.values.erase(name);
 
-        propertyListCtrl_.DeleteItem( hproperty );
+        propertyListCtrl_.DeleteItem(hproperty);
     }
 
     UpdateUiDelButton();
@@ -181,21 +181,21 @@ LRESULT CConfigTabProperties::OnDelBnClicked( WORD, WORD, HWND )
     return 0;
 }
 
-LRESULT CConfigTabProperties::OnImportBnClicked( WORD, WORD, HWND )
+LRESULT CConfigTabProperties::OnImportBnClicked(WORD, WORD, HWND)
 {
     using namespace smp::config;
 
     qwr::file::FileDialogOptions fdOpts{};
     fdOpts.savePathGuid = guid::dialog_path;
-    fdOpts.filterSpec.assign( {
+    fdOpts.filterSpec.assign({
         { L"Property files", L"*.json;*.smp;*.wsp" },
         { L"All files", L"*.*" },
-    } );
+    });
     fdOpts.defaultFilename = L"props";
     fdOpts.defaultExtension = L"json";
 
-    auto path = fs::path( qwr::file::FileDialog( L"Import from", false, fdOpts ).value_or( std::wstring{} ) );
-    if ( path.empty() )
+    auto path = fs::path(qwr::file::FileDialog(L"Import from", false, fdOpts).value_or(std::wstring{}));
+    if (path.empty())
     {
         return 0;
     }
@@ -205,63 +205,63 @@ LRESULT CConfigTabProperties::OnImportBnClicked( WORD, WORD, HWND )
     {
         auto& abort = qwr::GlobalAbortCallback::GetInstance();
         file_ptr io;
-        filesystem::g_open_read( io, path.u8string().c_str(), abort );
+        filesystem::g_open_read(io, path.u8string().c_str(), abort);
 
         const auto extension = path.extension();
-        if ( extension == ".json" )
+        if (extension == ".json")
         {
             pfc::string8 str;
             io->read_string(str, abort);
 
             properties_ = PanelProperties::FromJson(str.get_ptr());
         }
-        else if ( extension == ".smp" )
+        else if (extension == ".smp")
         {
-            properties_ = PanelProperties::Load( *io, abort, smp::config::SerializationFormat::Binary );
+            properties_ = PanelProperties::Load(*io, abort, smp::config::SerializationFormat::Binary);
         }
-        else if ( extension == ".wsp" )
+        else if (extension == ".wsp")
         {
-            properties_ = PanelProperties::Load( *io, abort, smp::config::SerializationFormat::Com );
+            properties_ = PanelProperties::Load(*io, abort, smp::config::SerializationFormat::Com);
         }
         else
         { // let's brute-force it!
-            const auto tryParse = [&io, &abort]( smp::config::SerializationFormat format ) -> std::optional<config::PanelProperties> {
+            const auto tryParse = [&io, &abort](smp::config::SerializationFormat format) -> std::optional<config::PanelProperties> {
                 try
                 {
-                    return config::PanelProperties::Load( *io, abort, format );
+                    return config::PanelProperties::Load(*io, abort, format);
                 }
-                catch ( const qwr::QwrException& )
+                catch (const qwr::QwrException&)
                 {
                     return std::nullopt;
                 }
             };
 
             bool success = false;
-            for ( const auto format: { config::SerializationFormat::Json, config::SerializationFormat::Binary, config::SerializationFormat::Com } )
+            for (const auto format: { config::SerializationFormat::Json, config::SerializationFormat::Binary, config::SerializationFormat::Com })
             {
-                auto propOpt = tryParse( format );
-                if ( propOpt )
+                auto propOpt = tryParse(format);
+                if (propOpt)
                 {
                     properties_ = *propOpt;
                     success = true;
                     break;
                 }
             }
-            if ( !success )
+            if (!success)
             {
-                throw qwr::QwrException( "Failed to parse panel properties: unknown format" );
+                throw qwr::QwrException("Failed to parse panel properties: unknown format");
             }
         }
 
         UpdateUiFromData();
     }
-    catch ( const qwr::QwrException& e )
+    catch (const qwr::QwrException& e)
     {
-        qwr::ReportErrorWithPopup( SMP_UNDERSCORE_NAME, e.what() );
+        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
     }
-    catch ( const pfc::exception& e )
+    catch (const pfc::exception& e)
     {
-        qwr::ReportErrorWithPopup( SMP_UNDERSCORE_NAME, e.what() );
+        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
     }
 
     parent_.OnDataChanged();
@@ -269,19 +269,19 @@ LRESULT CConfigTabProperties::OnImportBnClicked( WORD, WORD, HWND )
     return 0;
 }
 
-LRESULT CConfigTabProperties::OnExportBnClicked( WORD, WORD, HWND )
+LRESULT CConfigTabProperties::OnExportBnClicked(WORD, WORD, HWND)
 {
     qwr::file::FileDialogOptions fdOpts{};
     fdOpts.savePathGuid = guid::dialog_path;
-    fdOpts.filterSpec.assign( {
+    fdOpts.filterSpec.assign({
         { L"Property files", L"*.json" },
         { L"All files", L"*.*" },
-    } );
+    });
     fdOpts.defaultFilename = L"props";
     fdOpts.defaultExtension = L"json";
 
-    auto path = fs::path( qwr::file::FileDialog( L"Save as", true, fdOpts ).value_or( std::wstring{} ) );
-    if ( path.empty() )
+    auto path = fs::path(qwr::file::FileDialog(L"Save as", true, fdOpts).value_or(std::wstring{}));
+    if (path.empty())
     {
         return 0;
     }
@@ -291,13 +291,13 @@ LRESULT CConfigTabProperties::OnExportBnClicked( WORD, WORD, HWND )
     {
         auto& abort = qwr::GlobalAbortCallback::GetInstance();
         file_ptr io;
-        filesystem::g_open_write_new( io, path.u8string().c_str(), abort );
+        filesystem::g_open_write_new(io, path.u8string().c_str(), abort);
 
         io->write_string(properties_.ToJson().c_str(), abort);
     }
-    catch ( const pfc::exception& e )
+    catch (const pfc::exception& e)
     {
-        qwr::ReportErrorWithPopup( SMP_UNDERSCORE_NAME, e.what() );
+        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
     }
 
     return 0;
@@ -309,56 +309,56 @@ void CConfigTabProperties::UpdateUiFromData()
 
     struct LowerLexCmp
     { // lexicographical comparison but with lower cased chars
-        bool operator()( const std::wstring& a, const std::wstring& b ) const
+        bool operator()(const std::wstring& a, const std::wstring& b) const
         {
-            return ( _wcsicmp( a.c_str(), b.c_str() ) < 0 );
+            return (_wcsicmp(a.c_str(), b.c_str()) < 0);
         }
     };
     std::map<std::wstring, HPROPERTY, LowerLexCmp> propMap;
-    for ( const auto& [name, pSerializedValue]: properties_.values )
+    for (const auto& [name, pSerializedValue]: properties_.values)
     {
-        HPROPERTY hProp = std::visit( [&name = name]( auto&& arg ) {
-            using T = std::decay_t<decltype( arg )>;
-            if constexpr ( std::is_same_v<T, bool> || std::is_same_v<T, int32_t> )
+        HPROPERTY hProp = std::visit([&name = name](auto&& arg) {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, bool> || std::is_same_v<T, int32_t>)
             {
-                return PropCreateSimple( name.c_str(), arg );
+                return PropCreateSimple(name.c_str(), arg);
             }
-            else if constexpr ( std::is_same_v<T, double> )
+            else if constexpr (std::is_same_v<T, double>)
             {
                 const std::wstring strNumber = [arg] {
-                    if ( std::trunc( arg ) == arg )
+                    if (std::trunc(arg) == arg)
                     { // Most likely uint64_t
-                        return std::to_wstring( static_cast<uint64_t>( arg ) );
+                        return std::to_wstring(static_cast<uint64_t>(arg));
                     }
 
                     // std::to_string(double) has precision of float
-                    return fmt::format( L"{:.16g}", arg );
+                    return fmt::format(L"{:.16g}", arg);
                 }();
-                return PropCreateSimple( name.c_str(), strNumber.c_str() );
+                return PropCreateSimple(name.c_str(), strNumber.c_str());
             }
-            else if constexpr ( std::is_same_v<T, std::string> )
+            else if constexpr (std::is_same_v<T, std::string>)
             {
-                return PropCreateSimple( name.c_str(), qwr::unicode::ToWide( arg ).c_str() );
+                return PropCreateSimple(name.c_str(), qwr::unicode::ToWide(arg).c_str());
             }
             else
             {
-                static_assert( qwr::always_false_v<T>, "non-exhaustive visitor!" );
+                static_assert(qwr::always_false_v<T>, "non-exhaustive visitor!");
             }
         },
-                                      *pSerializedValue );
+                                      *pSerializedValue);
 
-        propMap.emplace( name, hProp );
+        propMap.emplace(name, hProp);
     }
 
-    for ( auto& [name, hProp]: propMap )
+    for (auto& [name, hProp]: propMap)
     {
-        propertyListCtrl_.AddItem( hProp );
+        propertyListCtrl_.AddItem(hProp);
     }
 }
 
 void CConfigTabProperties::UpdateUiDelButton()
 {
-    CWindow{ GetDlgItem( IDC_DEL ) }.EnableWindow( propertyListCtrl_.GetCurSel() != -1 );
+    CWindow{ GetDlgItem(IDC_DEL) }.EnableWindow(propertyListCtrl_.GetCurSel() != -1);
 }
 
 } // namespace smp::ui

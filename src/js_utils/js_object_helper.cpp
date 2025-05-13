@@ -5,7 +5,7 @@
 namespace mozjs
 {
 
-bool DummyGetter( JSContext*, unsigned, JS::Value* vp )
+bool DummyGetter(JSContext*, unsigned, JS::Value* vp)
 {
     vp->setUndefined();
     return true;

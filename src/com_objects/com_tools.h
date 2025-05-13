@@ -48,12 +48,12 @@ public:
 
     [[nodiscard]] bool Empty();
 
-    void InitFromTypelib( ITypeLib* p_typeLib, const GUID& guid );
+    void InitFromTypelib(ITypeLib* p_typeLib, const GUID& guid);
 
     // "Expose" some ITypeInfo related methods here
-    HRESULT GetTypeInfo( UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo );
-    HRESULT GetIDsOfNames( LPOLESTR* rgszNames, UINT cNames, MEMBERID* pMemId );
-    HRESULT Invoke( PVOID pvInstance, MEMBERID memid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr );
+    HRESULT GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo);
+    HRESULT GetIDsOfNames(LPOLESTR* rgszNames, UINT cNames, MEMBERID* pMemId);
+    HRESULT Invoke(PVOID pvInstance, MEMBERID memid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr);
 
 protected:
     std::unordered_map<ULONG, DISPID> cache_;
@@ -69,9 +69,9 @@ template <class T>
 class IDispatchWithCachedTypes : public T
 {
 public:
-    STDMETHOD( GetTypeInfoCount )( unsigned int* n )
+    STDMETHOD(GetTypeInfoCount)(unsigned int* n)
     {
-        if ( !n )
+        if (!n)
         {
             return E_INVALIDARG;
         }
@@ -79,35 +79,35 @@ public:
         return S_OK;
     }
 
-    STDMETHOD( GetTypeInfo )( unsigned int i, LCID lcid, ITypeInfo** pp )
+    STDMETHOD(GetTypeInfo)(unsigned int i, LCID lcid, ITypeInfo** pp)
     {
-        return g_typeInfoCacheHolder.GetTypeInfo( i, lcid, pp );
+        return g_typeInfoCacheHolder.GetTypeInfo(i, lcid, pp);
     }
 
-    STDMETHOD( GetIDsOfNames )( REFIID riid, OLECHAR** names, unsigned int cnames, LCID lcid, DISPID* dispids )
+    STDMETHOD(GetIDsOfNames)(REFIID riid, OLECHAR** names, unsigned int cnames, LCID lcid, DISPID* dispids)
     {
-        if ( g_typeInfoCacheHolder.Empty() )
+        if (g_typeInfoCacheHolder.Empty())
         {
             return E_UNEXPECTED;
         }
-        return g_typeInfoCacheHolder.GetIDsOfNames( names, cnames, dispids );
+        return g_typeInfoCacheHolder.GetIDsOfNames(names, cnames, dispids);
     }
 
-    STDMETHOD( Invoke )( DISPID dispid, REFIID riid, LCID lcid, WORD flag, DISPPARAMS* params, VARIANT* result, EXCEPINFO* excep, unsigned int* err )
+    STDMETHOD(Invoke)(DISPID dispid, REFIID riid, LCID lcid, WORD flag, DISPPARAMS* params, VARIANT* result, EXCEPINFO* excep, unsigned int* err)
     {
-        if ( g_typeInfoCacheHolder.Empty() )
+        if (g_typeInfoCacheHolder.Empty())
         {
             return E_UNEXPECTED;
         }
-        return g_typeInfoCacheHolder.Invoke( this, dispid, flag, params, result, excep, err );
+        return g_typeInfoCacheHolder.Invoke(this, dispid, flag, params, result, excep, err);
     }
 
 protected:
     IDispatchWithCachedTypes<T>()
     {
-        if ( g_typeInfoCacheHolder.Empty() && g_typelib )
+        if (g_typeInfoCacheHolder.Empty() && g_typelib)
         {
-            g_typeInfoCacheHolder.InitFromTypelib( g_typelib, __uuidof( T ) );
+            g_typeInfoCacheHolder.InitFromTypelib(g_typelib, __uuidof(T));
         }
     }
 
@@ -122,7 +122,7 @@ protected:
 };
 
 template <class T>
-__declspec( selectany ) smp::com::internal::TypeInfoCacheHolder IDispatchWithCachedTypes<T>::g_typeInfoCacheHolder;
+__declspec(selectany) smp::com::internal::TypeInfoCacheHolder IDispatchWithCachedTypes<T>::g_typeInfoCacheHolder;
 
 //-- IDispatch impl -- [T] [IDispatch] [IUnknown]
 template <class T>
@@ -134,9 +134,9 @@ protected:
 
 private:
     BEGIN_COM_QI_IMPL()
-        COM_QI_ENTRY_MULTI( IUnknown, IDispatch )
-        COM_QI_ENTRY( T )
-        COM_QI_ENTRY( IDispatch )
+        COM_QI_ENTRY_MULTI(IUnknown, IDispatch)
+        COM_QI_ENTRY(T)
+        COM_QI_ENTRY(IDispatch)
     END_COM_QI_IMPL()
 };
 
@@ -145,24 +145,24 @@ class ComPtrImpl : public T
 {
 public:
     template <typename... Args>
-    ComPtrImpl( Args&&... args )
-        : T( std::forward<Args>( args )... )
+    ComPtrImpl(Args&&... args)
+        : T(std::forward<Args>(args)...)
     {
-        if constexpr ( ShouldAddRef )
+        if constexpr (ShouldAddRef)
         {
             ++refCount_;
         }
     }
 
-    STDMETHODIMP_( ULONG ) AddRef()
+    STDMETHODIMP_(ULONG) AddRef()
     {
         return ++refCount_;
     }
 
-    STDMETHODIMP_( ULONG ) Release()
+    STDMETHODIMP_(ULONG) Release()
     {
         const ULONG n = --refCount_;
-        if ( !n )
+        if (!n)
         {
             this->FinalRelease();
             delete this;

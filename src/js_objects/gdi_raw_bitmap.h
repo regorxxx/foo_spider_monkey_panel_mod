@@ -34,8 +34,8 @@ public:
 public:
     ~JsGdiRawBitmap() override = default;
 
-    static std::unique_ptr<JsGdiRawBitmap> CreateNative( JSContext* cx, Gdiplus::Bitmap* pBmp );
-    static size_t GetInternalSize( Gdiplus::Bitmap* pBmp );
+    static std::unique_ptr<JsGdiRawBitmap> CreateNative(JSContext* cx, Gdiplus::Bitmap* pBmp);
+    static size_t GetInternalSize(Gdiplus::Bitmap* pBmp);
 
 public:
     [[nodiscard]] __notnull
@@ -47,11 +47,11 @@ public: // props
     std::uint32_t get_Width();
 
 private:
-    JsGdiRawBitmap( JSContext* cx,
+    JsGdiRawBitmap(JSContext* cx,
                     smp::gdi::unique_gdi_ptr<HDC> hDc,
                     smp::gdi::unique_gdi_ptr<HBITMAP> hBmp,
                     uint32_t width,
-                    uint32_t height );
+                    uint32_t height);
 
 private:
     [[maybe_unused]] JSContext* pJsCtx_ = nullptr;

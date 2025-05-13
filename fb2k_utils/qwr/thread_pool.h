@@ -15,38 +15,38 @@ private:
     using Task = std::function<void()>;
 
 public:
-    ThreadPool( const std::string& threadName = "QWR Worker",
-                size_t maxThreadCount = std::max<size_t>( std::thread::hardware_concurrency(), 1 ) );
+    ThreadPool(const std::string& threadName = "QWR Worker",
+                size_t maxThreadCount = std::max<size_t>(std::thread::hardware_concurrency(), 1));
     ~ThreadPool();
-    ThreadPool( const ThreadPool& ) = delete;
-    ThreadPool& operator=( const ThreadPool& ) = delete;
+    ThreadPool(const ThreadPool&) = delete;
+    ThreadPool& operator=(const ThreadPool&) = delete;
 
     template <typename T>
-    void AddTask( T&& task )
+    void AddTask(T&& task)
     {
-        static_assert( std::is_invocable_v<T> );
-        static_assert( std::is_move_constructible_v<T> || std::is_copy_constructible_v<T> );
+        static_assert(std::is_invocable_v<T>);
+        static_assert(std::is_move_constructible_v<T> || std::is_copy_constructible_v<T>);
         // This method can be easily modified to be thread-safe, but we don't need that currently
-        assert( core_api::is_main_thread() );
+        assert(core_api::is_main_thread());
 
-        if ( isExiting_ )
+        if (isExiting_)
         {
             return;
         }
 
         {
-            std::scoped_lock sl( queueMutex_ );
+            std::scoped_lock sl(queueMutex_);
 
-            if constexpr ( !std::is_copy_constructible_v<T> && std::is_move_constructible_v<T> )
+            if constexpr (!std::is_copy_constructible_v<T> && std::is_move_constructible_v<T>)
             {
-                auto taskLambda = [taskWrapper = std::make_shared<T>( std::forward<T>( task ) )] {
-                    std::invoke( *taskWrapper );
+                auto taskLambda = [taskWrapper = std::make_shared<T>(std::forward<T>(task))] {
+                    std::invoke(*taskWrapper);
                 };
-                tasks_.emplace( std::make_unique<Task>( taskLambda ) );
+                tasks_.emplace(std::make_unique<Task>(taskLambda));
             }
             else
             {
-                tasks_.emplace( std::make_unique<Task>( task ) );
+                tasks_.emplace(std::make_unique<Task>(task));
             }
 
             hasTask_.notify_one();
@@ -54,7 +54,7 @@ public:
 
         {
             std::mutex queueMutex_;
-            if ( !tasks_.empty() && threads_.size() < maxThreadCount_ && !idleThreadCount_ )
+            if (!tasks_.empty() && threads_.size() < maxThreadCount_ && !idleThreadCount_)
             {
                 AddThread();
             }

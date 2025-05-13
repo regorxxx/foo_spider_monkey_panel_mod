@@ -12,16 +12,16 @@ class handle_container_t
 public:
     void release()
     {
-        if ( is_valid() )
+        if (is_valid())
         {
-            t_release::release( m_handle );
-            t_release::set_invalid( m_handle );
+            t_release::release(m_handle);
+            t_release::set_invalid(m_handle);
         }
     }
-    t_handle set( t_handle value )
+    t_handle set(t_handle value)
     {
         release();
-        return ( m_handle = value );
+        return (m_handle = value);
     }
     t_handle get() const
     {
@@ -31,38 +31,38 @@ public:
     {
         return get();
     }
-    t_handle operator=( t_handle value )
+    t_handle operator=(t_handle value)
     {
-        return set( value );
+        return set(value);
     }
-    t_self& operator=( const t_self& value ) = delete;
-    t_self& operator=( t_self&& value )
+    t_self& operator=(const t_self& value) = delete;
+    t_self& operator=(t_self&& value)
     {
-        set( value.detach() );
+        set(value.detach());
         return *this;
     }
     t_handle detach()
     {
         t_handle ret = m_handle;
-        t_release::set_invalid( m_handle );
+        t_release::set_invalid(m_handle);
         return ret;
     }
     bool is_valid() const
     {
-        return t_release::is_valid( m_handle );
+        return t_release::is_valid(m_handle);
     }
 
     handle_container_t()
     {
-        t_release::set_invalid( m_handle );
+        t_release::set_invalid(m_handle);
     };
-    handle_container_t( t_handle value )
-        : m_handle( value ){};
-    handle_container_t( t_self&& value )
+    handle_container_t(t_handle value)
+        : m_handle(value){};
+    handle_container_t(t_self&& value)
     {
-        set( value.detach() );
+        set(value.detach());
     }
-    handle_container_t( const t_self& value ) = delete;
+    handle_container_t(const t_self& value) = delete;
 
     ~handle_container_t()
     {
@@ -81,17 +81,17 @@ public:
     {
     public:
         template <typename t_gdi_type>
-        static void release( t_gdi_type handle )
+        static void release(t_gdi_type handle)
         {
-            DeleteObject( (t_gdi_type)handle );
+            DeleteObject((t_gdi_type)handle);
         };
         template <typename t_gdi_type>
-        static bool is_valid( t_gdi_type handle )
+        static bool is_valid(t_gdi_type handle)
         {
             return handle != nullptr;
         };
         template <typename t_gdi_type>
-        static void set_invalid( t_gdi_type& handle )
+        static void set_invalid(t_gdi_type& handle)
         {
             handle = nullptr;
         };
@@ -102,15 +102,15 @@ public:
 class icon_release_t
 {
 public:
-    static void release( HICON handle )
+    static void release(HICON handle)
     {
-        DestroyIcon( handle );
+        DestroyIcon(handle);
     };
-    static bool is_valid( HICON handle )
+    static bool is_valid(HICON handle)
     {
         return handle != nullptr;
     };
-    static void set_invalid( HICON& handle )
+    static void set_invalid(HICON& handle)
     {
         handle = nullptr;
     };
@@ -122,15 +122,15 @@ namespace win32
 class __handle_release_t
 {
 public:
-    static void release( HANDLE handle )
+    static void release(HANDLE handle)
     {
-        CloseHandle( handle );
+        CloseHandle(handle);
     };
-    static bool is_valid( HANDLE handle )
+    static bool is_valid(HANDLE handle)
     {
         return handle != INVALID_HANDLE_VALUE;
     };
-    static void set_invalid( HANDLE& handle )
+    static void set_invalid(HANDLE& handle)
     {
         handle = INVALID_HANDLE_VALUE;
     };

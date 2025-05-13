@@ -9,19 +9,19 @@ using namespace smp;
 namespace smp
 {
 
-Timer_Native::Timer_Native( TimerManager_Native& pParent, std::shared_ptr<PanelTarget> pTarget )
-    : pParent_( pParent )
-    , pTarget_( pTarget )
+Timer_Native::Timer_Native(TimerManager_Native& pParent, std::shared_ptr<PanelTarget> pTarget)
+    : pParent_(pParent)
+    , pTarget_(pTarget)
 {
 }
 
-void Timer_Native::Start( TimerNotifyTask& task, const TimeStamp& when )
+void Timer_Native::Start(TimerNotifyTask& task, const TimeStamp& when)
 {
-    assert( core_api::is_main_thread() );
+    assert(core_api::is_main_thread());
 
-    if ( hTimer_ )
+    if (hTimer_)
     {
-        pParent_.DestroyNativeTimer( hTimer_, false );
+        pParent_.DestroyNativeTimer(hTimer_, false);
         hTimer_ = nullptr;
     }
 
@@ -30,35 +30,35 @@ void Timer_Native::Start( TimerNotifyTask& task, const TimeStamp& when )
 
     executeAt_ = when;
 
-    hTimer_ = pParent_.CreateNativeTimer( shared_from_this() );
+    hTimer_ = pParent_.CreateNativeTimer(shared_from_this());
 }
 
-void Timer_Native::Fire( uint64_t generation )
+void Timer_Native::Fire(uint64_t generation)
 {
     // Save self, since it can be destroyed in `Notify` callback
     auto selfSaver = shared_from_this();
 
-    if ( generation != generation_ )
+    if (generation != generation_)
     {
         return;
     }
 
-    if ( pTask_ )
+    if (pTask_)
     {
         pTask_->Notify();
     }
 
-    if ( generation == generation_ )
+    if (generation == generation_)
     {
         pTask_ = nullptr;
     }
 }
 
-void Timer_Native::Cancel( bool waitForDestruction )
+void Timer_Native::Cancel(bool waitForDestruction)
 {
-    if ( hTimer_ )
+    if (hTimer_)
     {
-        pParent_.DestroyNativeTimer( hTimer_, waitForDestruction );
+        pParent_.DestroyNativeTimer(hTimer_, waitForDestruction);
         hTimer_ = nullptr;
     }
 
@@ -66,17 +66,17 @@ void Timer_Native::Cancel( bool waitForDestruction )
     ++generation_;
 }
 
-VOID CALLBACK Timer_Native::TimerProc( PVOID lpParameter, BOOLEAN /*TimerOrWaitFired*/ )
+VOID CALLBACK Timer_Native::TimerProc(PVOID lpParameter, BOOLEAN /*TimerOrWaitFired*/)
 {
-    auto pTimer = reinterpret_cast<Timer_Native*>( lpParameter );
-    assert( pTimer );
+    auto pTimer = reinterpret_cast<Timer_Native*>(lpParameter);
+    assert(pTimer);
 
-    pTimer->pParent_.PostTimerEvent( pTimer->shared_from_this() );
+    pTimer->pParent_.PostTimerEvent(pTimer->shared_from_this());
 }
 
 PanelTarget& Timer_Native::Target() const
 {
-    assert( pTarget_ );
+    assert(pTarget_);
     return *pTarget_;
 }
 

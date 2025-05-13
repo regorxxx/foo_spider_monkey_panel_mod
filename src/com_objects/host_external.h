@@ -5,7 +5,7 @@
 
 #include <OleIdl.h>
 
-_COM_SMARTPTR_TYPEDEF( IHostExternal, __uuidof( IHostExternal ) );
+_COM_SMARTPTR_TYPEDEF(IHostExternal, __uuidof(IHostExternal));
 
 namespace smp::com
 {
@@ -13,11 +13,11 @@ namespace smp::com
 class HostExternal : public IDispatchImpl3<IHostExternal>
 {
 protected:
-    HostExternal( _variant_t data );
+    HostExternal(_variant_t data);
     ~HostExternal() override = default;
 
 public:
-    STDMETHODIMP get_dialogArguments( VARIANT* pData ) override;
+    STDMETHODIMP get_dialogArguments(VARIANT* pData) override;
 
 private:
     _variant_t data_;

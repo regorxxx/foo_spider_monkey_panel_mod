@@ -24,45 +24,45 @@ enum class SettingsType : uint32_t
 namespace smp::config
 {
 
-PanelProperties PanelProperties::FromJson( const std::string& jsonString )
+PanelProperties PanelProperties::FromJson(const std::string& jsonString)
 {
-    return smp::config::json::DeserializeProperties( jsonString );
+    return smp::config::json::DeserializeProperties(jsonString);
 }
 
 std::string PanelProperties::ToJson() const
 {
-    return smp::config::json::SerializeProperties( *this );
+    return smp::config::json::SerializeProperties(*this);
 }
 
-PanelProperties PanelProperties::Load( stream_reader& reader, abort_callback& abort, SerializationFormat format )
+PanelProperties PanelProperties::Load(stream_reader& reader, abort_callback& abort, SerializationFormat format)
 {
-    switch ( format )
+    switch (format)
     {
     case smp::config::SerializationFormat::Com:
-        return smp::config::com::LoadProperties( reader, abort );
+        return smp::config::com::LoadProperties(reader, abort);
     case smp::config::SerializationFormat::Binary:
-        return smp::config::binary::LoadProperties( reader, abort );
+        return smp::config::binary::LoadProperties(reader, abort);
     case smp::config::SerializationFormat::Json:
-        return smp::config::json::LoadProperties( reader, abort );
+        return smp::config::json::LoadProperties(reader, abort);
     default:
     {
-        assert( false );
-        throw qwr::QwrException( "Internal error: unknown serialization format" );
+        assert(false);
+        throw qwr::QwrException("Internal error: unknown serialization format");
     }
     }
 }
 
-void PanelProperties::Save( stream_writer& writer, abort_callback& abort ) const
+void PanelProperties::Save(stream_writer& writer, abort_callback& abort) const
 {
-    smp::config::json::SaveProperties( writer, abort, *this );
+    smp::config::json::SaveProperties(writer, abort, *this);
 }
 
 std::string PanelSettings_InMemory::GetDefaultScript()
 {
-    puResource puRes = uLoadResource( core_api::get_my_instance(), uMAKEINTRESOURCE( IDR_DEFAULT_SCRIPT ), "SCRIPT" );
-    if ( puRes )
+    puResource puRes = uLoadResource(core_api::get_my_instance(), uMAKEINTRESOURCE(IDR_DEFAULT_SCRIPT), "SCRIPT");
+    if (puRes)
     {
-        return std::string{ static_cast<const char*>( puRes->GetPointer() ), puRes->GetSize() };
+        return std::string{ static_cast<const char*>(puRes->GetPointer()), puRes->GetSize() };
     }
     else
     {
@@ -81,70 +81,70 @@ void PanelSettings::ResetToDefault()
     isPseudoTransparent = false;
     edgeStyle = EdgeStyle::NoEdge;
     id = [] {
-        const auto guidStr = utils::GuidToStr( utils::GenerateGuid() );
-        return qwr::unicode::ToU8( guidStr );
+        const auto guidStr = utils::GuidToStr(utils::GenerateGuid());
+        return qwr::unicode::ToU8(guidStr);
     }();
 }
 
-PanelSettings PanelSettings::Load( stream_reader& reader, size_t size, abort_callback& abort )
+PanelSettings PanelSettings::Load(stream_reader& reader, size_t size, abort_callback& abort)
 {
     try
     {
         PanelSettings panelSettings;
 
-        if ( size < sizeof( SettingsType ) )
+        if (size < sizeof(SettingsType))
         { // probably no config at all
             return panelSettings;
         }
 
         uint32_t ver;
-        reader.read_object_t( ver, abort );
+        reader.read_object_t(ver, abort);
 
-        switch ( static_cast<SettingsType>( ver ) )
+        switch (static_cast<SettingsType>(ver))
         {
         case SettingsType::Binary:
         {
-            const PanelSettings binarySettings = smp::config::binary::LoadSettings( reader, abort );
+            const PanelSettings binarySettings = smp::config::binary::LoadSettings(reader, abort);
             try
             { // check if we have json config appended
-                return smp::config::json::LoadSettings( reader, abort );
+                return smp::config::json::LoadSettings(reader, abort);
             }
-            catch ( const qwr::QwrException& )
+            catch (const qwr::QwrException&)
             {
                 return binarySettings;
             }
         }
         case SettingsType::Json:
-            return smp::config::json::LoadSettings( reader, abort );
+            return smp::config::json::LoadSettings(reader, abort);
         default:
-            throw qwr::QwrException( "Unexpected panel settings format: {}", ver );
+            throw qwr::QwrException("Unexpected panel settings format: {}", ver);
         }
     }
-    catch ( const pfc::exception& e )
+    catch (const pfc::exception& e)
     {
-        throw qwr::QwrException( e.what() );
+        throw qwr::QwrException(e.what());
     }
 }
 
-void PanelSettings::Save( stream_writer& writer, abort_callback& abort ) const
+void PanelSettings::Save(stream_writer& writer, abort_callback& abort) const
 {
-    if ( std::holds_alternative<PanelSettings_InMemory>( payload ) )
+    if (std::holds_alternative<PanelSettings_InMemory>(payload))
     { // append json config for compatibility with older versions
         // TODO: remove in the future versions
-        writer.write_object_t( static_cast<uint32_t>( SettingsType::Binary ), abort );
-        smp::config::binary::SaveSettings( writer, abort, *this );
-        smp::config::json::SaveSettings( writer, abort, *this );
+        writer.write_object_t(static_cast<uint32_t>(SettingsType::Binary), abort);
+        smp::config::binary::SaveSettings(writer, abort, *this);
+        smp::config::json::SaveSettings(writer, abort, *this);
     }
     else
     {
-        writer.write_object_t( static_cast<uint32_t>( SettingsType::Json ), abort );
-        smp::config::json::SaveSettings( writer, abort, *this );
+        writer.write_object_t(static_cast<uint32_t>(SettingsType::Json), abort);
+        smp::config::json::SaveSettings(writer, abort, *this);
     }
 }
 
-void PanelSettings::SaveDefault( stream_writer& writer, abort_callback& abort )
+void PanelSettings::SaveDefault(stream_writer& writer, abort_callback& abort)
 {
-    PanelSettings{}.Save( writer, abort );
+    PanelSettings{}.Save(writer, abort);
 }
 
 } // namespace smp::config

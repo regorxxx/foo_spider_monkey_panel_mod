@@ -28,16 +28,16 @@ public:
 public:
     UiOption() = default;
 
-    UiOption( const value_type& value, const value_type& defaultValue )
+    UiOption(const value_type& value, const value_type& defaultValue)
     {
-        InitializeValue( value, defaultValue );
+        InitializeValue(value, defaultValue);
     }
 
-    UiOption( const UiOption& ) = delete;
+    UiOption(const UiOption&) = delete;
 
-    UiOption& operator=( const value_type& value )
+    UiOption& operator=(const value_type& value)
     {
-        SetValue( value );
+        SetValue(value);
         return *this;
     }
 
@@ -56,7 +56,7 @@ public:
         return curValue_;
     }
 
-    void InitializeValue( const value_type& value, const value_type& defaultValue )
+    void InitializeValue(const value_type& value, const value_type& defaultValue)
     {
         defaultValue_ = defaultValue;
         savedValue_ = value;
@@ -64,9 +64,9 @@ public:
         hasChanged_ = false;
     }
 
-    void SetValue( const value_type& value, bool dontCheck = false )
+    void SetValue(const value_type& value, bool dontCheck = false)
     {
-        hasChanged_ = ( dontCheck ? true : ( savedValue_ != value ) );
+        hasChanged_ = (dontCheck ? true : (savedValue_ != value));
         curValue_ = value;
     }
 
@@ -79,7 +79,7 @@ public:
 
     void Apply() override
     {
-        if ( hasChanged_ )
+        if (hasChanged_)
         {
             savedValue_ = curValue_;
             hasChanged_ = false;
@@ -88,7 +88,7 @@ public:
 
     void Revert() override
     {
-        if ( hasChanged_ )
+        if (hasChanged_)
         {
             curValue_ = savedValue_;
             hasChanged_ = false;
@@ -97,7 +97,7 @@ public:
 
     void ResetToDefault() override
     {
-        SetValue( defaultValue_ );
+        SetValue(defaultValue_);
     }
 
     // < IOptionWrap

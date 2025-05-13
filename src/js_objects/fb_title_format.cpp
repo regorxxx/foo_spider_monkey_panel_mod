@@ -37,24 +37,24 @@ JSClass jsClass = {
     &jsOps
 };
 
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( Eval, JsFbTitleFormat::Eval, JsFbTitleFormat::EvalWithOpt, 1 )
-MJS_DEFINE_JS_FN_FROM_NATIVE( EvalWithMetadb, JsFbTitleFormat::EvalWithMetadb )
-MJS_DEFINE_JS_FN_FROM_NATIVE( EvalWithMetadbs, JsFbTitleFormat::EvalWithMetadbs )
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(Eval, JsFbTitleFormat::Eval, JsFbTitleFormat::EvalWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE(EvalWithMetadb, JsFbTitleFormat::EvalWithMetadb)
+MJS_DEFINE_JS_FN_FROM_NATIVE(EvalWithMetadbs, JsFbTitleFormat::EvalWithMetadbs)
 
 constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
     {
-        JS_FN( "Eval", Eval, 0, kDefaultPropsFlags ),
-        JS_FN( "EvalWithMetadb", EvalWithMetadb, 1, kDefaultPropsFlags ),
-        JS_FN( "EvalWithMetadbs", EvalWithMetadbs, 1, kDefaultPropsFlags ),
+        JS_FN("Eval", Eval, 0, kDefaultPropsFlags),
+        JS_FN("EvalWithMetadb", EvalWithMetadb, 1, kDefaultPropsFlags),
+        JS_FN("EvalWithMetadbs", EvalWithMetadbs, 1, kDefaultPropsFlags),
         JS_FS_END,
-    } );
+    });
 
 constexpr auto jsProperties = std::to_array<JSPropertySpec>(
     {
         JS_PS_END,
-    } );
+    });
 
-MJS_DEFINE_JS_FN_FROM_NATIVE( FbTitleFormat_Constructor, JsFbTitleFormat::Constructor )
+MJS_DEFINE_JS_FN_FROM_NATIVE(FbTitleFormat_Constructor, JsFbTitleFormat::Constructor)
 
 } // namespace
 
@@ -67,21 +67,21 @@ const JSPropertySpec* JsFbTitleFormat::JsProperties = jsProperties.data();
 const JsPrototypeId JsFbTitleFormat::PrototypeId = JsPrototypeId::FbTitleFormat;
 const JSNative JsFbTitleFormat::JsConstructor = ::FbTitleFormat_Constructor;
 
-JsFbTitleFormat::JsFbTitleFormat( JSContext* cx, const std::string& expr )
-    : pJsCtx_( cx )
+JsFbTitleFormat::JsFbTitleFormat(JSContext* cx, const std::string& expr)
+    : pJsCtx_(cx)
 {
-    titleformat_compiler::get()->compile_safe( titleFormatObject_, expr.c_str() );
+    titleformat_compiler::get()->compile_safe(titleFormatObject_, expr.c_str());
 }
 
 std::unique_ptr<JsFbTitleFormat>
-JsFbTitleFormat::CreateNative( JSContext* cx, const std::string& expr )
+JsFbTitleFormat::CreateNative(JSContext* cx, const std::string& expr)
 {
-    return std::unique_ptr<JsFbTitleFormat>( new JsFbTitleFormat( cx, expr ) );
+    return std::unique_ptr<JsFbTitleFormat>(new JsFbTitleFormat(cx, expr));
 }
 
-size_t JsFbTitleFormat::GetInternalSize( const std::string& /*expr*/ )
+size_t JsFbTitleFormat::GetInternalSize(const std::string& /*expr*/)
 {
-    return sizeof( titleformat_object );
+    return sizeof(titleformat_object);
 }
 
 titleformat_object::ptr JsFbTitleFormat::GetTitleFormat()
@@ -89,9 +89,9 @@ titleformat_object::ptr JsFbTitleFormat::GetTitleFormat()
     return titleFormatObject_;
 }
 
-JSObject* JsFbTitleFormat::Constructor( JSContext* cx, const std::string& expr )
+JSObject* JsFbTitleFormat::Constructor(JSContext* cx, const std::string& expr)
 {
-    return JsFbTitleFormat::CreateJs( cx, expr );
+    return JsFbTitleFormat::CreateJs(cx, expr);
 }
 
 pfc::string8_fast JsFbTitleFormat::Eval(bool force)
@@ -117,31 +117,31 @@ pfc::string8_fast JsFbTitleFormat::Eval(bool force)
 	return text;
 }
 
-pfc::string8_fast JsFbTitleFormat::EvalWithOpt( size_t optArgCount, bool force )
+pfc::string8_fast JsFbTitleFormat::EvalWithOpt(size_t optArgCount, bool force)
 {
-    switch ( optArgCount )
+    switch (optArgCount)
     {
     case 0:
-        return Eval( force );
+        return Eval(force);
     case 1:
         return Eval();
     default:
-        throw qwr::QwrException( "Internal error: invalid number of optional arguments specified: {}", optArgCount );
+        throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
     }
 }
 
-pfc::string8_fast JsFbTitleFormat::EvalWithMetadb( JsFbMetadbHandle* handle )
+pfc::string8_fast JsFbTitleFormat::EvalWithMetadb(JsFbMetadbHandle* handle)
 {
-    qwr::QwrException::ExpectTrue( handle, "handle argument is null" );
+    qwr::QwrException::ExpectTrue(handle, "handle argument is null");
 
     pfc::string8_fast text;
-    handle->GetHandle()->format_title( nullptr, text, titleFormatObject_, nullptr );
+    handle->GetHandle()->format_title(nullptr, text, titleFormatObject_, nullptr);
     return text;
 }
 
-JS::Value JsFbTitleFormat::EvalWithMetadbs( JsFbMetadbHandleList* handles )
+JS::Value JsFbTitleFormat::EvalWithMetadbs(JsFbMetadbHandleList* handles)
 {
-    qwr::QwrException::ExpectTrue( handles, "handles argument is null" );
+    qwr::QwrException::ExpectTrue(handles, "handles argument is null");
 
     const auto& native = handles->GetHandleList();
     const auto count = native.get_count();

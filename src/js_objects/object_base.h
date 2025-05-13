@@ -86,13 +86,13 @@ namespace mozjs
     // Creates object T.
     // Must always return a valid object.
     // Throw smp::JsException or qwr::QwrException on error.
-    static std::unique_ptr<T> CreateNative( JSContext* cx, Args... args );
+    static std::unique_ptr<T> CreateNative(JSContext* cx, Args... args);
 
     // Returns the size of properties of T, that can't be calculated by sizeof(T).
     // E.g. if T has property `std::unique_ptr<BigStruct> bigStruct_`, then 
-    // `GetInternalSize` must return sizeof( bigStruct_ ).
+    // `GetInternalSize` must return sizeof(bigStruct_).
     // Note: `args` is the same as in `CreateNative`.
-    static size_t GetInternalSize( Args... args );
+    static size_t GetInternalSize(Args... args);
 */
 
 /*
@@ -101,7 +101,7 @@ namespace mozjs
     // Finalizes the JS object that contains T.
     // Called before JS object is wrapped in proxy (if `HasProxy` is true).
     // Throw smp::JsException or qwr::QwrException on error.
-    static void PostCreate( JSContext* cx, JS::HandleObject self );
+    static void PostCreate(JSContext* cx, JS::HandleObject self);
 */
 
 template <typename T>
@@ -109,22 +109,22 @@ class JsObjectBase
 {
 public:
     JsObjectBase() = default;
-    JsObjectBase( const JsObjectBase& ) = delete;
-    JsObjectBase& operator=( const JsObjectBase& ) = delete;
+    JsObjectBase(const JsObjectBase&) = delete;
+    JsObjectBase& operator=(const JsObjectBase&) = delete;
     virtual ~JsObjectBase() = default;
 
 public:
-    [[nodiscard]] static JSObject* CreateProto( JSContext* cx )
+    [[nodiscard]] static JSObject* CreateProto(JSContext* cx)
     {
-        JS::RootedObject jsObject( cx,
-                                   JS_NewPlainObject( cx ) );
-        if ( !jsObject )
+        JS::RootedObject jsObject(cx,
+                                   JS_NewPlainObject(cx));
+        if (!jsObject)
         {
             throw smp::JsException();
         }
 
-        if ( !JS_DefineFunctions( cx, jsObject, T::JsFunctions )
-             || !JS_DefineProperties( cx, jsObject, T::JsProperties ) )
+        if (!JS_DefineFunctions(cx, jsObject, T::JsFunctions)
+             || !JS_DefineProperties(cx, jsObject, T::JsProperties))
         {
             throw smp::JsException();
         }
@@ -132,10 +132,10 @@ public:
         return jsObject;
     }
 
-    [[nodiscard]] static JSObject* InstallProto( JSContext* cx, JS::HandleObject parentObject )
+    [[nodiscard]] static JSObject* InstallProto(JSContext* cx, JS::HandleObject parentObject)
     {
         const JSFunctionSpec* staticFns = [] {
-            if constexpr ( T::HasStaticFunctions )
+            if constexpr (T::HasStaticFunctions)
             {
                 return T::JsStaticFunctions;
             }
@@ -145,7 +145,7 @@ public:
             }
         }();
 
-        auto pJsProto = JS_InitClass( cx,
+        auto pJsProto = JS_InitClass(cx,
                                       parentObject,
                                       nullptr,
                                       &T::JsClass,
@@ -154,8 +154,8 @@ public:
                                       T::JsProperties,
                                       T::JsFunctions,
                                       nullptr,
-                                      staticFns );
-        if ( !pJsProto )
+                                      staticFns);
+        if (!pJsProto)
         {
             throw smp::JsException();
         }
@@ -163,99 +163,99 @@ public:
     }
 
     template <typename... ArgTypes>
-    [[nodiscard]] static JSObject* CreateJs( JSContext* cx, ArgTypes&&... args )
+    [[nodiscard]] static JSObject* CreateJs(JSContext* cx, ArgTypes&&... args)
     {
-        JS::RootedObject jsProto( cx );
-        if constexpr ( T::HasProto )
+        JS::RootedObject jsProto(cx);
+        if constexpr (T::HasProto)
         {
-            jsProto = GetProto( cx );
-            assert( jsProto );
+            jsProto = GetProto(cx);
+            assert(jsProto);
         }
 
-        JS::RootedObject jsObject( cx, CreateJsObject_Base( cx, jsProto ) );
-        assert( jsObject );
+        JS::RootedObject jsObject(cx, CreateJsObject_Base(cx, jsProto));
+        assert(jsObject);
 
-        const size_t nativeObjectSize = sizeof( T ) + T::GetInternalSize( args... ); ///< don't forward: don't want to lose those smart ptrs
-        std::unique_ptr<T> nativeObject = T::CreateNative( cx, std::forward<ArgTypes>( args )... );
-        assert( nativeObject );
+        const size_t nativeObjectSize = sizeof(T) + T::GetInternalSize(args...); ///< don't forward: don't want to lose those smart ptrs
+        std::unique_ptr<T> nativeObject = T::CreateNative(cx, std::forward<ArgTypes>(args)...);
+        assert(nativeObject);
 
         nativeObject->nativeObjectSize_ = nativeObjectSize;
 
-        return CreateJsObject_Final( cx, jsProto, jsObject, std::move( nativeObject ) );
+        return CreateJsObject_Final(cx, jsProto, jsObject, std::move(nativeObject));
     }
 
-    [[nodiscard]] static JSObject* CreateJsFromNative( JSContext* cx, std::unique_ptr<T> nativeObject )
+    [[nodiscard]] static JSObject* CreateJsFromNative(JSContext* cx, std::unique_ptr<T> nativeObject)
     {
-        JS::RootedObject jsProto( cx );
-        if constexpr ( T::HasProto )
+        JS::RootedObject jsProto(cx);
+        if constexpr (T::HasProto)
         {
-            jsProto = GetProto( cx );
-            assert( jsProto );
+            jsProto = GetProto(cx);
+            assert(jsProto);
         }
 
-        JS::RootedObject jsObject( cx, CreateJsObject_Base( cx, jsProto ) );
-        assert( jsObject );
+        JS::RootedObject jsObject(cx, CreateJsObject_Base(cx, jsProto));
+        assert(jsObject);
 
-        nativeObject->nativeObjectSize_ = sizeof( T );
+        nativeObject->nativeObjectSize_ = sizeof(T);
 
-        return CreateJsObject_Final( cx, jsProto, jsObject, std::move( nativeObject ) );
+        return CreateJsObject_Final(cx, jsProto, jsObject, std::move(nativeObject));
     }
 
-    static void FinalizeJsObject( JSFreeOp* /*fop*/, JSObject* pSelf )
+    static void FinalizeJsObject(JSFreeOp* /*fop*/, JSObject* pSelf)
     {
-        auto pNative = static_cast<T*>( JS_GetPrivate( pSelf ) );
-        if ( pNative )
+        auto pNative = static_cast<T*>(JS_GetPrivate(pSelf));
+        if (pNative)
         {
-            auto pJsRealm = static_cast<JsRealmInner*>( JS::GetRealmPrivate( js::GetNonCCWObjectRealm( pSelf ) ) );
-            if ( pJsRealm )
+            auto pJsRealm = static_cast<JsRealmInner*>(JS::GetRealmPrivate(js::GetNonCCWObjectRealm(pSelf)));
+            if (pJsRealm)
             {
-                pJsRealm->OnHeapDeallocate( pNative->nativeObjectSize_ );
+                pJsRealm->OnHeapDeallocate(pNative->nativeObjectSize_);
             }
 
             delete pNative;
-            JS_SetPrivate( pSelf, nullptr );
+            JS_SetPrivate(pSelf, nullptr);
         }
     }
 
 private:
     template <typename U = T, std::enable_if_t<U::HasProto, int> = 0>
-    [[nodiscard]] static JSObject* GetProto( JSContext* cx )
+    [[nodiscard]] static JSObject* GetProto(JSContext* cx)
     {
-        JS::RootedObject jsProto( cx );
-        if constexpr ( T::HasGlobalProto )
+        JS::RootedObject jsProto(cx);
+        if constexpr (T::HasGlobalProto)
         {
-            jsProto = GetPrototype<T>( cx, T::PrototypeId );
+            jsProto = GetPrototype<T>(cx, T::PrototypeId);
         }
         else
         {
-            jsProto = GetOrCreatePrototype<T>( cx, T::PrototypeId );
+            jsProto = GetOrCreatePrototype<T>(cx, T::PrototypeId);
         }
-        assert( jsProto );
+        assert(jsProto);
         return jsProto;
     }
 
-    [[nodiscard]] static JSObject* CreateJsObject_Base( JSContext* cx, [[maybe_unused]] JS::HandleObject jsProto )
+    [[nodiscard]] static JSObject* CreateJsObject_Base(JSContext* cx, [[maybe_unused]] JS::HandleObject jsProto)
     {
-        JS::RootedObject jsObject( cx );
-        if constexpr ( T::HasProto )
+        JS::RootedObject jsObject(cx);
+        if constexpr (T::HasProto)
         {
-            assert( jsProto );
-            jsObject.set( JS_NewObjectWithGivenProto( cx, &T::JsClass, jsProto ) );
-            if ( !jsObject )
+            assert(jsProto);
+            jsObject.set(JS_NewObjectWithGivenProto(cx, &T::JsClass, jsProto));
+            if (!jsObject)
             {
                 throw smp::JsException();
             }
         }
         else
         {
-            jsObject.set( JS_NewObject( cx, &T::JsClass ) );
-            if ( !jsObject )
+            jsObject.set(JS_NewObject(cx, &T::JsClass));
+            if (!jsObject)
             {
                 throw smp::JsException();
             }
 
-            if ( !JS_DefineFunctions( cx, jsObject, T::JsFunctions )
-                 || !JS_DefineProperties( cx, jsObject, T::JsProperties ) )
+            if (!JS_DefineFunctions(cx, jsObject, T::JsFunctions)
+                 || !JS_DefineProperties(cx, jsObject, T::JsProperties))
             {
                 throw smp::JsException();
             }
@@ -264,27 +264,27 @@ private:
         return jsObject;
     }
 
-    [[nodiscard]] static JSObject* CreateJsObject_Final( JSContext* cx,
+    [[nodiscard]] static JSObject* CreateJsObject_Final(JSContext* cx,
                                                          [[maybe_unused]] JS::HandleObject jsProto,
                                                          JS::HandleObject jsBaseObject,
-                                                         std::unique_ptr<T> premadeNative )
+                                                         std::unique_ptr<T> premadeNative)
     {
-        auto pJsRealm = static_cast<JsRealmInner*>( JS::GetRealmPrivate( js::GetContextRealm( cx ) ) );
-        assert( pJsRealm );
-        pJsRealm->OnHeapAllocate( premadeNative->nativeObjectSize_ );
+        auto pJsRealm = static_cast<JsRealmInner*>(JS::GetRealmPrivate(js::GetContextRealm(cx)));
+        assert(pJsRealm);
+        pJsRealm->OnHeapAllocate(premadeNative->nativeObjectSize_);
 
-        JS_SetPrivate( jsBaseObject, premadeNative.release() );
+        JS_SetPrivate(jsBaseObject, premadeNative.release());
 
-        if constexpr ( T::HasPostCreate )
+        if constexpr (T::HasPostCreate)
         {
-            T::PostCreate( cx, jsBaseObject );
+            T::PostCreate(cx, jsBaseObject);
         }
 
-        if constexpr ( T::HasProxy )
+        if constexpr (T::HasProxy)
         {
-            JS::RootedValue jsBaseValue( cx, JS::ObjectValue( *jsBaseObject ) );
-            JS::RootedObject jsProxyObject( cx, js::NewProxyObject( cx, &T::JsProxy, jsBaseValue, jsProto ) );
-            if ( !jsProxyObject )
+            JS::RootedValue jsBaseValue(cx, JS::ObjectValue(*jsBaseObject));
+            JS::RootedObject jsProxyObject(cx, js::NewProxyObject(cx, &T::JsProxy, jsBaseValue, jsProto));
+            if (!jsProxyObject)
             {
                 throw smp::JsException();
             }

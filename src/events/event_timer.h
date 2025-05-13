@@ -12,7 +12,7 @@ class Event_Timer
     : public EventBase
 {
 public:
-    Event_Timer( std::shared_ptr<ITimer> pTimer, uint64_t generation );
+    Event_Timer(std::shared_ptr<ITimer> pTimer, uint64_t generation);
 
     void Run() override;
 

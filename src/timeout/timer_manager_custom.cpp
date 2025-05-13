@@ -34,35 +34,35 @@ TimerManager_Custom& TimerManager_Custom::Get()
 
 const TimeDuration& TimerManager_Custom::GetAllowedEarlyFiringTime()
 {
-    static constexpr TimeDuration earlyDelay{ std::chrono::microseconds( 10 ) };
+    static constexpr TimeDuration earlyDelay{ std::chrono::microseconds(10) };
     return earlyDelay;
 }
 
-std::unique_ptr<Timer_Custom> TimerManager_Custom::CreateTimer( std::shared_ptr<PanelTarget> pTarget )
+std::unique_ptr<Timer_Custom> TimerManager_Custom::CreateTimer(std::shared_ptr<PanelTarget> pTarget)
 {
-    return std::unique_ptr<Timer_Custom>( new Timer_Custom( *this, pTarget ) );
+    return std::unique_ptr<Timer_Custom>(new Timer_Custom(*this, pTarget));
 }
 
 void TimerManager_Custom::CreateThread()
 {
-    thread_ = std::make_unique<std::thread>( &TimerManager_Custom::ThreadMain, this );
-    qwr::SetThreadName( *thread_, "SMP TimerManager" );
+    thread_ = std::make_unique<std::thread>(&TimerManager_Custom::ThreadMain, this);
+    qwr::SetThreadName(*thread_, "SMP TimerManager");
 }
 
 void TimerManager_Custom::StopThread()
 {
-    if ( !thread_ )
+    if (!thread_)
     {
         return;
     }
 
     {
-        std::unique_lock<std::mutex> lock( threadMutex_ );
+        std::unique_lock<std::mutex> lock(threadMutex_);
         isTimeToDie_ = true;
     }
     cv_.notify_all();
 
-    if ( thread_->joinable() )
+    if (thread_->joinable())
     {
         thread_->join();
     }
@@ -74,34 +74,34 @@ void TimerManager_Custom::StopThread()
 void TimerManager_Custom::ThreadMain()
 {
     const auto hasWorkToDo = [&] {
-        return ( !timers_.empty() || isTimeToDie_ );
+        return (!timers_.empty() || isTimeToDie_);
     };
 
-    while ( !isTimeToDie_ )
+    while (!isTimeToDie_)
     {
-        std::unique_lock sl( threadMutex_ );
+        std::unique_lock sl(threadMutex_);
 
         std::optional<TimeStamp> waitUntilOpt;
-        while ( hasWorkToDo() )
+        while (hasWorkToDo())
         {
             RemoveLeadingCanceledTimersInternal();
-            if ( timers_.empty() )
+            if (timers_.empty())
             {
                 break;
             }
 
-            assert( timers_.front() );
+            assert(timers_.front());
             auto pTimer = timers_.front()->Value();
-            assert( pTimer );
+            assert(pTimer);
 
             const auto now = TimeStamp::clock::now();
-            if ( now < pTimer->When() - GetAllowedEarlyFiringTime() )
+            if (now < pTimer->When() - GetAllowedEarlyFiringTime())
             {
                 // clamp to ms
-                auto diffInMs = std::chrono::duration_cast<std::chrono::milliseconds>( pTimer->When() - now );
-                if ( !diffInMs.count() )
+                auto diffInMs = std::chrono::duration_cast<std::chrono::milliseconds>(pTimer->When() - now);
+                if (!diffInMs.count())
                 { // round sub-millisecond waits to 1
-                    diffInMs = std::chrono::milliseconds( 1 );
+                    diffInMs = std::chrono::milliseconds(1);
                 }
 
                 waitUntilOpt = now + diffInMs;
@@ -112,40 +112,40 @@ void TimerManager_Custom::ThreadMain()
             waitUntilOpt.reset();
             RemoveFirstTimerInternal();
 
-            EventDispatcher::Get().PutEvent( pTimer->Target().GetHwnd(), std::make_unique<Event_Timer>( pTimer, pTimer->Generation() ) );
+            EventDispatcher::Get().PutEvent(pTimer->Target().GetHwnd(), std::make_unique<Event_Timer>(pTimer, pTimer->Generation()));
         }
 
         // spurious wake up guard has a HUUUUGE CPU overhead, hence we don't use it
-        if ( waitUntilOpt )
+        if (waitUntilOpt)
         {
-            cv_.wait_until( sl, *waitUntilOpt );
+            cv_.wait_until(sl, *waitUntilOpt);
         }
         else
         {
-            cv_.wait( sl );
+            cv_.wait(sl);
         }
     }
 }
 
-void TimerManager_Custom::AddTimer( std::shared_ptr<Timer_Custom> pTimer )
+void TimerManager_Custom::AddTimer(std::shared_ptr<Timer_Custom> pTimer)
 {
     {
-        std::unique_lock sl( threadMutex_ );
+        std::unique_lock sl(threadMutex_);
 
-        const auto& pHolder = timers_.emplace_back( std::make_unique<TimerHolder>( pTimer ) );
-        pTimer->SetHolder( timers_.back().get() );
+        const auto& pHolder = timers_.emplace_back(std::make_unique<TimerHolder>(pTimer));
+        pTimer->SetHolder(timers_.back().get());
 
-        std::push_heap( timers_.begin(), timers_.end(), TimerSorter );
+        std::push_heap(timers_.begin(), timers_.end(), TimerSorter);
     }
     cv_.notify_all();
 }
 
-void TimerManager_Custom::RemoveTimer( std::shared_ptr<Timer_Custom> pTimer )
+void TimerManager_Custom::RemoveTimer(std::shared_ptr<Timer_Custom> pTimer)
 {
     {
-        std::unique_lock sl( threadMutex_ );
+        std::unique_lock sl(threadMutex_);
 
-        if ( !pTimer || !pTimer->Holder() )
+        if (!pTimer || !pTimer->Holder())
         {
             return;
         }
@@ -160,35 +160,35 @@ void TimerManager_Custom::RemoveLeadingCanceledTimersInternal()
 {
     // Move all canceled timers from the front of the list to
     // the back of the list using std::pop_heap().
-    decltype( timers_ )::iterator sortedEnd;
-    for ( sortedEnd = timers_.end(); sortedEnd != timers_.begin() && !timers_[0]->Value(); --sortedEnd )
+    decltype(timers_)::iterator sortedEnd;
+    for (sortedEnd = timers_.end(); sortedEnd != timers_.begin() && !timers_[0]->Value(); --sortedEnd)
     {
-        std::pop_heap( timers_.begin(), sortedEnd, TimerSorter );
+        std::pop_heap(timers_.begin(), sortedEnd, TimerSorter);
     }
 
     // If there were no canceled timers then we are done.
-    if ( sortedEnd == timers_.end() )
+    if (sortedEnd == timers_.end())
     {
         return;
     }
 
     // Finally, remove the canceled timers from the back.
-    timers_.resize( timers_.size() - std::distance( sortedEnd, timers_.end() ) );
+    timers_.resize(timers_.size() - std::distance(sortedEnd, timers_.end()));
 }
 
 void TimerManager_Custom::RemoveFirstTimerInternal()
 {
-    assert( !timers_.empty() );
+    assert(!timers_.empty());
 
-    std::pop_heap( timers_.begin(), timers_.end(), TimerSorter );
+    std::pop_heap(timers_.begin(), timers_.end(), TimerSorter);
     timers_.pop_back();
 }
 
-bool TimerManager_Custom::TimerSorter( const std::unique_ptr<TimerHolder>& a, const std::unique_ptr<TimerHolder>& b )
+bool TimerManager_Custom::TimerSorter(const std::unique_ptr<TimerHolder>& a, const std::unique_ptr<TimerHolder>& b)
 {
     // This is reversed because std::push_heap() sorts the "largest" to
     // the front of the heap.  We want that to be the earliest timer.
-    return ( b->When() < a->When() );
+    return (b->When() < a->When());
 }
 
 } // namespace smp

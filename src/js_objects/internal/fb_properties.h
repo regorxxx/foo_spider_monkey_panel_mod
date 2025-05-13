@@ -19,21 +19,21 @@ namespace mozjs
 class FbProperties
 {
 public:
-    FbProperties( const FbProperties& ) = delete;
-    FbProperties& operator=( const FbProperties& ) = delete;
+    FbProperties(const FbProperties&) = delete;
+    FbProperties& operator=(const FbProperties&) = delete;
     ~FbProperties() = default;
 
-    static [[nodiscard]] std::unique_ptr<FbProperties> Create( JSContext* cx, smp::panel::js_panel_window& parentPanel );
+    static [[nodiscard]] std::unique_ptr<FbProperties> Create(JSContext* cx, smp::panel::js_panel_window& parentPanel);
 
 public:
-    void Trace( JSTracer* trc );
+    void Trace(JSTracer* trc);
     void PrepareForGc();
 
-    [[nodiscard]] JS::Value GetProperty( const std::wstring& propName, JS::HandleValue propDefaultValue );
-    void SetProperty( const std::wstring& propName, JS::HandleValue propValue );
+    [[nodiscard]] JS::Value GetProperty(const std::wstring& propName, JS::HandleValue propDefaultValue);
+    void SetProperty(const std::wstring& propName, JS::HandleValue propValue);
 
 private:
-    FbProperties( JSContext* cx, smp::panel::js_panel_window& parentPanel );
+    FbProperties(JSContext* cx, smp::panel::js_panel_window& parentPanel);
 
 private:
     JSContext* pJsCtx_ = nullptr;
@@ -41,8 +41,8 @@ private:
 
     struct HeapElement
     {
-        HeapElement( JS::HandleValue inValue )
-            : value( inValue )
+        HeapElement(JS::HandleValue inValue)
+            : value(inValue)
         {
         }
         JS::Heap<JS::Value> value;

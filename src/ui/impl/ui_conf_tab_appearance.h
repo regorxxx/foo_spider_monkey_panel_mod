@@ -23,20 +23,20 @@ public:
         IDD = IDD_DIALOG_CONF_TAB_APPEARANCE
     };
 
-    BEGIN_MSG_MAP( CConfigTabAppearance )
-        MSG_WM_INITDIALOG( OnInitDialog )
-        COMMAND_HANDLER_EX( IDC_RADIO_EDGE_NO, BN_CLICKED, OnDdxUiChange )
-        COMMAND_HANDLER_EX( IDC_RADIO_EDGE_GREY, BN_CLICKED, OnDdxUiChange )
-        COMMAND_HANDLER_EX( IDC_RADIO_EDGE_SUNKEN, BN_CLICKED, OnDdxUiChange )
-        COMMAND_HANDLER_EX( IDC_CHECK_PSEUDOTRANSPARENT, BN_CLICKED, OnDdxUiChange )
+    BEGIN_MSG_MAP(CConfigTabAppearance)
+        MSG_WM_INITDIALOG(OnInitDialog)
+        COMMAND_HANDLER_EX(IDC_RADIO_EDGE_NO, BN_CLICKED, OnDdxUiChange)
+        COMMAND_HANDLER_EX(IDC_RADIO_EDGE_GREY, BN_CLICKED, OnDdxUiChange)
+        COMMAND_HANDLER_EX(IDC_RADIO_EDGE_SUNKEN, BN_CLICKED, OnDdxUiChange)
+        COMMAND_HANDLER_EX(IDC_CHECK_PSEUDOTRANSPARENT, BN_CLICKED, OnDdxUiChange)
     END_MSG_MAP()
 
 public:
-    CConfigTabAppearance( CDialogConf& parent, config::ParsedPanelSettings& settings );
+    CConfigTabAppearance(CDialogConf& parent, config::ParsedPanelSettings& settings);
     ~CConfigTabAppearance() override = default;
 
     // > IUiTab
-    HWND CreateTab( HWND hParent ) override;
+    HWND CreateTab(HWND hParent) override;
     [[nodiscard]] CDialogImplBase& Dialog() override;
     [[nodiscard]] const wchar_t* Name() const override;
     [[nodiscard]] bool HasChanged() override;
@@ -46,8 +46,8 @@ public:
     // < IUiTab
 
 private:
-    BOOL OnInitDialog( HWND hwndFocus, LPARAM lParam );
-    void OnDdxUiChange( UINT uNotifyCode, int nID, CWindow wndCtl );
+    BOOL OnInitDialog(HWND hwndFocus, LPARAM lParam);
+    void OnDdxUiChange(UINT uNotifyCode, int nID, CWindow wndCtl);
 
     void DoFullDdxToUi();
     void InitializeLocalOptions();

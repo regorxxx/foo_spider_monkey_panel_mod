@@ -10,14 +10,14 @@ namespace mozjs
 class JsAutoRealmWithErrorReport
 {
 public:
-    [[nodiscard]] JsAutoRealmWithErrorReport( JSContext* cx, JS::HandleObject global )
-        : ac_( cx, global )
-        , are_( cx )
+    [[nodiscard]] JsAutoRealmWithErrorReport(JSContext* cx, JS::HandleObject global)
+        : ac_(cx, global)
+        , are_(cx)
     {
     }
 
-    JsAutoRealmWithErrorReport( const JsAutoRealmWithErrorReport& ) = delete;
-    JsAutoRealmWithErrorReport& operator=( const JsAutoRealmWithErrorReport& ) = delete;
+    JsAutoRealmWithErrorReport(const JsAutoRealmWithErrorReport&) = delete;
+    JsAutoRealmWithErrorReport& operator=(const JsAutoRealmWithErrorReport&) = delete;
 
     void DisableReport()
     {

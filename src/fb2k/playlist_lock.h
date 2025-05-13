@@ -14,12 +14,12 @@ public:
     void InitializeLocks();
 
     /// @throw qwr::QwrException
-    void InstallLock( size_t playlistIndex, uint32_t flags );
+    void InstallLock(size_t playlistIndex, uint32_t flags);
 
     /// @throw qwr::QwrException
-    void RemoveLock( size_t playlistIndex );
+    void RemoveLock(size_t playlistIndex);
 
-    [[nodiscard]] bool HasLock( size_t playlistIndex );
+    [[nodiscard]] bool HasLock(size_t playlistIndex);
 
 private:
     PlaylistLockManager() = default;

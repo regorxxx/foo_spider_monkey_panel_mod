@@ -10,19 +10,19 @@ class JsGc final
 public:
     JsGc() = default;
     ~JsGc() = default;
-    JsGc( const JsGc& ) = delete;
-    JsGc& operator=( const JsGc& ) = delete;
+    JsGc(const JsGc&) = delete;
+    JsGc& operator=(const JsGc&) = delete;
 
 public:
     /// @throw qwr::QwrException
     [[nodiscard]] static uint32_t GetMaxHeap();
-    [[nodiscard]] static uint64_t GetTotalHeapUsageForGlobal( JSContext* cx, JS::HandleObject jsGlobal );
+    [[nodiscard]] static uint64_t GetTotalHeapUsageForGlobal(JSContext* cx, JS::HandleObject jsGlobal);
     /// @details Returns last heap size instead of the current size,
     /// but this should be good enough for users
     [[nodiscard]] uint64_t GetTotalHeapUsage() const;
 
     /// @throw qwr::QwrException
-    void Initialize( JSContext* pJsCtx );
+    void Initialize(JSContext* pJsCtx);
     void Finalize();
 
     bool MaybeGc();
@@ -50,11 +50,11 @@ private:
     void UpdateGcStats();
 
     // GC implementation
-    void PerformGc( GcLevel gcLevel );
+    void PerformGc(GcLevel gcLevel);
     void PerformIncrementalGc();
     void PerformNormalGc();
     void PerformFullGc();
-    void PrepareRealmsForGc( GcLevel gcLevel );
+    void PrepareRealmsForGc(GcLevel gcLevel);
     void NotifyRealmsOnGcEnd();
 
 private:

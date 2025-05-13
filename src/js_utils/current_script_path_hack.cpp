@@ -7,47 +7,47 @@
 namespace mozjs::hack
 {
 
-std::optional<std::filesystem::path> GetCurrentScriptPath( JSContext* cx )
+std::optional<std::filesystem::path> GetCurrentScriptPath(JSContext* cx)
 {
     try
     {
-        JS_ReportErrorUTF8( cx, "hacking around..." );
-        assert( JS_IsExceptionPending( cx ) );
+        JS_ReportErrorUTF8(cx, "hacking around...");
+        assert(JS_IsExceptionPending(cx));
 
-        JS::RootedValue excn( cx );
-        (void)JS_GetPendingException( cx, &excn );
-        JS_ClearPendingException( cx );
+        JS::RootedValue excn(cx);
+        (void)JS_GetPendingException(cx, &excn);
+        JS_ClearPendingException(cx);
 
-        assert( excn.isObject() );
-        JS::RootedObject excnObject( cx, &excn.toObject() );
+        assert(excn.isObject());
+        JS::RootedObject excnObject(cx, &excn.toObject());
 
-        js::ErrorReport report( cx );
-        if ( !report.init( cx, excn, js::ErrorReport::SniffingBehavior::WithSideEffects ) )
+        js::ErrorReport report(cx);
+        if (!report.init(cx, excn, js::ErrorReport::SniffingBehavior::WithSideEffects))
         {
-            throw qwr::QwrException( "js::ErrorReport::init failed" );
+            throw qwr::QwrException("js::ErrorReport::init failed");
         }
 
         JSErrorReport* pReport = report.report();
-        assert( pReport );
+        assert(pReport);
 
-        if ( !pReport->filename || std::string{ pReport->filename }.empty() )
+        if (!pReport->filename || std::string{ pReport->filename }.empty())
         {
             return std::nullopt;
         }
 
         // workaround for https://github.com/TheQwertiest/foo_spider_monkey_panel/issues/1
         // and https://bugzilla.mozilla.org/show_bug.cgi?id=1492090
-        const auto pathOpt = hack::GetCachedUtf8Path( pReport->filename );
-        if ( !pathOpt )
+        const auto pathOpt = hack::GetCachedUtf8Path(pReport->filename);
+        if (!pathOpt)
         {
             return std::nullopt;
         }
 
         return pathOpt;
     }
-    catch ( const std::filesystem::filesystem_error& e )
+    catch (const std::filesystem::filesystem_error& e)
     {
-        throw qwr::QwrException( e );
+        throw qwr::QwrException(e);
     }
 }
 

@@ -23,16 +23,16 @@ enum class CodePage : UINT
     Utf8 = CP_UTF8,
 };
 
-UINT FilterEncodings( std::span<const DetectEncodingInfo> encodings )
+UINT FilterEncodings(std::span<const DetectEncodingInfo> encodings)
 {
-    assert( !encodings.empty() );
+    assert(!encodings.empty());
 
-    if ( encodings.size() == 1 )
+    if (encodings.size() == 1)
     {
         const auto codepage = encodings[0].nCodePage;
-        if ( codepage == static_cast<UINT>( CodePage::UsAscii ) )
+        if (codepage == static_cast<UINT>(CodePage::UsAscii))
         { // UsAscii is a subset of Utf8
-            return static_cast<UINT>( CodePage::Utf8 );
+            return static_cast<UINT>(CodePage::Utf8);
         }
         else
         {
@@ -41,10 +41,10 @@ UINT FilterEncodings( std::span<const DetectEncodingInfo> encodings )
     }
     else
     {
-        return ranges::max_element( encodings,
-                                    []( const auto& a, const auto& b ) {
-                                        return ( a.nConfidence < b.nConfidence );
-                                    } )
+        return ranges::max_element(encodings,
+                                    [](const auto& a, const auto& b) {
+                                        return (a.nConfidence < b.nConfidence);
+                                    })
             ->nCodePage;
     }
 }
@@ -54,13 +54,13 @@ UINT FilterEncodings( std::span<const DetectEncodingInfo> encodings )
 namespace qwr
 {
 
-std::optional<UINT> DetectCharSet( std::string_view text )
+std::optional<UINT> DetectCharSet(std::string_view text)
 {
-    _COM_SMARTPTR_TYPEDEF( IMultiLanguage2, IID_IMultiLanguage2 );
+    _COM_SMARTPTR_TYPEDEF(IMultiLanguage2, IID_IMultiLanguage2);
     IMultiLanguage2Ptr lang;
 
-    HRESULT hr = lang.CreateInstance( CLSID_CMultiLanguage, nullptr, CLSCTX_INPROC_SERVER );
-    if ( FAILED( hr ) )
+    HRESULT hr = lang.CreateInstance(CLSID_CMultiLanguage, nullptr, CLSCTX_INPROC_SERVER);
+    if (FAILED(hr))
     {
         return std::nullopt;
     }
@@ -70,13 +70,13 @@ std::optional<UINT> DetectCharSet( std::string_view text )
     std::array<DetectEncodingInfo, maxEncodings> encodings;
     int iTextSize = text.size();
 
-    hr = lang->DetectInputCodepage( MLDETECTCP_NONE, 0, const_cast<char*>( text.data() ), &iTextSize, encodings.data(), &encodingCount );
-    if ( FAILED( hr ) || !encodingCount )
+    hr = lang->DetectInputCodepage(MLDETECTCP_NONE, 0, const_cast<char*>(text.data()), &iTextSize, encodings.data(), &encodingCount);
+    if (FAILED(hr) || !encodingCount)
     {
         return std::nullopt;
     }
 
-    return FilterEncodings( std::span<const DetectEncodingInfo>( encodings.data(), encodingCount ) );
+    return FilterEncodings(std::span<const DetectEncodingInfo>(encodings.data(), encodingCount));
 }
 
 } // namespace qwr

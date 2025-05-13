@@ -31,22 +31,22 @@ JSClass jsClass = {
     &jsOps
 };
 
-MJS_DEFINE_JS_FN_FROM_NATIVE( get_IsValid, JsFbPlayingItemLocation::get_IsValid )
-MJS_DEFINE_JS_FN_FROM_NATIVE( get_PlaylistIndex, JsFbPlayingItemLocation::get_PlaylistIndex )
-MJS_DEFINE_JS_FN_FROM_NATIVE( get_PlaylistItemIndex, JsFbPlayingItemLocation::get_PlaylistItemIndex )
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_IsValid, JsFbPlayingItemLocation::get_IsValid)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_PlaylistIndex, JsFbPlayingItemLocation::get_PlaylistIndex)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_PlaylistItemIndex, JsFbPlayingItemLocation::get_PlaylistItemIndex)
 
 constexpr auto jsProperties = std::to_array<JSPropertySpec>(
     {
-        JS_PSG( "IsValid", get_IsValid, kDefaultPropsFlags ),
-        JS_PSG( "PlaylistIndex", get_PlaylistIndex, kDefaultPropsFlags ),
-        JS_PSG( "PlaylistItemIndex", get_PlaylistItemIndex, kDefaultPropsFlags ),
+        JS_PSG("IsValid", get_IsValid, kDefaultPropsFlags),
+        JS_PSG("PlaylistIndex", get_PlaylistIndex, kDefaultPropsFlags),
+        JS_PSG("PlaylistItemIndex", get_PlaylistItemIndex, kDefaultPropsFlags),
         JS_PS_END,
-    } );
+    });
 
 constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
     {
         JS_FS_END,
-    } );
+    });
 
 } // namespace
 
@@ -58,21 +58,21 @@ const JSFunctionSpec* JsFbPlayingItemLocation::JsFunctions = jsFunctions.data();
 const JSPropertySpec* JsFbPlayingItemLocation::JsProperties = jsProperties.data();
 const JsPrototypeId JsFbPlayingItemLocation::PrototypeId = JsPrototypeId::FbPlayingItemLocation;
 
-JsFbPlayingItemLocation::JsFbPlayingItemLocation( JSContext* cx, bool isValid, uint32_t playlistIndex, uint32_t playlistItemIndex )
-    : pJsCtx_( cx )
-    , isValid_( isValid )
-    , playlistIndex_( playlistIndex )
-    , playlistItemIndex_( playlistItemIndex )
+JsFbPlayingItemLocation::JsFbPlayingItemLocation(JSContext* cx, bool isValid, uint32_t playlistIndex, uint32_t playlistItemIndex)
+    : pJsCtx_(cx)
+    , isValid_(isValid)
+    , playlistIndex_(playlistIndex)
+    , playlistItemIndex_(playlistItemIndex)
 {
 }
 
 std::unique_ptr<JsFbPlayingItemLocation>
-JsFbPlayingItemLocation::CreateNative( JSContext* cx, bool isValid, uint32_t playlistIndex, uint32_t playlistItemIndex )
+JsFbPlayingItemLocation::CreateNative(JSContext* cx, bool isValid, uint32_t playlistIndex, uint32_t playlistItemIndex)
 {
-    return std::unique_ptr<JsFbPlayingItemLocation>( new JsFbPlayingItemLocation( cx, isValid, playlistIndex, playlistItemIndex ) );
+    return std::unique_ptr<JsFbPlayingItemLocation>(new JsFbPlayingItemLocation(cx, isValid, playlistIndex, playlistItemIndex));
 }
 
-size_t JsFbPlayingItemLocation::GetInternalSize( bool /*isValid*/, uint32_t /*playlistIndex*/, uint32_t /*playlistItemIndex*/ )
+size_t JsFbPlayingItemLocation::GetInternalSize(bool /*isValid*/, uint32_t /*playlistIndex*/, uint32_t /*playlistItemIndex*/)
 {
     return 0;
 }

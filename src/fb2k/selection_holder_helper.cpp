@@ -20,9 +20,9 @@ const std::array<const GUID*, 7> guids = {
 namespace smp
 {
 
-std::optional<GUID> GetSelectionHolderGuidFromType( uint8_t typeId )
+std::optional<GUID> GetSelectionHolderGuidFromType(uint8_t typeId)
 {
-    if ( typeId >= guids.size() )
+    if (typeId >= guids.size())
     {
         return std::nullopt;
     }
@@ -30,15 +30,15 @@ std::optional<GUID> GetSelectionHolderGuidFromType( uint8_t typeId )
     return *guids[typeId];
 }
 
-std::optional<uint8_t> GetSelectionHolderTypeFromGuid( const GUID& typeGuid )
+std::optional<uint8_t> GetSelectionHolderTypeFromGuid(const GUID& typeGuid)
 {
-    const auto it = ranges::find_if( guids, [&typeGuid]( const auto pGuid ) { return typeGuid == *pGuid; } );
-    if ( ranges::end( guids ) == it )
+    const auto it = ranges::find_if(guids, [&typeGuid](const auto pGuid) { return typeGuid == *pGuid; });
+    if (ranges::end(guids) == it)
     {
         return std::nullopt;
     }
 
-    return ranges::distance( ranges::begin( guids ), it );
+    return ranges::distance(ranges::begin(guids), it);
 }
 
 } // namespace smp

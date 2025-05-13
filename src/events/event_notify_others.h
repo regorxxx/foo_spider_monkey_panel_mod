@@ -11,12 +11,12 @@ class Event_NotifyOthers final
     : public Event_JsExecutor
 {
 public:
-    Event_NotifyOthers( JSContext* cx, const std::wstring& name, JS::HandleValue info );
+    Event_NotifyOthers(JSContext* cx, const std::wstring& name, JS::HandleValue info);
     ~Event_NotifyOthers() override;
 
     std::unique_ptr<EventBase> Clone() override;
 
-    std::optional<bool> JsExecute( mozjs::JsContainer& jsContainer ) override;
+    std::optional<bool> JsExecute(mozjs::JsContainer& jsContainer) override;
 
 private:
     JSContext* pJsCtx_ = nullptr;

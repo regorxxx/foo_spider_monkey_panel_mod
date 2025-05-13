@@ -16,17 +16,17 @@ inline constexpr uint32_t kDefaultClassFlags = JSCLASS_HAS_PRIVATE | JSCLASS_BAC
 inline constexpr uint8_t kDefaultPropsFlags = JSPROP_ENUMERATE | JSPROP_PERMANENT;
 
 /// @details Used to define write-only property with JS_PSGS
-bool DummyGetter( JSContext* cx, unsigned argc, JS::Value* vp );
+bool DummyGetter(JSContext* cx, unsigned argc, JS::Value* vp);
 
 const void* GetSmpProxyFamily();
 
 template <typename JsObjectType, typename... ArgsType>
-void CreateAndInstallObject( JSContext* cx, JS::HandleObject parentObject, const std::string& propertyName, ArgsType&&... args )
+void CreateAndInstallObject(JSContext* cx, JS::HandleObject parentObject, const std::string& propertyName, ArgsType&&... args)
 {
-    JS::RootedObject objectToInstall( cx, JsObjectType::CreateJs( cx, args... ) );
-    assert( objectToInstall );
+    JS::RootedObject objectToInstall(cx, JsObjectType::CreateJs(cx, args...));
+    assert(objectToInstall);
 
-    if ( !JS_DefineProperty( cx, parentObject, propertyName.c_str(), objectToInstall, kDefaultPropsFlags ) )
+    if (!JS_DefineProperty(cx, parentObject, propertyName.c_str(), objectToInstall, kDefaultPropsFlags))
     {
         throw smp::JsException();
     }
@@ -34,36 +34,36 @@ void CreateAndInstallObject( JSContext* cx, JS::HandleObject parentObject, const
 
 /// @brief Same as JS_GetInstancePrivate, but unwraps the object if it's a proxy.
 template <typename T>
-T* GetInnerInstancePrivate( JSContext* cx, JS::HandleObject jsObject )
+T* GetInnerInstancePrivate(JSContext* cx, JS::HandleObject jsObject)
 {
-    JS::RootedObject jsUnwrappedObject( cx, jsObject );
-    if ( js::IsWrapper( jsObject ) )
+    JS::RootedObject jsUnwrappedObject(cx, jsObject);
+    if (js::IsWrapper(jsObject))
     {
-        jsUnwrappedObject = js::UncheckedUnwrap( jsObject );
+        jsUnwrappedObject = js::UncheckedUnwrap(jsObject);
     }
 
-    if constexpr ( T::HasProxy )
+    if constexpr (T::HasProxy)
     {
-        if ( js::IsProxy( jsUnwrappedObject ) && js::GetProxyHandler( jsUnwrappedObject )->family() == GetSmpProxyFamily() )
+        if (js::IsProxy(jsUnwrappedObject) && js::GetProxyHandler(jsUnwrappedObject)->family() == GetSmpProxyFamily())
         {
-            jsUnwrappedObject = js::GetProxyTargetObject( jsUnwrappedObject );
+            jsUnwrappedObject = js::GetProxyTargetObject(jsUnwrappedObject);
         }
     }
 
-    return static_cast<T*>( JS_GetInstancePrivate( cx, jsUnwrappedObject, &T::JsClass, nullptr ) );
+    return static_cast<T*>(JS_GetInstancePrivate(cx, jsUnwrappedObject, &T::JsClass, nullptr));
 }
 
 /// @brief Same as GetInnerInstancePrivate, but also check for JS::Value
 template <typename T>
-T* GetInnerInstancePrivate( JSContext* cx, JS::HandleValue jsValue )
+T* GetInnerInstancePrivate(JSContext* cx, JS::HandleValue jsValue)
 {
-    if ( !jsValue.isObject() )
+    if (!jsValue.isObject())
     {
         return nullptr;
     }
 
-    JS::RootedObject jsObject( cx, &jsValue.toObject() );
-    return GetInnerInstancePrivate<T>( cx, jsObject );
+    JS::RootedObject jsObject(cx, &jsValue.toObject());
+    return GetInnerInstancePrivate<T>(cx, jsObject);
 }
 
 } // namespace mozjs

@@ -5,28 +5,28 @@
 namespace qwr::string
 {
 
-std::vector<std::string_view> SplitByLines( std::string_view str )
+std::vector<std::string_view> SplitByLines(std::string_view str)
 {
     std::vector<std::string_view> lines;
-    for ( std::string_view curScope = str; !curScope.empty(); )
+    for (std::string_view curScope = str; !curScope.empty();)
     {
-        if ( size_t pos = curScope.find_first_of( "\r\n" );
-             std::string::npos != pos )
+        if (size_t pos = curScope.find_first_of("\r\n");
+             std::string::npos != pos)
         {
-            if ( pos )
+            if (pos)
             {
-                lines.emplace_back( curScope.data(), pos );
-                curScope.remove_prefix( pos );
+                lines.emplace_back(curScope.data(), pos);
+                curScope.remove_prefix(pos);
             }
 
-            while ( !curScope.empty() && ( curScope[0] == '\r' || curScope[0] == '\n' ) )
+            while (!curScope.empty() && (curScope[0] == '\r' || curScope[0] == '\n'))
             {
-                curScope.remove_prefix( 1 );
+                curScope.remove_prefix(1);
             }
         }
         else
         {
-            lines.emplace_back( curScope.data(), curScope.size() );
+            lines.emplace_back(curScope.data(), curScope.size());
             curScope = std::string_view{};
         }
     }

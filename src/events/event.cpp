@@ -7,8 +7,8 @@
 namespace smp
 {
 
-EventBase::EventBase( EventId id )
-    : id_( id )
+EventBase::EventBase(EventId id)
+    : id_(id)
 {
 }
 
@@ -17,7 +17,7 @@ std::unique_ptr<EventBase> EventBase::Clone()
     return nullptr;
 }
 
-void EventBase::SetTarget( std::shared_ptr<PanelTarget> pTarget )
+void EventBase::SetTarget(std::shared_ptr<PanelTarget> pTarget)
 {
     pTarget_ = pTarget;
 }
@@ -37,9 +37,9 @@ Event_Drag* EventBase::AsDragEvent()
     return nullptr;
 }
 
-PanelTarget::PanelTarget( panel::js_panel_window& panel )
-    : pPanel_( &panel )
-    , hWnd_( panel.GetHWND() )
+PanelTarget::PanelTarget(panel::js_panel_window& panel)
+    : pPanel_(&panel)
+    , hWnd_(panel.GetHWND())
 {
 }
 
@@ -50,7 +50,7 @@ HWND PanelTarget::GetHwnd()
 
 panel::js_panel_window* PanelTarget::GetPanel()
 {
-    assert( core_api::is_main_thread() );
+    assert(core_api::is_main_thread());
     return pPanel_;
 }
 

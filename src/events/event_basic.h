@@ -8,7 +8,7 @@ namespace smp
 class Event_Basic : public EventBase
 {
 public:
-    Event_Basic( EventId id );
+    Event_Basic(EventId id);
 
     void Run() override;
 };

@@ -7,15 +7,15 @@
 namespace mozjs
 {
 
-HWND GetPanelHwndForCurrentGlobal( JSContext* cx )
+HWND GetPanelHwndForCurrentGlobal(JSContext* cx)
 {
-    assert( cx );
+    assert(cx);
 
-    JS::RootedObject jsGlobal( cx, JS::CurrentGlobalOrNull( cx ) );
-    assert( jsGlobal );
+    JS::RootedObject jsGlobal(cx, JS::CurrentGlobalOrNull(cx));
+    assert(jsGlobal);
 
-    const auto pNativeGlobal = static_cast<mozjs::JsGlobalObject*>( JS_GetInstancePrivate( cx, jsGlobal, &mozjs::JsGlobalObject::JsClass, nullptr ) );
-    assert( pNativeGlobal );
+    const auto pNativeGlobal = static_cast<mozjs::JsGlobalObject*>(JS_GetInstancePrivate(cx, jsGlobal, &mozjs::JsGlobalObject::JsClass, nullptr));
+    assert(pNativeGlobal);
 
     return pNativeGlobal->GetPanelHwnd();
 }

@@ -6,6 +6,6 @@
 namespace qwr
 {
 
-std::optional<UINT> DetectCharSet( std::string_view text );
+std::optional<UINT> DetectCharSet(std::string_view text);
 
 } // namespace qwr

@@ -204,7 +204,7 @@ public:
 class PanelTarget final
 {
 public:
-    PanelTarget( panel::js_panel_window& panel );
+    PanelTarget(panel::js_panel_window& panel);
 
     [[nodiscard]] HWND GetHwnd();
 
@@ -219,12 +219,12 @@ private:
 class EventBase : public Runnable
 {
 public:
-    EventBase( EventId id );
+    EventBase(EventId id);
     virtual ~EventBase() = default;
 
     [[nodiscard]] virtual std::unique_ptr<EventBase> Clone();
 
-    void SetTarget( std::shared_ptr<PanelTarget> pTarget );
+    void SetTarget(std::shared_ptr<PanelTarget> pTarget);
     [[nodiscard]] EventId GetId() const;
 
     [[nodiscard]] virtual Event_Mouse* AsMouseEvent();

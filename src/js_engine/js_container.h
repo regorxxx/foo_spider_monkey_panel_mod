@@ -33,8 +33,8 @@ class JsContainer final
     friend class JsEngine;
 
 public:
-    JsContainer( smp::panel::js_panel_window& parentPanel );
-    JsContainer( const JsContainer& ) = delete;
+    JsContainer(smp::panel::js_panel_window& parentPanel);
+    JsContainer(const JsContainer&) = delete;
     ~JsContainer();
 
 public:
@@ -50,12 +50,12 @@ public:
     [[nodiscard]] bool Initialize();
     void Finalize();
 
-    void Fail( const std::string& errorText );
+    void Fail(const std::string& errorText);
 
     [[nodiscard]] JsStatus GetStatus() const;
 
-    [[nodiscard]] bool ExecuteScript( const std::string& scriptCode );
-    [[nodiscard]] bool ExecuteScriptFile( const std::filesystem::path& scriptPath );
+    [[nodiscard]] bool ExecuteScript(const std::string& scriptCode);
+    [[nodiscard]] bool ExecuteScriptFile(const std::filesystem::path& scriptPath);
 
     static void RunJobs();
 
@@ -64,10 +64,10 @@ public:
 
 public:
     template <typename ReturnType = std::nullptr_t, typename... ArgTypes>
-    std::optional<ReturnType> InvokeJsCallback( std::string functionName,
-                                                ArgTypes&&... args )
+    std::optional<ReturnType> InvokeJsCallback(std::string functionName,
+                                                ArgTypes&&... args)
     {
-        if ( !IsReadyForCallback() )
+        if (!IsReadyForCallback())
         {
             return std::nullopt;
         }
@@ -75,18 +75,18 @@ public:
         auto selfSaver = shared_from_this();
 
         OnJsActionStart();
-        qwr::final_action autoAction( [&] { OnJsActionEnd(); } );
+        qwr::final_action autoAction([&] { OnJsActionEnd(); });
 
-        return mozjs::InvokeJsCallback<ReturnType>( pJsCtx_, jsGlobal_, functionName, std::forward<ArgTypes>( args )... );
+        return mozjs::InvokeJsCallback<ReturnType>(pJsCtx_, jsGlobal_, functionName, std::forward<ArgTypes>(args)...);
     }
 
-    [[nodiscard]] bool InvokeOnDragAction( const std::string& functionName, const POINTL& pt, uint32_t keyState, smp::panel::DragActionParams& actionParams );
-    void InvokeOnNotify( const std::wstring& name, JS::HandleValue info );
-    void InvokeOnPaint( Gdiplus::Graphics& gr );
-    bool InvokeJsAsyncTask( JsAsyncTask& jsTask );
+    [[nodiscard]] bool InvokeOnDragAction(const std::string& functionName, const POINTL& pt, uint32_t keyState, smp::panel::DragActionParams& actionParams);
+    void InvokeOnNotify(const std::wstring& name, JS::HandleValue info);
+    void InvokeOnPaint(Gdiplus::Graphics& gr);
+    bool InvokeJsAsyncTask(JsAsyncTask& jsTask);
 
 private:
-    void SetJsCtx( JSContext* cx );
+    void SetJsCtx(JSContext* cx);
 
     [[nodiscard]] bool IsReadyForCallback() const;
 

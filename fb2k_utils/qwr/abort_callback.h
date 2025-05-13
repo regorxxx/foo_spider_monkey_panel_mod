@@ -12,8 +12,8 @@ class GlobalAbortCallback : public abort_callback
 public:
     static GlobalAbortCallback& GetInstance();
 
-    void AddListener( pfc::event& listener );
-    void RemoveListener( pfc::event& listener );
+    void AddListener(pfc::event& listener);
+    void RemoveListener(pfc::event& listener);
     void Abort();
 
     // abort_callback
@@ -30,16 +30,16 @@ private:
 class TimedAbortCallback : public abort_callback
 {
 public:
-    TimedAbortCallback( const std::string& timeoutLogMessage = {}, uint32_t timeoutSeconds = 5 );
-    TimedAbortCallback( const TimedAbortCallback& ) = delete;
+    TimedAbortCallback(const std::string& timeoutLogMessage = {}, uint32_t timeoutSeconds = 5);
+    TimedAbortCallback(const TimedAbortCallback&) = delete;
     ~TimedAbortCallback();
-    TimedAbortCallback& operator=( const TimedAbortCallback& ) = delete;
+    TimedAbortCallback& operator=(const TimedAbortCallback&) = delete;
 
     // abort_callback
     bool is_aborting() const override;
     abort_callback_event get_abort_event() const override;
 
-    static void CALLBACK timerProc( PVOID lpParameter, BOOLEAN /*TimerOrWaitFired*/ );
+    static void CALLBACK timerProc(PVOID lpParameter, BOOLEAN /*TimerOrWaitFired*/);
 
 private:
     const std::string timeoutLogMessage_;

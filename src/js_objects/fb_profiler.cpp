@@ -33,25 +33,25 @@ JSClass jsClass = {
     &jsOps
 };
 
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( Print, JsFbProfiler::Print, JsFbProfiler::PrintWithOpt, 2 )
-MJS_DEFINE_JS_FN_FROM_NATIVE( Reset, JsFbProfiler::Reset )
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(Print, JsFbProfiler::Print, JsFbProfiler::PrintWithOpt, 2)
+MJS_DEFINE_JS_FN_FROM_NATIVE(Reset, JsFbProfiler::Reset)
 
 constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
     {
-        JS_FN( "Print", Print, 0, kDefaultPropsFlags ),
-        JS_FN( "Reset", Reset, 0, kDefaultPropsFlags ),
+        JS_FN("Print", Print, 0, kDefaultPropsFlags),
+        JS_FN("Reset", Reset, 0, kDefaultPropsFlags),
         JS_FS_END,
-    } );
+    });
 
-MJS_DEFINE_JS_FN_FROM_NATIVE( get_Time, JsFbProfiler::get_Time )
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_Time, JsFbProfiler::get_Time)
 
 constexpr auto jsProperties = std::to_array<JSPropertySpec>(
     {
-        JS_PSG( "Time", get_Time, kDefaultPropsFlags ),
+        JS_PSG("Time", get_Time, kDefaultPropsFlags),
         JS_PS_END,
-    } );
+    });
 
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( FbProfiler_Constructor, JsFbProfiler::Constructor, JsFbProfiler::ConstructorWithOpt, 1 )
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(FbProfiler_Constructor, JsFbProfiler::Constructor, JsFbProfiler::ConstructorWithOpt, 1)
 
 } // namespace
 
@@ -64,76 +64,76 @@ const JSPropertySpec* JsFbProfiler::JsProperties = jsProperties.data();
 const JsPrototypeId JsFbProfiler::PrototypeId = JsPrototypeId::FbProfiler;
 const JSNative JsFbProfiler::JsConstructor = ::FbProfiler_Constructor;
 
-JsFbProfiler::JsFbProfiler( JSContext* cx, const std::string& name )
-    : pJsCtx_( cx )
-    , name_( name )
+JsFbProfiler::JsFbProfiler(JSContext* cx, const std::string& name)
+    : pJsCtx_(cx)
+    , name_(name)
 {
     timer_.start();
 }
 
 std::unique_ptr<JsFbProfiler>
-JsFbProfiler::CreateNative( JSContext* cx, const std::string& name )
+JsFbProfiler::CreateNative(JSContext* cx, const std::string& name)
 {
-    return std::unique_ptr<JsFbProfiler>( new JsFbProfiler( cx, name ) );
+    return std::unique_ptr<JsFbProfiler>(new JsFbProfiler(cx, name));
 }
 
-size_t JsFbProfiler::GetInternalSize( const std::string& name )
+size_t JsFbProfiler::GetInternalSize(const std::string& name)
 {
     return name.length();
 }
 
-JSObject* JsFbProfiler::Constructor( JSContext* cx, const std::string& name )
+JSObject* JsFbProfiler::Constructor(JSContext* cx, const std::string& name)
 {
-    return JsFbProfiler::CreateJs( cx, name );
+    return JsFbProfiler::CreateJs(cx, name);
 }
 
-JSObject* JsFbProfiler::ConstructorWithOpt( JSContext* cx, size_t optArgCount, const std::string& name )
+JSObject* JsFbProfiler::ConstructorWithOpt(JSContext* cx, size_t optArgCount, const std::string& name)
 {
-    switch ( optArgCount )
+    switch (optArgCount)
     {
     case 0:
-        return Constructor( cx, name );
+        return Constructor(cx, name);
     case 1:
-        return Constructor( cx );
+        return Constructor(cx);
     default:
-        throw qwr::QwrException( "Internal error: invalid number of optional arguments specified: {}", optArgCount );
+        throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
     }
 }
 
-void JsFbProfiler::Print( const std::string& additionalMsg, bool printComponentInfo )
+void JsFbProfiler::Print(const std::string& additionalMsg, bool printComponentInfo)
 {
     std::string msg;
-    if ( printComponentInfo )
+    if (printComponentInfo)
     {
         msg += SMP_NAME_WITH_VERSION ": ";
     }
     msg += "profiler";
-    if ( !name_.empty() )
+    if (!name_.empty())
     {
-        msg += fmt::format( " ({})", name_ );
+        msg += fmt::format(" ({})", name_);
     }
     msg += ":";
-    if ( !additionalMsg.empty() )
+    if (!additionalMsg.empty())
     {
         msg += " " + additionalMsg;
     }
-    msg += fmt::format( " {}ms", static_cast<uint32_t>( timer_.query() * 1000 ) );
+    msg += fmt::format(" {}ms", static_cast<uint32_t>(timer_.query() * 1000));
 
     FB2K_console_formatter() << msg;
 }
 
-void JsFbProfiler::PrintWithOpt( size_t optArgCount, const std::string& additionalMsg, bool printComponentInfo )
+void JsFbProfiler::PrintWithOpt(size_t optArgCount, const std::string& additionalMsg, bool printComponentInfo)
 {
-    switch ( optArgCount )
+    switch (optArgCount)
     {
     case 0:
-        return Print( additionalMsg, printComponentInfo );
+        return Print(additionalMsg, printComponentInfo);
     case 1:
-        return Print( additionalMsg );
+        return Print(additionalMsg);
     case 2:
         return Print();
     default:
-        throw qwr::QwrException( "Internal error: invalid number of optional arguments specified: {}", optArgCount );
+        throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
     }
 }
 
@@ -144,7 +144,7 @@ void JsFbProfiler::Reset()
 
 uint32_t JsFbProfiler::get_Time()
 {
-    return static_cast<uint32_t>( timer_.query() * 1000 );
+    return static_cast<uint32_t>(timer_.query() * 1000);
 }
 
 } // namespace mozjs

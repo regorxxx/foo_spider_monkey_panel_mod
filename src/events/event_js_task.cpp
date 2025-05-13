@@ -8,16 +8,16 @@
 namespace smp
 {
 
-Event_JsTask::Event_JsTask( EventId id, std::shared_ptr<mozjs::JsAsyncTask> pTask )
-    : Event_JsExecutor( id )
-    , pTask_( pTask )
+Event_JsTask::Event_JsTask(EventId id, std::shared_ptr<mozjs::JsAsyncTask> pTask)
+    : Event_JsExecutor(id)
+    , pTask_(pTask)
 {
-    assert( pTask_ );
+    assert(pTask_);
 }
 
-std::optional<bool> Event_JsTask::JsExecute( mozjs::JsContainer& jsContainer )
+std::optional<bool> Event_JsTask::JsExecute(mozjs::JsContainer& jsContainer)
 {
-    jsContainer.InvokeJsAsyncTask( *pTask_ );
+    jsContainer.InvokeJsAsyncTask(*pTask_);
     return std::nullopt;
 }
 

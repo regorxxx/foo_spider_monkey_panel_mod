@@ -31,35 +31,35 @@ class Event_JsCallback
 {
 public:
     template <typename... ArgsFwd>
-    Event_JsCallback( EventId id, ArgsFwd&&... args )
-        : Event_JsExecutor( id )
-        , data_( std::forward<ArgsFwd>( args )... )
+    Event_JsCallback(EventId id, ArgsFwd&&... args)
+        : Event_JsExecutor(id)
+        , data_(std::forward<ArgsFwd>(args)...)
     {
-        static_assert( !impl::Contains<metadb_handle_list, Args...>(), "Use shared_ptr instead" );
-        assert( kCallbackIdToName.count( id_ ) );
+        static_assert(!impl::Contains<metadb_handle_list, Args...>(), "Use shared_ptr instead");
+        assert(kCallbackIdToName.count(id_));
     }
 
-    std::optional<bool> JsExecute( mozjs::JsContainer& jsContainer ) override
+    std::optional<bool> JsExecute(mozjs::JsContainer& jsContainer) override
     {
-        const auto callbackName = fmt::format( "on_{}", kCallbackIdToName.at( id_ ) );
+        const auto callbackName = fmt::format("on_{}", kCallbackIdToName.at(id_));
         std::apply(
-            [&]( auto&&... args ) {
-                jsContainer.InvokeJsCallback<bool>( callbackName, std::forward<decltype( args )>( args )... );
+            [&](auto&&... args) {
+                jsContainer.InvokeJsCallback<bool>(callbackName, std::forward<decltype(args)>(args)...);
             },
-            std::move( data_ ) );
+            std::move(data_));
 
         return std::nullopt;
     }
 
     [[nodiscard]] std::unique_ptr<EventBase> Clone() override
     {
-        if constexpr ( std::is_copy_constructible_v<std::tuple<Args...>> )
+        if constexpr (std::is_copy_constructible_v<std::tuple<Args...>>)
         {
             return std::apply(
-                [&]( const auto&... args ) {
-                    return std::make_unique<Event_JsCallback<std::decay_t<Args>...>>( id_, args... );
+                [&](const auto&... args) {
+                    return std::make_unique<Event_JsCallback<std::decay_t<Args>...>>(id_, args...);
                 },
-                data_ );
+                data_);
         }
         else
         {
@@ -72,9 +72,9 @@ private:
 };
 
 template <typename... Args>
-auto GenerateEvent_JsCallback( EventId id, Args&&... args )
+auto GenerateEvent_JsCallback(EventId id, Args&&... args)
 {
-    return std::make_unique<Event_JsCallback<std::decay_t<Args>...>>( id, std::forward<Args>( args )... );
+    return std::make_unique<Event_JsCallback<std::decay_t<Args>...>>(id, std::forward<Args>(args)...);
 }
 
 } // namespace smp

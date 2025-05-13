@@ -15,13 +15,13 @@ class TimeoutExecutor
     , public std::enable_shared_from_this<TimeoutExecutor>
 {
 public:
-    TimeoutExecutor( TimeoutManager& pParent, std::shared_ptr<PanelTarget> pTarget );
+    TimeoutExecutor(TimeoutManager& pParent, std::shared_ptr<PanelTarget> pTarget);
     ~TimeoutExecutor();
 
     void Shutdown();
-    void Cancel( bool waitForDestruction );
+    void Cancel(bool waitForDestruction);
 
-    void MaybeSchedule( const TimeStamp& targetDeadline );
+    void MaybeSchedule(const TimeStamp& targetDeadline);
 
     // Runnable
     void Run() override;
@@ -30,11 +30,11 @@ public:
     void Notify() override;
 
 private:
-    void Schedule( const TimeStamp& targetDeadline );
-    void MaybeReschedule( const TimeStamp& targetDeadline );
+    void Schedule(const TimeStamp& targetDeadline);
+    void MaybeReschedule(const TimeStamp& targetDeadline);
 
-    void ScheduleImmediate( const TimeStamp& targetDeadline, const TimeStamp& now );
-    void ScheduleDelayed( const TimeStamp& targetDeadline, const TimeStamp& now );
+    void ScheduleImmediate(const TimeStamp& targetDeadline, const TimeStamp& now);
+    void ScheduleDelayed(const TimeStamp& targetDeadline, const TimeStamp& now);
 
     void MaybeExecute();
 

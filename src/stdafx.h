@@ -9,9 +9,9 @@
 #include <WinSock2.h>
 #include <Windows.h>
 #include <windowsx.h>
-#pragma warning( push, 0 )
+#pragma warning(push, 0)
 #include <GdiPlus.h>
-#pragma warning( pop ) 
+#pragma warning(pop) 
 
 // COM objects
 #include <ActivScp.h>
@@ -38,23 +38,23 @@
 #include <atlwin.h>
 
 // foobar2000 SDK
-#pragma warning( push, 0 )
+#pragma warning(push, 0)
 #include <foobar2000/SDK/foobar2000.h>
 #include <pfc/string-conv-lite.h>
-#pragma warning( pop ) 
+#pragma warning(pop) 
 
 // Columns UI SDK
-#pragma warning( push, 0 )
+#pragma warning(push, 0)
 #include <columns_ui-sdk/ui_extension.h>
-#pragma warning( pop )
+#pragma warning(pop)
 
 // 4251: dll interface warning
 #define SMP_MJS_SUPPRESS_WARNINGS_PUSH \
-    __pragma( warning( push ) )        \
-    __pragma( warning( disable : 4251 ) ) 
+    __pragma(warning(push))        \
+    __pragma(warning(disable : 4251)) 
 
 #define SMP_MJS_SUPPRESS_WARNINGS_POP \
-    __pragma( warning( pop ) )
+    __pragma(warning(pop))
 
 // Mozilla SpiderMonkey
 SMP_MJS_SUPPRESS_WARNINGS_PUSH

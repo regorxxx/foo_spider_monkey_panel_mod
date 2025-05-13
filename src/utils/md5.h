@@ -12,18 +12,18 @@ class MD5
 
 public:
     MD5();
-    MD5( std::span<const uint8_t> input );
+    MD5(std::span<const uint8_t> input);
 
-    void Update( std::span<const uint8_t> input );
+    void Update(std::span<const uint8_t> input);
     void Finalize();
 
     [[nodiscard]] std::string HexDigest() const;
 
 private:
     void Init();
-    void Transform( const uint8_t block[kBlocksize] );
-    static void Decode( uint32_t output[], const uint8_t input[], size_t len );
-    static void Encode( uint8_t output[], const uint32_t input[], size_t len );
+    void Transform(const uint8_t block[kBlocksize]);
+    static void Decode(uint32_t output[], const uint8_t input[], size_t len);
+    static void Encode(uint8_t output[], const uint32_t input[], size_t len);
 
 private:
     bool finalized = false;
@@ -33,6 +33,6 @@ private:
     uint8_t digest[16];         // the result
 };
 
-[[nodiscard]] std::string CalculateMd5( std::span<const uint8_t> input );
+[[nodiscard]] std::string CalculateMd5(std::span<const uint8_t> input);
 
 } // namespace smp

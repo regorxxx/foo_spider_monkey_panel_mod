@@ -26,11 +26,11 @@ public:
 public:
     ~JsFbWindow() override = default;
 
-    static std::unique_ptr<JsFbWindow> CreateNative( JSContext* cx );
+    static std::unique_ptr<JsFbWindow> CreateNative(JSContext* cx);
     static size_t GetInternalSize();
 
 public:
-    void SetPseudoCaption( uint32_t x, uint32_t y, uint32_t w, uint32_t h );
+    void SetPseudoCaption(uint32_t x, uint32_t y, uint32_t w, uint32_t h);
 
 public:
     JSObject* get_Aero();
@@ -41,15 +41,15 @@ public:
     uint8_t get_MainWindowState();
     bool get_Sizing();
     float get_SystemCpuUsage();
-    void put_BlockMaximize( bool block );
-    void put_FrameStyle( uint8_t style );
-    void put_FullScreen( bool is );
-    void put_MainWindowState( uint8_t state );
+    void put_BlockMaximize(bool block);
+    void put_FrameStyle(uint8_t style);
+    void put_FullScreen(bool is);
+    void put_MainWindowState(uint8_t state);
 
-    void put_Sizing( bool enable );
+    void put_Sizing(bool enable);
 
 private:
-    JsFbWindow( JSContext* cx, HWND hFbWnd );
+    JsFbWindow(JSContext* cx, HWND hFbWnd);
 
 private:
     JSContext* pJsCtx_ = nullptr;

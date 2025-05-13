@@ -24,51 +24,51 @@ enum class JsValueType : uint32_t
 namespace smp::config::binary
 {
 
-PanelSettings LoadSettings( stream_reader& reader, abort_callback& abort )
+PanelSettings LoadSettings(stream_reader& reader, abort_callback& abort)
 {
     try
     {
         PanelSettings panelSettings;
         PanelSettings_InMemory payload;
 
-        reader.skip_object( sizeof( false ), abort ); // skip "delay load"
+        reader.skip_object(sizeof(false), abort); // skip "delay load"
         panelSettings.id = [&] {
             GUID guid;
-            reader.read_object_t( guid, abort );
+            reader.read_object_t(guid, abort);
 
-            const auto guidStr = utils::GuidToStr( guid );
-            return qwr::unicode::ToU8( guidStr );
+            const auto guidStr = utils::GuidToStr(guid);
+            return qwr::unicode::ToU8(guidStr);
         }();
-        reader.read_object( &panelSettings.edgeStyle, sizeof( panelSettings.edgeStyle ), abort );
-        panelSettings.properties = LoadProperties( reader, abort );
-        reader.skip_object( sizeof( false ), abort ); // skip "disable before"
-        reader.read_object_t( payload.shouldGrabFocus, abort );
-        reader.skip_object( sizeof( WINDOWPLACEMENT ), abort ); // skip WINDOWPLACEMENT
+        reader.read_object(&panelSettings.edgeStyle, sizeof(panelSettings.edgeStyle), abort);
+        panelSettings.properties = LoadProperties(reader, abort);
+        reader.skip_object(sizeof(false), abort); // skip "disable before"
+        reader.read_object_t(payload.shouldGrabFocus, abort);
+        reader.skip_object(sizeof(WINDOWPLACEMENT), abort); // skip WINDOWPLACEMENT
         payload.script = reader.read_string(abort).get_ptr();
-        reader.read_object_t( panelSettings.isPseudoTransparent, abort );
+        reader.read_object_t(panelSettings.isPseudoTransparent, abort);
 
         panelSettings.payload = payload;
 
         return panelSettings;
     }
-    catch ( const pfc::exception& e )
+    catch (const pfc::exception& e)
     {
-        throw qwr::QwrException( e.what() );
+        throw qwr::QwrException(e.what());
     }
 }
 
-void SaveSettings( stream_writer& writer, abort_callback& abort, const PanelSettings& settings )
+void SaveSettings(stream_writer& writer, abort_callback& abort, const PanelSettings& settings)
 {
     try
     {
-        assert( std::holds_alternative<PanelSettings_InMemory>( settings.payload ) );
-        const auto& payload = std::get<PanelSettings_InMemory>( settings.payload );
+        assert(std::holds_alternative<PanelSettings_InMemory>(settings.payload));
+        const auto& payload = std::get<PanelSettings_InMemory>(settings.payload);
 
-        writer.write_object_t( false, abort ); // skip "delay load"
+        writer.write_object_t(false, abort); // skip "delay load"
         {
             const auto guid = [&] {
-                const auto guidOpt = utils::StrToGuid( qwr::unicode::ToWide( settings.id ) );
-                if ( guidOpt )
+                const auto guidOpt = utils::StrToGuid(qwr::unicode::ToWide(settings.id));
+                if (guidOpt)
                 {
                     return *guidOpt;
                 }
@@ -77,35 +77,35 @@ void SaveSettings( stream_writer& writer, abort_callback& abort, const PanelSett
                     return utils::GenerateGuid();
                 }
             }();
-            writer.write_object_t( guid, abort );
+            writer.write_object_t(guid, abort);
         }
-        writer.write_object_t( static_cast<uint8_t>( settings.edgeStyle ), abort );
-        SaveProperties( writer, abort, settings.properties );
-        writer.write_object_t( false, abort ); // skip "disable before"
-        writer.write_object_t( payload.shouldGrabFocus, abort );
+        writer.write_object_t(static_cast<uint8_t>(settings.edgeStyle), abort);
+        SaveProperties(writer, abort, settings.properties);
+        writer.write_object_t(false, abort); // skip "disable before"
+        writer.write_object_t(payload.shouldGrabFocus, abort);
         {
             WINDOWPLACEMENT dummy{};
-            writer.write_object( &dummy, sizeof( dummy ), abort ); // skip WINDOWPLACEMENT
+            writer.write_object(&dummy, sizeof(dummy), abort); // skip WINDOWPLACEMENT
         }
         writer.write_string(payload.script, abort);
-        writer.write_object_t( settings.isPseudoTransparent, abort );
+        writer.write_object_t(settings.isPseudoTransparent, abort);
     }
-    catch ( const pfc::exception& e )
+    catch (const pfc::exception& e)
     {
-        throw qwr::QwrException( e.what() );
+        throw qwr::QwrException(e.what());
     }
 }
 
-PanelProperties LoadProperties( stream_reader& reader, abort_callback& abort )
+PanelProperties LoadProperties(stream_reader& reader, abort_callback& abort)
 {
     try
     {
         PanelProperties properties;
 
         uint32_t count;
-        reader.read_lendian_t( count, abort );
+        reader.read_lendian_t(count, abort);
 
-        for ( auto i: ranges::views::indices( count ) )
+        for (auto i: ranges::views::indices(count))
         {
             (void)i;
 
@@ -114,28 +114,28 @@ PanelProperties LoadProperties( stream_reader& reader, abort_callback& abort )
             const std::string u8PropName = reader.read_string(abort).get_ptr();
 
             uint32_t valueType;
-            reader.read_lendian_t( valueType, abort );
+            reader.read_lendian_t(valueType, abort);
 
-            switch ( static_cast<JsValueType>( valueType ) )
+            switch (static_cast<JsValueType>(valueType))
             {
             case JsValueType::pt_boolean:
             {
                 bool value;
-                reader.read_lendian_t( value, abort );
+                reader.read_lendian_t(value, abort);
                 serializedValue = value;
                 break;
             }
             case JsValueType::pt_int32:
             {
                 int32_t value;
-                reader.read_lendian_t( value, abort );
+                reader.read_lendian_t(value, abort);
                 serializedValue = value;
                 break;
             }
             case JsValueType::pt_double:
             {
                 double value;
-                reader.read_lendian_t( value, abort );
+                reader.read_lendian_t(value, abort);
                 serializedValue = value;
                 break;
             }
@@ -146,76 +146,76 @@ PanelProperties LoadProperties( stream_reader& reader, abort_callback& abort )
             }
             default:
             {
-                assert( 0 );
+                assert(0);
                 continue;
             }
             }
 
-            properties.values.emplace( qwr::unicode::ToWide( u8PropName ), std::make_shared<mozjs::SerializedJsValue>( serializedValue ) );
+            properties.values.emplace(qwr::unicode::ToWide(u8PropName), std::make_shared<mozjs::SerializedJsValue>(serializedValue));
         }
 
         return properties;
     }
-    catch ( const pfc::exception& e )
+    catch (const pfc::exception& e)
     {
-        throw qwr::QwrException( e.what() );
+        throw qwr::QwrException(e.what());
     }
 }
 
-void SaveProperties( stream_writer& writer, abort_callback& abort, const PanelProperties& properties )
+void SaveProperties(stream_writer& writer, abort_callback& abort, const PanelProperties& properties)
 {
     try
     {
-        writer.write_lendian_t( static_cast<uint32_t>( properties.values.size() ), abort );
+        writer.write_lendian_t(static_cast<uint32_t>(properties.values.size()), abort);
 
-        for ( const auto& [name, pValue]: properties.values )
+        for (const auto& [name, pValue]: properties.values)
         {
             writer.write_string(qwr::unicode::ToU8(name), abort);
 
             const auto& serializedValue = *pValue;
 
-            const JsValueType valueType = std::visit( []( auto&& arg ) {
-                using T = std::decay_t<decltype( arg )>;
-                if constexpr ( std::is_same_v<T, bool> )
+            const JsValueType valueType = std::visit([](auto&& arg) {
+                using T = std::decay_t<decltype(arg)>;
+                if constexpr (std::is_same_v<T, bool>)
                 {
                     return JsValueType::pt_boolean;
                 }
-                else if constexpr ( std::is_same_v<T, int32_t> )
+                else if constexpr (std::is_same_v<T, int32_t>)
                 {
                     return JsValueType::pt_int32;
                 }
-                else if constexpr ( std::is_same_v<T, double> )
+                else if constexpr (std::is_same_v<T, double>)
                 {
                     return JsValueType::pt_double;
                 }
-                else if constexpr ( std::is_same_v<T, std::string> )
+                else if constexpr (std::is_same_v<T, std::string>)
                 {
                     return JsValueType::pt_string;
                 }
                 else
                 {
-                    static_assert( qwr::always_false_v<T>, "non-exhaustive visitor!" );
+                    static_assert(qwr::always_false_v<T>, "non-exhaustive visitor!");
                 }
             },
-                                                      serializedValue );
+                                                      serializedValue);
 
-            writer.write_lendian_t( static_cast<uint32_t>( valueType ), abort );
+            writer.write_lendian_t(static_cast<uint32_t>(valueType), abort);
 
-            std::visit( [&writer, &abort]( auto&& arg ) {
-                using T = std::decay_t<decltype( arg )>;
-                if constexpr ( std::is_same_v<T, std::string> )
+            std::visit([&writer, &abort](auto&& arg) {
+                using T = std::decay_t<decltype(arg)>;
+                if constexpr (std::is_same_v<T, std::string>)
                 {
-                    writer.write_string(arg, abort );
+                    writer.write_string(arg, abort);
                 }
                 else
                 {
-                    writer.write_lendian_t( arg, abort );
+                    writer.write_lendian_t(arg, abort);
                 }
             },
-                        serializedValue );
+                        serializedValue);
         }
     }
-    catch ( const pfc::exception& )
+    catch (const pfc::exception&)
     {
     }
 }

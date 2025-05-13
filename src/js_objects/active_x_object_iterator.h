@@ -34,20 +34,20 @@ public:
 public:
     ~JsActiveXObject_Iterator() override;
 
-    static std::unique_ptr<JsActiveXObject_Iterator> CreateNative( JSContext* cx, JsActiveXObject& activeXObject );
-    static size_t GetInternalSize( JsActiveXObject& activeXObject );
+    static std::unique_ptr<JsActiveXObject_Iterator> CreateNative(JSContext* cx, JsActiveXObject& activeXObject);
+    static size_t GetInternalSize(JsActiveXObject& activeXObject);
 
 public:
     JSObject* Next();
 
 public:
-    static bool IsIterable( const JsActiveXObject& activeXObject );
+    static bool IsIterable(const JsActiveXObject& activeXObject);
 
 private:
     // alias for IEnumVARIANTPtr: don't want to drag extra com headers
-    using EnumVARIANTComPtr = _com_ptr_t<_com_IIID<IEnumVARIANT, &__uuidof( IEnumVARIANT )>>;
+    using EnumVARIANTComPtr = _com_ptr_t<_com_IIID<IEnumVARIANT, &__uuidof(IEnumVARIANT)>>;
 
-    JsActiveXObject_Iterator( JSContext* cx, EnumVARIANTComPtr pEnum );
+    JsActiveXObject_Iterator(JSContext* cx, EnumVARIANTComPtr pEnum);
 
     void LoadCurrentElement();
 

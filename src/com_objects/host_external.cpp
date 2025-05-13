@@ -5,16 +5,16 @@
 namespace smp::com
 {
 
-HostExternal::HostExternal( _variant_t data )
-    : data_( data )
+HostExternal::HostExternal(_variant_t data)
+    : data_(data)
 {
 }
 
-STDMETHODIMP HostExternal::get_dialogArguments( VARIANT* pData )
+STDMETHODIMP HostExternal::get_dialogArguments(VARIANT* pData)
 {
-    if ( pData )
+    if (pData)
     {
-        return VariantCopy( pData, &data_ );
+        return VariantCopy(pData, &data_);
     }
     else
     {

@@ -13,9 +13,9 @@ public:
     IUiDdx() = default;
     virtual ~IUiDdx() = default;
 
-    virtual bool IsMatchingId( int controlId ) const = 0;
+    virtual bool IsMatchingId(int controlId) const = 0;
 
-    virtual void SetHwnd( HWND hWnd ) = 0;
+    virtual void SetHwnd(HWND hWnd) = 0;
     virtual void ReadFromUi() = 0;
     virtual void WriteToUi() = 0;
 };
@@ -27,44 +27,44 @@ class UiDdx_CheckBox final
 public:
     using value_type = typename T;
 
-    static_assert( std::is_convertible_v<T, bool> );
-    static_assert( std::is_assignable_v<T&, bool> );
+    static_assert(std::is_convertible_v<T, bool>);
+    static_assert(std::is_assignable_v<T&, bool>);
 
 public:
-    UiDdx_CheckBox( T& value, int controlId )
-        : value_( value )
-        , controlId_( controlId )
+    UiDdx_CheckBox(T& value, int controlId)
+        : value_(value)
+        , controlId_(controlId)
     {
     }
     ~UiDdx_CheckBox() override = default;
 
-    bool IsMatchingId( int controlId ) const override
+    bool IsMatchingId(int controlId) const override
     {
-        return ( controlId == controlId_ );
+        return (controlId == controlId_);
     }
 
-    void SetHwnd( HWND hWnd ) override
+    void SetHwnd(HWND hWnd) override
     {
         hWnd_ = hWnd;
     }
 
     void ReadFromUi() override
     {
-        if ( !hWnd_ )
+        if (!hWnd_)
         {
             return;
         }
 
-        value_ = uButton_GetCheck( hWnd_, controlId_ );
+        value_ = uButton_GetCheck(hWnd_, controlId_);
     }
     void WriteToUi() override
     {
-        if ( !hWnd_ )
+        if (!hWnd_)
         {
             return;
         }
 
-        uButton_SetCheck( hWnd_, controlId_, static_cast<bool>( value_ ) );
+        uButton_SetCheck(hWnd_, controlId_, static_cast<bool>(value_));
     }
 
 private:
@@ -80,55 +80,55 @@ class UiDdx_TextEdit final
 public:
     using value_type = typename T;
 
-    static_assert( std::is_convertible_v<T, std::string> );
-    static_assert( std::is_assignable_v<T&, std::string> );
+    static_assert(std::is_convertible_v<T, std::string>);
+    static_assert(std::is_assignable_v<T&, std::string>);
 
 public:
-    UiDdx_TextEdit( T& value, int controlId )
-        : value_( value )
-        , controlId_( controlId )
+    UiDdx_TextEdit(T& value, int controlId)
+        : value_(value)
+        , controlId_(controlId)
     {
     }
     ~UiDdx_TextEdit() override = default;
 
-    bool IsMatchingId( int controlId ) const override
+    bool IsMatchingId(int controlId) const override
     {
-        return ( controlId == controlId_ );
+        return (controlId == controlId_);
     }
 
-    void SetHwnd( HWND hWnd ) override
+    void SetHwnd(HWND hWnd) override
     {
         hWnd_ = hWnd;
     }
 
     void ReadFromUi() override
     {
-        if ( !hWnd_ )
+        if (!hWnd_)
         {
             return;
         }
 
-        value_ = qwr::pfc_x::uGetDlgItemText<char>( hWnd_, controlId_ );
+        value_ = qwr::pfc_x::uGetDlgItemText<char>(hWnd_, controlId_);
     }
     void WriteToUi() override
     {
-        if ( !hWnd_ )
+        if (!hWnd_)
         {
             return;
         }
 
         const auto& value = [&] {
-            if constexpr ( std::is_convertible_v<decltype( value_ ), pfc::string8_fast> )
+            if constexpr (std::is_convertible_v<decltype(value_), pfc::string8_fast>)
             {
-                return std::string( static_cast<pfc::string8_fast>( value_ ).c_str() );
+                return std::string(static_cast<pfc::string8_fast>(value_).c_str());
             }
             else
             {
-                return static_cast<std::string>( value_ );
+                return static_cast<std::string>(value_);
             }
         }();
 
-        uSetDlgItemText( hWnd_, controlId_, value.c_str() );
+        uSetDlgItemText(hWnd_, controlId_, value.c_str());
     }
 
 private:
@@ -144,49 +144,49 @@ class UiDdx_TextEditNum final
 public:
     using value_type = typename T;
 
-    static_assert( std::is_convertible_v<T, int> );
-    static_assert( std::is_assignable_v<T&, int> );
+    static_assert(std::is_convertible_v<T, int>);
+    static_assert(std::is_assignable_v<T&, int>);
 
 public:
-    UiDdx_TextEditNum( T& value, int controlId )
-        : value_( value )
-        , controlId_( controlId )
+    UiDdx_TextEditNum(T& value, int controlId)
+        : value_(value)
+        , controlId_(controlId)
     {
     }
     ~UiDdx_TextEditNum() override = default;
 
-    bool IsMatchingId( int controlId ) const override
+    bool IsMatchingId(int controlId) const override
     {
-        return ( controlId == controlId_ );
+        return (controlId == controlId_);
     }
 
-    void SetHwnd( HWND hWnd ) override
+    void SetHwnd(HWND hWnd) override
     {
         hWnd_ = hWnd;
     }
 
     void ReadFromUi() override
     {
-        if ( !hWnd_ )
+        if (!hWnd_)
         {
             return;
         }
 
         BOOL lpTranslated;
-        const auto value = GetDlgItemInt( hWnd_, controlId_, &lpTranslated, false );
-        if ( lpTranslated )
+        const auto value = GetDlgItemInt(hWnd_, controlId_, &lpTranslated, false);
+        if (lpTranslated)
         {
             value_ = value;
         }
     }
     void WriteToUi() override
     {
-        if ( !hWnd_ )
+        if (!hWnd_)
         {
             return;
         }
 
-        SetDlgItemInt( hWnd_, controlId_, static_cast<int>( value_ ), false );
+        SetDlgItemInt(hWnd_, controlId_, static_cast<int>(value_), false);
     }
 
 private:
@@ -202,37 +202,37 @@ class UiDdx_RadioRange final
 public:
     using value_type = typename T;
 
-    static_assert( std::is_convertible_v<T, int> );
-    static_assert( std::is_assignable_v<T&, int> );
+    static_assert(std::is_convertible_v<T, int>);
+    static_assert(std::is_assignable_v<T&, int>);
 
 public:
-    UiDdx_RadioRange( T& value, std::span<const int> controlIdList )
-        : value_( value )
-        , controlIdList_( controlIdList.begin(), controlIdList.end() )
+    UiDdx_RadioRange(T& value, std::span<const int> controlIdList)
+        : value_(value)
+        , controlIdList_(controlIdList.begin(), controlIdList.end())
     {
     }
     ~UiDdx_RadioRange() override = default;
 
-    bool IsMatchingId( int controlId ) const override
+    bool IsMatchingId(int controlId) const override
     {
-        return ( controlIdList_.cend() != ranges::find( controlIdList_, controlId ) );
+        return (controlIdList_.cend() != ranges::find(controlIdList_, controlId));
     }
 
-    void SetHwnd( HWND hWnd ) override
+    void SetHwnd(HWND hWnd) override
     {
         hWnd_ = hWnd;
     }
 
     void ReadFromUi() override
     {
-        if ( !hWnd_ )
+        if (!hWnd_)
         {
             return;
         }
 
-        for ( const auto& id: controlIdList_ )
+        for (const auto& id: controlIdList_)
         {
-            if ( uButton_GetCheck( hWnd_, id ) )
+            if (uButton_GetCheck(hWnd_, id))
             {
                 value_ = id;
                 break;
@@ -241,14 +241,14 @@ public:
     }
     void WriteToUi() override
     {
-        if ( !hWnd_ )
+        if (!hWnd_)
         {
             return;
         }
 
-        for ( const auto& id: controlIdList_ )
+        for (const auto& id: controlIdList_)
         {
-            uButton_SetCheck( hWnd_, id, static_cast<int>( value_ ) == id );
+            uButton_SetCheck(hWnd_, id, static_cast<int>(value_) == id);
         }
     }
 
@@ -265,44 +265,44 @@ class UiDdx_ListBase final
 public:
     using value_type = typename T;
 
-    static_assert( std::is_convertible_v<T, int> );
-    static_assert( std::is_assignable_v<T&, int> );
+    static_assert(std::is_convertible_v<T, int>);
+    static_assert(std::is_assignable_v<T&, int>);
 
 public:
-    UiDdx_ListBase( T& value, int controlId )
-        : value_( value )
-        , controlId_( controlId )
+    UiDdx_ListBase(T& value, int controlId)
+        : value_(value)
+        , controlId_(controlId)
     {
     }
     ~UiDdx_ListBase() override = default;
 
-    bool IsMatchingId( int controlId ) const override
+    bool IsMatchingId(int controlId) const override
     {
-        return ( controlId == controlId_ );
+        return (controlId == controlId_);
     }
 
-    void SetHwnd( HWND hWnd ) override
+    void SetHwnd(HWND hWnd) override
     {
         hWnd_ = hWnd;
     }
 
     void ReadFromUi() override
     {
-        if ( !hWnd_ )
+        if (!hWnd_)
         {
             return;
         }
 
-        value_ = ListT{ ::GetDlgItem( hWnd_, controlId_ ) }.GetCurSel();
+        value_ = ListT{ ::GetDlgItem(hWnd_, controlId_) }.GetCurSel();
     }
     void WriteToUi() override
     {
-        if ( !hWnd_ )
+        if (!hWnd_)
         {
             return;
         }
 
-        ListT{ ::GetDlgItem( hWnd_, controlId_ ) }.SetCurSel( static_cast<int>( value_ ) );
+        ListT{ ::GetDlgItem(hWnd_, controlId_) }.SetCurSel(static_cast<int>(value_));
     }
 
 private:
@@ -324,44 +324,44 @@ class UiDdx_TrackBar final
 public:
     using value_type = typename T;
 
-    static_assert( std::is_convertible_v<T, int> );
-    static_assert( std::is_assignable_v<T&, int> );
+    static_assert(std::is_convertible_v<T, int>);
+    static_assert(std::is_assignable_v<T&, int>);
 
 public:
-    UiDdx_TrackBar( T& value, int controlId )
-        : value_( value )
-        , controlId_( controlId )
+    UiDdx_TrackBar(T& value, int controlId)
+        : value_(value)
+        , controlId_(controlId)
     {
     }
     ~UiDdx_TrackBar() override = default;
 
-    bool IsMatchingId( int controlId ) const override
+    bool IsMatchingId(int controlId) const override
     {
-        return ( controlId == controlId_ );
+        return (controlId == controlId_);
     }
 
-    void SetHwnd( HWND hWnd ) override
+    void SetHwnd(HWND hWnd) override
     {
         hWnd_ = hWnd;
     }
 
     void ReadFromUi() override
     {
-        if ( !hWnd_ )
+        if (!hWnd_)
         {
             return;
         }
 
-        value_ = CTrackBarCtrl{ ::GetDlgItem( hWnd_, controlId_ ) }.GetPos();
+        value_ = CTrackBarCtrl{ ::GetDlgItem(hWnd_, controlId_) }.GetPos();
     }
     void WriteToUi() override
     {
-        if ( !hWnd_ )
+        if (!hWnd_)
         {
             return;
         }
 
-        CTrackBarCtrl{ ::GetDlgItem( hWnd_, controlId_ ) }.SetPos( static_cast<int>( value_ ) );
+        CTrackBarCtrl{ ::GetDlgItem(hWnd_, controlId_) }.SetPos(static_cast<int>(value_));
     }
 
 private:
@@ -371,9 +371,9 @@ private:
 };
 
 template <template <typename> typename DdxT, typename T, typename... Args>
-std::unique_ptr<IUiDdx> CreateUiDdx( T& value, Args&&... args )
+std::unique_ptr<IUiDdx> CreateUiDdx(T& value, Args&&... args)
 {
-    return std::make_unique<DdxT<T>>( value, std::forward<Args>( args )... );
+    return std::make_unique<DdxT<T>>(value, std::forward<Args>(args)...);
 }
 
 } // namespace qwr::ui

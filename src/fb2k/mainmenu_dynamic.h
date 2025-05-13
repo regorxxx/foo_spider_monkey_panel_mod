@@ -24,13 +24,13 @@ public:
 public:
     static [[nodiscard]] DynamicMainMenuManager& Get();
 
-    void RegisterPanel( HWND hWnd, const std::string& panelName );
-    void UnregisterPanel( HWND hWnd );
+    void RegisterPanel(HWND hWnd, const std::string& panelName);
+    void UnregisterPanel(HWND hWnd);
 
     /// @throw qwr::QwrException
-    void RegisterCommand( HWND hWnd, uint32_t id, const std::string& name, const std::optional<std::string>& description );
+    void RegisterCommand(HWND hWnd, uint32_t id, const std::string& name, const std::optional<std::string>& description);
     /// @throw qwr::QwrException
-    void UnregisterCommand( HWND hWnd, uint32_t id );
+    void UnregisterCommand(HWND hWnd, uint32_t id);
 
     const std::unordered_map<HWND, PanelData>& GetAllCommandData() const;
 

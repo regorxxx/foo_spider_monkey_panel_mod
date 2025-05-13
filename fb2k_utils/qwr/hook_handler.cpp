@@ -9,10 +9,10 @@ namespace qwr
 
 HookHandler::~HookHandler()
 {
-    assert( callbacks_.empty() );
-    if ( hHook_ )
+    assert(callbacks_.empty());
+    if (hHook_)
     {
-        ::UnhookWindowsHookEx( hHook_ );
+        ::UnhookWindowsHookEx(hHook_);
     }
 }
 
@@ -22,32 +22,32 @@ HookHandler& HookHandler::GetInstance()
     return hh;
 }
 
-void HookHandler::UnregisterHook( uint32_t hookId )
+void HookHandler::UnregisterHook(uint32_t hookId)
 {
-    assert( callbacks_.contains( hookId ) );
-    callbacks_.erase( hookId );
+    assert(callbacks_.contains(hookId));
+    callbacks_.erase(hookId);
 }
 
 void HookHandler::MaybeRegisterGlobalHook()
 {
-    if ( !hHook_ )
+    if (!hHook_)
     {
-        hHook_ = ::SetWindowsHookEx( WH_GETMESSAGE, GetMsgProc, nullptr, ::GetCurrentThreadId() );
-        qwr::error::CheckWinApi( hHook_, "SetWindowsHookEx" );
+        hHook_ = ::SetWindowsHookEx(WH_GETMESSAGE, GetMsgProc, nullptr, ::GetCurrentThreadId());
+        qwr::error::CheckWinApi(hHook_, "SetWindowsHookEx");
     }
 }
 
-LRESULT CALLBACK HookHandler::GetMsgProc( int code, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK HookHandler::GetMsgProc(int code, WPARAM wParam, LPARAM lParam)
 {
-    for ( auto it = callbacks_.begin(); it != callbacks_.end(); )
+    for (auto it = callbacks_.begin(); it != callbacks_.end();)
     {
         // callback might trigger self-destruction, thus we need to preserve it
         auto tmpCallback = *it->second;
         ++it;
-        std::invoke( tmpCallback, code, wParam, lParam );
+        std::invoke(tmpCallback, code, wParam, lParam);
     }
 
-    return CallNextHookEx( nullptr, code, wParam, lParam );
+    return CallNextHookEx(nullptr, code, wParam, lParam);
 }
 
 std::unordered_map<uint32_t, std::shared_ptr<HookHandler::HookCallback>> HookHandler::callbacks_;

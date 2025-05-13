@@ -37,16 +37,16 @@ public:
 public:
     ~JsGdiFont() override;
 
-    static std::unique_ptr<JsGdiFont> CreateNative( JSContext* cx, std::unique_ptr<Gdiplus::Font> gdiFont, HFONT hFont, bool isManaged );
-    [[nodiscard]] static size_t GetInternalSize( const std::unique_ptr<Gdiplus::Font>& gdiFont, HFONT hFont, bool isManaged );
+    static std::unique_ptr<JsGdiFont> CreateNative(JSContext* cx, std::unique_ptr<Gdiplus::Font> gdiFont, HFONT hFont, bool isManaged);
+    [[nodiscard]] static size_t GetInternalSize(const std::unique_ptr<Gdiplus::Font>& gdiFont, HFONT hFont, bool isManaged);
 
 public:
     [[nodiscard]] Gdiplus::Font* GdiFont() const;
     [[nodiscard]] HFONT GetHFont() const;
 
 public: // ctor
-    static JSObject* Constructor( JSContext* cx, const std::wstring& fontName, uint32_t pxSize, uint32_t style = 0 );
-    static JSObject* ConstructorWithOpt( JSContext* cx, size_t optArgCount, const std::wstring& fontName, uint32_t pxSize, uint32_t style );
+    static JSObject* Constructor(JSContext* cx, const std::wstring& fontName, uint32_t pxSize, uint32_t style = 0);
+    static JSObject* ConstructorWithOpt(JSContext* cx, size_t optArgCount, const std::wstring& fontName, uint32_t pxSize, uint32_t style);
 
 public: // props
     [[nodiscard]] uint32_t get_Height() const;
@@ -55,7 +55,7 @@ public: // props
     [[nodiscard]] uint32_t get_Style() const;
 
 private:
-    JsGdiFont( JSContext* cx, std::unique_ptr<Gdiplus::Font> gdiFont, HFONT hFont, bool isManaged );
+    JsGdiFont(JSContext* cx, std::unique_ptr<Gdiplus::Font> gdiFont, HFONT hFont, bool isManaged);
 
 private:
     [[maybe_unused]] JSContext* pJsCtx_ = nullptr;

@@ -24,16 +24,16 @@ enum class InternalSyncMessage : UINT
 /// @brief Message definitions that are not handled by the main panel window
 enum class MiscMessage : UINT
 {
-    heartbeat = static_cast<int>( InternalSyncMessage::last_message ) + 1,
+    heartbeat = static_cast<int>(InternalSyncMessage::last_message) + 1,
     key_down,
     size_limit_changed
 };
 
 template <typename T>
-bool IsInEnumRange( UINT value )
+bool IsInEnumRange(UINT value)
 {
-    return ( value >= static_cast<UINT>( T::first_message )
-             && value <= static_cast<UINT>( T::last_message ) );
+    return (value >= static_cast<UINT>(T::first_message)
+             && value <= static_cast<UINT>(T::last_message));
 }
 
 } // namespace smp

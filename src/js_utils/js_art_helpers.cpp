@@ -35,15 +35,15 @@ class JsAlbumArtTask
     : public JsAsyncTaskImpl<JS::HandleValue>
 {
 public:
-    JsAlbumArtTask( JSContext* cx,
-                    JS::HandleValue jsPromise );
+    JsAlbumArtTask(JSContext* cx,
+                    JS::HandleValue jsPromise);
     ~JsAlbumArtTask() override = default;
 
-    void SetData( std::unique_ptr<Gdiplus::Bitmap> image,
-                  const std::string& path );
+    void SetData(std::unique_ptr<Gdiplus::Bitmap> image,
+                  const std::string& path);
 
 private:
-    bool InvokeJsImpl( JSContext* cx, JS::HandleObject jsGlobal, JS::HandleValue jsPromiseValue ) override;
+    bool InvokeJsImpl(JSContext* cx, JS::HandleObject jsGlobal, JS::HandleValue jsPromiseValue) override;
 
 private:
     std::unique_ptr<Gdiplus::Bitmap> image_;
@@ -53,17 +53,17 @@ private:
 class AlbumArtV2FetchTask
 {
 public:
-    AlbumArtV2FetchTask( JSContext* cx,
+    AlbumArtV2FetchTask(JSContext* cx,
                          JS::HandleObject jsPromise,
                          HWND hNotifyWnd,
                          metadb_handle_ptr handle,
-                         const smp::art::LoadingOptions& options );
+                         const smp::art::LoadingOptions& options);
 
     /// @details Executed off main thread
     ~AlbumArtV2FetchTask() = default;
 
-    AlbumArtV2FetchTask( const AlbumArtV2FetchTask& ) = delete;
-    AlbumArtV2FetchTask& operator=( const AlbumArtV2FetchTask& ) = delete;
+    AlbumArtV2FetchTask(const AlbumArtV2FetchTask&) = delete;
+    AlbumArtV2FetchTask& operator=(const AlbumArtV2FetchTask&) = delete;
 
     /// @details Executed off main thread
     void operator()();
@@ -82,84 +82,84 @@ private:
 namespace
 {
 
-AlbumArtV2FetchTask::AlbumArtV2FetchTask( JSContext* cx,
+AlbumArtV2FetchTask::AlbumArtV2FetchTask(JSContext* cx,
                                           JS::HandleObject jsPromise,
                                           HWND hNotifyWnd,
                                           metadb_handle_ptr handle,
-                                          const smp::art::LoadingOptions& options )
-    : hNotifyWnd_( hNotifyWnd )
-    , handle_( handle )
-    , rawPath_( handle_->get_path() )
-    , options_( options )
+                                          const smp::art::LoadingOptions& options)
+    : hNotifyWnd_(hNotifyWnd)
+    , handle_(handle)
+    , rawPath_(handle_->get_path())
+    , options_(options)
 {
-    assert( cx );
+    assert(cx);
 
-    JS::RootedValue jsPromiseValue( cx, JS::ObjectValue( *jsPromise ) );
-    jsTask_ = std::make_unique<JsAlbumArtTask>( cx, jsPromiseValue );
+    JS::RootedValue jsPromiseValue(cx, JS::ObjectValue(*jsPromise));
+    jsTask_ = std::make_unique<JsAlbumArtTask>(cx, jsPromiseValue);
 }
 
 void AlbumArtV2FetchTask::operator()()
 {
-    if ( !jsTask_->IsCanceled() )
+    if (!jsTask_->IsCanceled())
     { // the task still might be executed and posted, since we don't block here
         return;
     }
 
     std::string imagePath;
-    auto bitmap = smp::art::GetBitmapFromMetadbOrEmbed( handle_, options_, &imagePath );
+    auto bitmap = smp::art::GetBitmapFromMetadbOrEmbed(handle_, options_, &imagePath);
 
-    jsTask_->SetData( std::move( bitmap ), imagePath );
+    jsTask_->SetData(std::move(bitmap), imagePath);
 
-    EventDispatcher::Get().PutEvent( hNotifyWnd_,
+    EventDispatcher::Get().PutEvent(hNotifyWnd_,
                                      std::make_unique<Event_JsTask>(
-                                         EventId::kInternalGetAlbumArtPromiseDone, jsTask_ ) );
+                                         EventId::kInternalGetAlbumArtPromiseDone, jsTask_));
 }
 
-JsAlbumArtTask::JsAlbumArtTask( JSContext* cx,
-                                JS::HandleValue jsPromise )
-    : JsAsyncTaskImpl( cx, jsPromise )
+JsAlbumArtTask::JsAlbumArtTask(JSContext* cx,
+                                JS::HandleValue jsPromise)
+    : JsAsyncTaskImpl(cx, jsPromise)
 {
 }
 
-void JsAlbumArtTask::SetData( std::unique_ptr<Gdiplus::Bitmap> image, const std::string& path )
+void JsAlbumArtTask::SetData(std::unique_ptr<Gdiplus::Bitmap> image, const std::string& path)
 {
-    image_ = std::move( image );
+    image_ = std::move(image);
     path_ = path;
 }
 
-bool JsAlbumArtTask::InvokeJsImpl( JSContext* cx, JS::HandleObject, JS::HandleValue jsPromiseValue )
+bool JsAlbumArtTask::InvokeJsImpl(JSContext* cx, JS::HandleObject, JS::HandleValue jsPromiseValue)
 {
-    JS::RootedObject jsPromise( cx, &jsPromiseValue.toObject() );
+    JS::RootedObject jsPromise(cx, &jsPromiseValue.toObject());
 
     try
     {
-        JS::RootedValue jsBitmapValue( cx );
-        if ( image_ )
+        JS::RootedValue jsBitmapValue(cx);
+        if (image_)
         {
-            JS::RootedObject jsBitmap( cx, JsGdiBitmap::CreateJs( cx, std::move( image_ ) ) );
-            jsBitmapValue = jsBitmap ? JS::ObjectValue( *jsBitmap ) : JS::UndefinedValue();
+            JS::RootedObject jsBitmap(cx, JsGdiBitmap::CreateJs(cx, std::move(image_)));
+            jsBitmapValue = jsBitmap ? JS::ObjectValue(*jsBitmap) : JS::UndefinedValue();
         }
 
-        JS::RootedObject jsResult( cx, JS_NewPlainObject( cx ) );
-        if ( !jsResult )
+        JS::RootedObject jsResult(cx, JS_NewPlainObject(cx));
+        if (!jsResult)
         {
             throw JsException();
         }
 
-        AddProperty( cx, jsResult, "image", JS::HandleValue{ jsBitmapValue } );
-        AddProperty( cx, jsResult, "path", path_ );
+        AddProperty(cx, jsResult, "image", JS::HandleValue{ jsBitmapValue });
+        AddProperty(cx, jsResult, "path", path_);
 
-        JS::RootedValue jsResultValue( cx, JS::ObjectValue( *jsResult ) );
-        (void)JS::ResolvePromise( cx, jsPromise, jsResultValue );
+        JS::RootedValue jsResultValue(cx, JS::ObjectValue(*jsResult));
+        (void)JS::ResolvePromise(cx, jsPromise, jsResultValue);
     }
-    catch ( ... )
+    catch (...)
     {
-        mozjs::error::ExceptionToJsError( cx );
+        mozjs::error::ExceptionToJsError(cx);
 
-        JS::RootedValue jsError( cx );
-        (void)JS_GetPendingException( cx, &jsError );
+        JS::RootedValue jsError(cx);
+        (void)JS_GetPendingException(cx, &jsError);
 
-        JS::RejectPromise( cx, jsPromise, jsError );
+        JS::RejectPromise(cx, jsPromise, jsError);
     }
 
     return true;
@@ -170,18 +170,18 @@ bool JsAlbumArtTask::InvokeJsImpl( JSContext* cx, JS::HandleObject, JS::HandleVa
 namespace mozjs::art
 {
 
-JSObject* GetAlbumArtPromise( JSContext* cx, HWND hWnd, const metadb_handle_ptr& handle, const smp::art::LoadingOptions& options )
+JSObject* GetAlbumArtPromise(JSContext* cx, HWND hWnd, const metadb_handle_ptr& handle, const smp::art::LoadingOptions& options)
 {
-    assert( handle.is_valid() );
+    assert(handle.is_valid());
 
     // Art id is validated in LoadingOptions constructor, so we don't need to worry about it here
 
-    JS::RootedObject jsObject( cx, JS::NewPromiseObject( cx, nullptr ) );
-    JsException::ExpectTrue( jsObject );
+    JS::RootedObject jsObject(cx, JS::NewPromiseObject(cx, nullptr));
+    JsException::ExpectTrue(jsObject);
 
-    smp::GetThreadPoolInstance().AddTask( [task = std::make_shared<AlbumArtV2FetchTask>( cx, jsObject, hWnd, handle, options )] {
-        std::invoke( *task );
-    } );
+    smp::GetThreadPoolInstance().AddTask([task = std::make_shared<AlbumArtV2FetchTask>(cx, jsObject, hWnd, handle, options)] {
+        std::invoke(*task);
+    });
 
     return jsObject;
 }

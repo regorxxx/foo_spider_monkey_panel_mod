@@ -34,14 +34,14 @@ public:
 public:
     ~JsFbMetadbHandleList_Iterator() override;
 
-    static std::unique_ptr<JsFbMetadbHandleList_Iterator> CreateNative( JSContext* cx, JsFbMetadbHandleList& handleList );
-    static size_t GetInternalSize( JsFbMetadbHandleList& handleList );
+    static std::unique_ptr<JsFbMetadbHandleList_Iterator> CreateNative(JSContext* cx, JsFbMetadbHandleList& handleList);
+    static size_t GetInternalSize(JsFbMetadbHandleList& handleList);
 
 public:
     JSObject* Next();
 
 private:
-    JsFbMetadbHandleList_Iterator( JSContext* cx, JsFbMetadbHandleList& handleList );
+    JsFbMetadbHandleList_Iterator(JSContext* cx, JsFbMetadbHandleList& handleList);
 
 private:
     JSContext* pJsCtx_ = nullptr;

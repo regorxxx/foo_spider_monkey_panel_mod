@@ -45,7 +45,7 @@ constexpr auto jsProperties = std::to_array<JSPropertySpec>(
         JS_PSG("SampleCount", get_SampleCount, kDefaultPropsFlags),
         JS_PSG("SampleRate", get_SampleRate, kDefaultPropsFlags),
         JS_PS_END,
-    } );
+    });
 
 constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
     {
@@ -64,14 +64,14 @@ const JsPrototypeId JsFbAudioChunk::PrototypeId = JsPrototypeId::FbAudioChunk;
 
 JsFbAudioChunk::JsFbAudioChunk(JSContext* cx, const audio_chunk_impl& chunk) : pJsCtx_(cx), chunk_(chunk) {}
 
-std::unique_ptr<JsFbAudioChunk> JsFbAudioChunk::CreateNative( JSContext* cx, const audio_chunk_impl& chunk)
+std::unique_ptr<JsFbAudioChunk> JsFbAudioChunk::CreateNative(JSContext* cx, const audio_chunk_impl& chunk)
 {
-    return std::unique_ptr<JsFbAudioChunk>( new JsFbAudioChunk( cx, chunk ) );
+    return std::unique_ptr<JsFbAudioChunk>(new JsFbAudioChunk(cx, chunk));
 }
 
-size_t JsFbAudioChunk::GetInternalSize( const audio_chunk_impl&)
+size_t JsFbAudioChunk::GetInternalSize(const audio_chunk_impl&)
 {
-    return sizeof( audio_chunk_impl );
+    return sizeof(audio_chunk_impl);
 }
 
 JS::Value JsFbAudioChunk::get_Data()

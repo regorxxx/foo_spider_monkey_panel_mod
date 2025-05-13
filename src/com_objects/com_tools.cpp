@@ -16,22 +16,22 @@ bool TypeInfoCacheHolder::Empty()
     return !typeInfo_;
 }
 
-void TypeInfoCacheHolder::InitFromTypelib( ITypeLib* p_typeLib, const GUID& guid )
+void TypeInfoCacheHolder::InitFromTypelib(ITypeLib* p_typeLib, const GUID& guid)
 {
-    p_typeLib->GetTypeInfoOfGuid( guid, &typeInfo_ );
+    p_typeLib->GetTypeInfoOfGuid(guid, &typeInfo_);
 }
 
-HRESULT TypeInfoCacheHolder::GetTypeInfo( UINT iTInfo, LCID /*lcid*/, ITypeInfo** ppTInfo )
+HRESULT TypeInfoCacheHolder::GetTypeInfo(UINT iTInfo, LCID /*lcid*/, ITypeInfo** ppTInfo)
 {
-    if ( Empty() )
+    if (Empty())
     {
         return E_UNEXPECTED;
     }
-    if ( !ppTInfo )
+    if (!ppTInfo)
     {
         return E_POINTER;
     }
-    if ( iTInfo != 0 )
+    if (iTInfo != 0)
     {
         return DISP_E_BADINDEX;
     }
@@ -40,41 +40,41 @@ HRESULT TypeInfoCacheHolder::GetTypeInfo( UINT iTInfo, LCID /*lcid*/, ITypeInfo*
     return S_OK;
 }
 
-HRESULT TypeInfoCacheHolder::GetIDsOfNames( LPOLESTR* rgszNames, UINT cNames, MEMBERID* pMemId )
+HRESULT TypeInfoCacheHolder::GetIDsOfNames(LPOLESTR* rgszNames, UINT cNames, MEMBERID* pMemId)
 {
-    assert( typeInfo_ != NULL );
+    assert(typeInfo_ != NULL);
 
-    std::span<LPOLESTR> names( rgszNames, cNames );
-    std::span<MEMBERID> memIds( pMemId, cNames );
+    std::span<LPOLESTR> names(rgszNames, cNames);
+    std::span<MEMBERID> memIds(pMemId, cNames);
 
-    for ( auto&& [name, memId]: ranges::views::zip( names, memIds ) )
+    for (auto&& [name, memId]: ranges::views::zip(names, memIds))
     {
-        const auto hash = LHashValOfName( LANG_NEUTRAL, name );
-        if ( const auto it = cache_.find( hash );
-             cache_.cend() != it )
+        const auto hash = LHashValOfName(LANG_NEUTRAL, name);
+        if (const auto it = cache_.find(hash);
+             cache_.cend() != it)
         {
             memId = it->second;
         }
         else
         {
-            HRESULT hr = typeInfo_->GetIDsOfNames( &name, 1, &memId );
-            if ( FAILED( hr ) )
+            HRESULT hr = typeInfo_->GetIDsOfNames(&name, 1, &memId);
+            if (FAILED(hr))
             {
                 return hr;
             }
 
-            cache_.emplace( hash, memId );
+            cache_.emplace(hash, memId);
         }
     }
 
     return S_OK;
 }
 
-HRESULT TypeInfoCacheHolder::Invoke( PVOID pvInstance, MEMBERID memid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr )
+HRESULT TypeInfoCacheHolder::Invoke(PVOID pvInstance, MEMBERID memid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr)
 {
-    assert( typeInfo_ != NULL );
-    HRESULT hr = typeInfo_->Invoke( pvInstance, memid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr );
-    assert( hr != RPC_E_WRONG_THREAD );
+    assert(typeInfo_ != NULL);
+    HRESULT hr = typeInfo_->Invoke(pvInstance, memid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr);
+    assert(hr != RPC_E_WRONG_THREAD);
     return hr;
 }
 

@@ -10,7 +10,7 @@ class ConditionalModalScope
 {
 public:
     /// @param isWhitelistedModal false, if should not be considered JS blocking
-    [[nodiscard]] ConditionalModalScope( HWND hParent, bool isWhitelistedModal = false );
+    [[nodiscard]] ConditionalModalScope(HWND hParent, bool isWhitelistedModal = false);
     ~ConditionalModalScope();
 
 private:
@@ -30,7 +30,7 @@ class ModalBlockingScope
 {
 public:
     /// @param isWhitelistedModal false, if should not be considered JS blocking
-    [[nodiscard]] ModalBlockingScope( HWND hParent, bool isWhitelistedModal = false );
+    [[nodiscard]] ModalBlockingScope(HWND hParent, bool isWhitelistedModal = false);
     ~ModalBlockingScope();
 
 private:

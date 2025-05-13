@@ -21,26 +21,26 @@ class GlobalHeapManager
 public:
     /// @remark No need to cleanup JS here, since it must be performed manually beforehand anyway
     ~GlobalHeapManager() = default;
-    GlobalHeapManager( const GlobalHeapManager& ) = delete;
-    GlobalHeapManager& operator=( const GlobalHeapManager& ) = delete;
+    GlobalHeapManager(const GlobalHeapManager&) = delete;
+    GlobalHeapManager& operator=(const GlobalHeapManager&) = delete;
 
-    static [[nodiscard]] std::unique_ptr<GlobalHeapManager> Create( JSContext* cx );
+    static [[nodiscard]] std::unique_ptr<GlobalHeapManager> Create(JSContext* cx);
 
 public:
-    void RegisterUser( IHeapUser* heapUser );
-    void UnregisterUser( IHeapUser* heapUser );
+    void RegisterUser(IHeapUser* heapUser);
+    void UnregisterUser(IHeapUser* heapUser);
 
-    [[nodiscard]] uint32_t Store( JS::HandleValue valueToStore );
-    [[nodiscard]] uint32_t Store( JS::HandleObject valueToStore );
-    [[nodiscard]] uint32_t Store( JS::HandleFunction valueToStore );
-    [[nodiscard]] JS::Heap<JS::Value>& Get( uint32_t id );
-    void Remove( uint32_t id );
+    [[nodiscard]] uint32_t Store(JS::HandleValue valueToStore);
+    [[nodiscard]] uint32_t Store(JS::HandleObject valueToStore);
+    [[nodiscard]] uint32_t Store(JS::HandleFunction valueToStore);
+    [[nodiscard]] JS::Heap<JS::Value>& Get(uint32_t id);
+    void Remove(uint32_t id);
 
-    void Trace( JSTracer* trc );
+    void Trace(JSTracer* trc);
     void PrepareForGc();
 
 private:
-    GlobalHeapManager( JSContext* cx );
+    GlobalHeapManager(JSContext* cx);
 
 private:
     JSContext* pJsCtx_ = nullptr;

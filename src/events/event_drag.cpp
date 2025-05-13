@@ -11,15 +11,15 @@
 namespace smp
 {
 
-Event_Drag::Event_Drag( EventId id, int32_t x, int32_t y, uint32_t mask, uint32_t modifiers, const panel::DragActionParams& dragParams, IDataObjectPtr pData )
-    : Event_Mouse( id, x, y, mask, modifiers )
-    , dragParams_( dragParams )
-    , pDataObject_( pData )
-    , pStorage_( com::GetNewStoredObject() )
+Event_Drag::Event_Drag(EventId id, int32_t x, int32_t y, uint32_t mask, uint32_t modifiers, const panel::DragActionParams& dragParams, IDataObjectPtr pData)
+    : Event_Mouse(id, x, y, mask, modifiers)
+    , dragParams_(dragParams)
+    , pDataObject_(pData)
+    , pStorage_(com::GetNewStoredObject())
 {
-    assert( core_api::is_main_thread() );
-    assert( pDataObject_ );
-    assert( pStorage_ );
+    assert(core_api::is_main_thread());
+    assert(pDataObject_);
+    assert(pStorage_);
 
     pDataObject_->AddRef();
     pStorage_->pUnknown = pDataObject_;
@@ -27,7 +27,7 @@ Event_Drag::Event_Drag( EventId id, int32_t x, int32_t y, uint32_t mask, uint32_
 
 Event_Drag::~Event_Drag()
 {
-    assert( !pDataObject_ || core_api::is_main_thread() );
+    assert(!pDataObject_ || core_api::is_main_thread());
 }
 
 Event_Drag* Event_Drag::AsDragEvent()
@@ -35,9 +35,9 @@ Event_Drag* Event_Drag::AsDragEvent()
     return this;
 }
 
-std::optional<bool> Event_Drag::JsExecute( mozjs::JsContainer& /*jsContainer*/ )
+std::optional<bool> Event_Drag::JsExecute(mozjs::JsContainer& /*jsContainer*/)
 {
-    assert( false );
+    assert(false);
     return std::nullopt;
 }
 
@@ -48,17 +48,17 @@ const panel::DragActionParams& Event_Drag::GetDragParams() const
 
 IDataObjectPtr Event_Drag::GetStoredData() const
 {
-    assert( pDataObject_ );
+    assert(pDataObject_);
     return pDataObject_;
 }
 
 void Event_Drag::DisposeStoredData()
 {
-    assert( core_api::is_main_thread() );
-    if ( pStorage_ )
+    assert(core_api::is_main_thread());
+    if (pStorage_)
     {
         pDataObject_ = nullptr;
-        com::MarkStoredObjectAsToBeDeleted( pStorage_ );
+        com::MarkStoredObjectAsToBeDeleted(pStorage_);
         pStorage_ = nullptr;
     }
 }

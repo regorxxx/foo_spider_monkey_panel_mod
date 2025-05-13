@@ -22,7 +22,7 @@ struct StorageObject
 [[nodiscard]] StorageObject* GetNewStoredObject();
 
 /// @remark Should be called only from the main thread
-void MarkStoredObjectAsToBeDeleted( StorageObject* pObject );
+void MarkStoredObjectAsToBeDeleted(StorageObject* pObject);
 
 /// @remark Should be called only from the main thread
 void DeleteMarkedObjects();

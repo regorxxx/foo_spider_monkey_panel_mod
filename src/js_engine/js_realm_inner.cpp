@@ -14,7 +14,7 @@ void JsRealmInner::OnGcStart()
 
 void JsRealmInner::OnGcDone()
 {
-    std::scoped_lock sl( gcDataLock_ );
+    std::scoped_lock sl(gcDataLock_);
 
     lastHeapSize_ = curHeapSize_;
     lastAllocCount_ = curAllocCount_;
@@ -28,41 +28,41 @@ bool JsRealmInner::IsMarkedForGc() const
 
 uint64_t JsRealmInner::GetCurrentHeapBytes() const
 {
-    std::scoped_lock sl( gcDataLock_ );
+    std::scoped_lock sl(gcDataLock_);
     return curHeapSize_;
 }
 
 uint64_t JsRealmInner::GetLastHeapBytes() const
 {
-    std::scoped_lock sl( gcDataLock_ );
-    return std::min( lastHeapSize_, curHeapSize_ );
+    std::scoped_lock sl(gcDataLock_);
+    return std::min(lastHeapSize_, curHeapSize_);
 }
 
 uint32_t JsRealmInner::GetCurrentAllocCount() const
 {
-    std::scoped_lock sl( gcDataLock_ );
+    std::scoped_lock sl(gcDataLock_);
     return curAllocCount_;
 }
 
 uint32_t JsRealmInner::GetLastAllocCount() const
 {
-    std::scoped_lock sl( gcDataLock_ );
-    return std::min( lastAllocCount_, curAllocCount_ );
+    std::scoped_lock sl(gcDataLock_);
+    return std::min(lastAllocCount_, curAllocCount_);
 }
 
-void JsRealmInner::OnHeapAllocate( uint32_t size )
+void JsRealmInner::OnHeapAllocate(uint32_t size)
 {
-    std::scoped_lock sl( gcDataLock_ );
+    std::scoped_lock sl(gcDataLock_);
     curHeapSize_ += size;
     ++curAllocCount_;
 }
 
-void JsRealmInner::OnHeapDeallocate( uint32_t size )
+void JsRealmInner::OnHeapDeallocate(uint32_t size)
 {
-    std::scoped_lock sl( gcDataLock_ );
-    if ( size > curHeapSize_ )
+    std::scoped_lock sl(gcDataLock_);
+    if (size > curHeapSize_)
     {
-        assert( 0 );
+        assert(0);
         curHeapSize_ = 0;
     }
     else
@@ -70,9 +70,9 @@ void JsRealmInner::OnHeapDeallocate( uint32_t size )
         curHeapSize_ -= size;
     }
 
-    if ( !curAllocCount_ )
+    if (!curAllocCount_)
     {
-        assert( 0 );
+        assert(0);
     }
     else
     {

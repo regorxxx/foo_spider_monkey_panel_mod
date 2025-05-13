@@ -82,129 +82,129 @@ constexpr std::array<StyleToPropname, 16> js_style_table = {
       { SCE_C_OPERATOR, "style.operator" } }
 };
 
-bool IsBraceChar( int ch )
+bool IsBraceChar(int ch)
 {
     return ch == '[' || ch == ']' || ch == '(' || ch == ')' || ch == '{' || ch == '}';
 }
 
-bool IsCSym( int ch )
+bool IsCSym(int ch)
 {
-    return __iswcsym( static_cast<wint_t>( ch ) );
+    return __iswcsym(static_cast<wint_t>(ch));
 }
 
-DWORD GetColourFromHex( std::string_view hex )
+DWORD GetColourFromHex(std::string_view hex)
 {
     // Value format: #XXXXXX
-    if ( hex.size() != 7 )
+    if (hex.size() != 7)
     {
         return 0;
     }
 
-    const std::string_view hexView{ hex.substr( 1 ) }; // skip '#'
+    const std::string_view hexView{ hex.substr(1) }; // skip '#'
 
-    const auto colour = qwr::string::GetNumber<uint32_t>( hexView, 16 ).value_or( 0 );
+    const auto colour = qwr::string::GetNumber<uint32_t>(hexView, 16).value_or(0);
 
-    return smp::colour::ArgbToColorref( colour );
+    return smp::colour::ArgbToColorref(colour);
 }
 
-ScintillaStyle ParseStyle( std::string_view p_definition )
+ScintillaStyle ParseStyle(std::string_view p_definition)
 {
     ScintillaStyle p_style;
 
-    const auto attributes = qwr::string::Split( p_definition, ',' );
-    for ( const auto& attribute: attributes )
+    const auto attributes = qwr::string::Split(p_definition, ',');
+    for (const auto& attribute: attributes)
     {
-        if ( attribute.empty() )
+        if (attribute.empty())
         {
             continue;
         }
 
-        const auto values = qwr::string::Split( attribute, ':' );
-        if ( values.empty() || values[0].empty() )
+        const auto values = qwr::string::Split(attribute, ':');
+        if (values.empty() || values[0].empty())
         {
             continue;
         }
 
         const auto& name = values[0];
-        if ( name == "italics" )
+        if (name == "italics")
         {
             p_style.flags |= ESF_ITALICS;
             p_style.italics = true;
         }
-        else if ( name == "notitalics" )
+        else if (name == "notitalics")
         {
             p_style.flags |= ESF_ITALICS;
             p_style.italics = false;
         }
-        else if ( name == "bold" )
+        else if (name == "bold")
         {
             p_style.flags |= ESF_BOLD;
             p_style.bold = true;
         }
-        else if ( name == "notbold" )
+        else if (name == "notbold")
         {
             p_style.flags |= ESF_BOLD;
             p_style.bold = false;
         }
-        else if ( name == "font" )
+        else if (name == "font")
         {
-            if ( values.size() >= 2 )
+            if (values.size() >= 2)
             {
                 p_style.flags |= ESF_FONT;
-                p_style.font.assign( values[1].data(), values[1].size() );
+                p_style.font.assign(values[1].data(), values[1].size());
             }
         }
-        else if ( name == "fore" )
+        else if (name == "fore")
         {
-            if ( values.size() >= 2 )
+            if (values.size() >= 2)
             {
                 p_style.flags |= ESF_FORE;
-                p_style.fore = GetColourFromHex( values[1] );
+                p_style.fore = GetColourFromHex(values[1]);
             }
         }
-        else if ( name == "back" )
+        else if (name == "back")
         {
-            if ( values.size() >= 2 )
+            if (values.size() >= 2)
             {
                 p_style.flags |= ESF_BACK;
-                p_style.back = GetColourFromHex( values[1] );
+                p_style.back = GetColourFromHex(values[1]);
             }
         }
-        else if ( name == "size" )
+        else if (name == "size")
         {
-            if ( values.size() >= 2 )
+            if (values.size() >= 2)
             {
-                auto intRet = qwr::string::GetNumber<unsigned>( values[1] );
-                if ( intRet )
+                auto intRet = qwr::string::GetNumber<unsigned>(values[1]);
+                if (intRet)
                 {
                     p_style.flags |= ESF_SIZE;
                     p_style.size = *intRet;
                 }
             }
         }
-        else if ( name == "underlined" )
+        else if (name == "underlined")
         {
             p_style.flags |= ESF_UNDERLINED;
             p_style.underlined = true;
         }
-        else if ( name == "notunderlined" )
+        else if (name == "notunderlined")
         {
             p_style.flags |= ESF_UNDERLINED;
             p_style.underlined = false;
         }
-        else if ( name == "case" )
+        else if (name == "case")
         {
             p_style.flags |= ESF_CASEFORCE;
             p_style.case_force = SC_CASE_MIXED;
 
-            if ( values.size() >= 2 && !values[1].empty() )
+            if (values.size() >= 2 && !values[1].empty())
             {
                 const char ch = values[1][0];
-                if ( ch == 'u' )
+                if (ch == 'u')
                 {
                     p_style.case_force = SC_CASE_UPPER;
                 }
-                else if ( ch == 'l' )
+                else if (ch == 'l')
                 {
                     p_style.case_force = SC_CASE_LOWER;
                 }
@@ -216,15 +216,15 @@ ScintillaStyle ParseStyle( std::string_view p_definition )
 }
 
 template <typename T>
-std::string JoinWithSpace( const T& cont )
+std::string JoinWithSpace(const T& cont)
 {
-    static_assert( std::is_same_v<typename T::value_type, std::string> || std::is_same_v<typename T::value_type, std::string_view> || std::is_same_v<typename T::value_type, const char*> );
+    static_assert(std::is_same_v<typename T::value_type, std::string> || std::is_same_v<typename T::value_type, std::string_view> || std::is_same_v<typename T::value_type, const char*>);
 
     std::string words_str;
-    words_str.reserve( cont.size() * 6 );
-    for ( const auto& word: cont )
+    words_str.reserve(cont.size() * 6);
+    for (const auto& word: cont)
     {
-        if constexpr ( std::is_constructible_v<std::string, typename T::value_type> )
+        if constexpr (std::is_constructible_v<std::string, typename T::value_type>)
         {
             words_str += word;
         }
@@ -234,16 +234,16 @@ std::string JoinWithSpace( const T& cont )
         }
         words_str += ' ';
     }
-    if ( !words_str.empty() )
+    if (!words_str.empty())
     {
-        words_str.resize( words_str.size() - 1 );
+        words_str.resize(words_str.size() - 1);
     }
     return words_str;
 }
 
-bool StartsWith_CaseInsensitive( const std::string_view& a, const std::string_view& b )
+bool StartsWith_CaseInsensitive(const std::string_view& a, const std::string_view& b)
 {
-    return ( ( a.size() >= b.size() ) && !pfc::stricmp_ascii_ex( a.data(), b.size(), b.data(), b.size() ) );
+    return ((a.size() >= b.size()) && !pfc::stricmp_ascii_ex(a.data(), b.size(), b.data(), b.size()));
 }
 
 } // namespace
@@ -251,12 +251,12 @@ bool StartsWith_CaseInsensitive( const std::string_view& a, const std::string_vi
 namespace smp::ui::sci
 {
 
-bool CScriptEditorCtrl::KeyWordComparator::operator()( const std::string& a, const std::string& b ) const
+bool CScriptEditorCtrl::KeyWordComparator::operator()(const std::string& a, const std::string& b) const
 {
-    const int result = _stricmp( a.c_str(), b.c_str() );
-    if ( !result && !a.empty() && !b.empty() && std::isalpha( a[0] ) && ( a[0] != b[0] ) )
+    const int result = _stricmp(a.c_str(), b.c_str());
+    if (!result && !a.empty() && !b.empty() && std::isalpha(a[0]) && (a[0] != b[0]))
     {
-        return std::isupper( static_cast<unsigned char>( a[0] ) );
+        return std::isupper(static_cast<unsigned char>(a[0]));
     }
     else
     {
@@ -265,64 +265,64 @@ bool CScriptEditorCtrl::KeyWordComparator::operator()( const std::string& a, con
 }
 
 CScriptEditorCtrl::CScriptEditorCtrl()
-    : CScintillaFindReplaceImpl<CScriptEditorCtrl>( *this )
-    , CScintillaGotoImpl( *this )
+    : CScintillaFindReplaceImpl<CScriptEditorCtrl>(*this)
+    , CScintillaGotoImpl(*this)
 {
 }
 
-LRESULT CScriptEditorCtrl::OnKeyDown( UINT, WPARAM wParam, LPARAM lParam, BOOL& bHandled )
+LRESULT CScriptEditorCtrl::OnKeyDown(UINT, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
 {
     // Pass the message to the parent window to handle all shortcuts (it will call us back)
     bHandled = FALSE;
-    GetParent().PostMessage( static_cast<UINT>( smp::MiscMessage::key_down ), wParam, lParam );
+    GetParent().PostMessage(static_cast<UINT>(smp::MiscMessage::key_down), wParam, lParam);
     return 1;
 }
 
-LRESULT CScriptEditorCtrl::OnUpdateUI( LPNMHDR )
+LRESULT CScriptEditorCtrl::OnUpdateUI(LPNMHDR)
 {
     const auto bracePos = FindBraceMatchPos();
-    if ( bracePos.current )
+    if (bracePos.current)
     {
-        if ( bracePos.matching )
+        if (bracePos.matching)
         {
             const auto currentBrace = *bracePos.current;
             const auto matchingBrace = *bracePos.matching;
 
-            BraceHighlight( currentBrace, matchingBrace );
-            SetHighlightGuide( std::min( GetColumn( currentBrace ), GetColumn( matchingBrace ) ) );
+            BraceHighlight(currentBrace, matchingBrace);
+            SetHighlightGuide(std::min(GetColumn(currentBrace), GetColumn(matchingBrace)));
         }
         else
         {
-            BraceBadLight( *bracePos.current );
-            SetHighlightGuide( 0 );
+            BraceBadLight(*bracePos.current);
+            SetHighlightGuide(0);
         }
     }
     else
     {
-        BraceHighlight( -1, -1 );
-        SetHighlightGuide( 0 );
+        BraceHighlight(-1, -1);
+        SetHighlightGuide(0);
     }
 
     return 0;
 }
 
-LRESULT CScriptEditorCtrl::OnCharAdded( LPNMHDR pnmh )
+LRESULT CScriptEditorCtrl::OnCharAdded(LPNMHDR pnmh)
 {
-    auto* notification = reinterpret_cast<SCNotification*>( pnmh );
+    auto* notification = reinterpret_cast<SCNotification*>(pnmh);
     int ch = notification->ch;
     Sci_CharacterRange crange = GetSelection();
     int selStart = crange.cpMin;
     int selEnd = crange.cpMax;
 
-    if ( ( selEnd == selStart ) && ( selStart > 0 ) )
+    if ((selEnd == selStart) && (selStart > 0))
     {
-        if ( CallTipActive() )
+        if (CallTipActive())
         {
-            switch ( ch )
+            switch (ch)
             {
             case ')':
                 m_nBraceCount--;
-                if ( m_nBraceCount < 1 )
+                if (m_nBraceCount < 1)
                 {
                     CallTipCancel();
                 }
@@ -342,22 +342,22 @@ LRESULT CScriptEditorCtrl::OnCharAdded( LPNMHDR pnmh )
                 break;
             }
         }
-        else if ( AutoCActive() )
+        else if (AutoCActive())
         {
-            if ( ch == '(' )
+            if (ch == '(')
             {
                 m_nBraceCount++;
                 StartCallTip();
             }
-            else if ( ch == ')' )
+            else if (ch == ')')
             {
                 m_nBraceCount--;
             }
-            else if ( !IsCSym( ch ) )
+            else if (!IsCSym(ch))
             {
                 AutoCCancel();
 
-                if ( ch == '.' )
+                if (ch == '.')
                 {
                     StartAutoComplete();
                 }
@@ -365,16 +365,16 @@ LRESULT CScriptEditorCtrl::OnCharAdded( LPNMHDR pnmh )
         }
         else
         {
-            if ( ch == '(' )
+            if (ch == '(')
             {
                 m_nBraceCount = 1;
                 StartCallTip();
             }
             else
             {
-                AutomaticIndentation( ch );
+                AutomaticIndentation(ch);
 
-                if ( IsCSym( ch ) || ch == '.' )
+                if (IsCSym(ch) || ch == '.')
                 {
                     StartAutoComplete();
                 }
@@ -385,39 +385,39 @@ LRESULT CScriptEditorCtrl::OnCharAdded( LPNMHDR pnmh )
     return 0;
 }
 
-LRESULT CScriptEditorCtrl::OnZoom( LPNMHDR )
+LRESULT CScriptEditorCtrl::OnZoom(LPNMHDR)
 {
     AutoMarginWidth();
 
     return 0;
 }
 
-LRESULT CScriptEditorCtrl::OnChange( UINT, int, HWND )
+LRESULT CScriptEditorCtrl::OnChange(UINT, int, HWND)
 {
     AutoMarginWidth();
 
     return 0;
 }
 
-bool CScriptEditorCtrl::ProcessKey( uint32_t vk )
+bool CScriptEditorCtrl::ProcessKey(uint32_t vk)
 {
-    const int modifiers = ( IsKeyPressed( VK_SHIFT ) ? SCMOD_SHIFT : 0 )
-                          | ( IsKeyPressed( VK_CONTROL ) ? SCMOD_CTRL : 0 )
-                          | ( IsKeyPressed( VK_MENU ) ? SCMOD_ALT : 0 );
+    const int modifiers = (IsKeyPressed(VK_SHIFT) ? SCMOD_SHIFT : 0)
+                          | (IsKeyPressed(VK_CONTROL) ? SCMOD_CTRL : 0)
+                          | (IsKeyPressed(VK_MENU) ? SCMOD_ALT : 0);
 
     // Hotkeys
-    if ( modifiers == SCMOD_CTRL )
+    if (modifiers == SCMOD_CTRL)
     {
-        switch ( vk )
+        switch (vk)
         {
         case 'F':
         {
-            FindReplace( TRUE );
+            FindReplace(TRUE);
             return true;
         }
         case 'H':
         {
-            FindReplace( FALSE );
+            FindReplace(FALSE);
             return true;
         }
         case 'G':
@@ -429,32 +429,32 @@ bool CScriptEditorCtrl::ProcessKey( uint32_t vk )
             break;
         }
     }
-    else if ( modifiers == 0 )
+    else if (modifiers == 0)
     {
-        if ( vk == VK_F3 )
+        if (vk == VK_F3)
         {
-            if ( HasFindText() )
+            if (HasFindText())
             {
-                FindTextSimple( FindReplaceState::Direction::down );
+                FindTextSimple(FindReplaceState::Direction::down);
             }
             else
             {
-                FindReplace( TRUE );
+                FindReplace(TRUE);
             }
             return true;
         }
     }
-    else if ( modifiers == SCMOD_SHIFT )
+    else if (modifiers == SCMOD_SHIFT)
     {
-        if ( vk == VK_F3 )
+        if (vk == VK_F3)
         {
-            if ( HasFindText() )
+            if (HasFindText())
             {
-                FindTextSimple( FindReplaceState::Direction::up );
+                FindTextSimple(FindReplaceState::Direction::up);
             }
             else
             {
-                FindReplace( TRUE );
+                FindReplace(TRUE);
             }
             return true;
         }
@@ -469,57 +469,57 @@ void CScriptEditorCtrl::ReadAPI()
 
     m_apis.clear();
 
-    const auto readApi = [&m_apis = m_apis]( const auto& content ) {
-        for ( const auto& line: qwr::string::SplitByLines( content ) )
+    const auto readApi = [&m_apis = m_apis](const auto& content) {
+        for (const auto& line: qwr::string::SplitByLines(content))
         {
-            if ( !line.empty() && IsCSym( line[0] ) )
+            if (!line.empty() && IsCSym(line[0]))
             {
-                m_apis.emplace( line.data(), line.size() );
+                m_apis.emplace(line.data(), line.size());
             }
         }
     };
 
-    readApi( LoadStringResource( IDR_SCINTILLA_JS_API, "Script" ).value_or( "" ) );
-    readApi( LoadStringResource( IDR_SCINTILLA_INTERFACE_API, "Script" ).value_or( "" ) );
+    readApi(LoadStringResource(IDR_SCINTILLA_JS_API, "Script").value_or(""));
+    readApi(LoadStringResource(IDR_SCINTILLA_INTERFACE_API, "Script").value_or(""));
 
-    const auto propvalRet = GetPropertyExpanded_Opt( "api.extra" );
-    if ( !propvalRet || propvalRet->empty() )
+    const auto propvalRet = GetPropertyExpanded_Opt("api.extra");
+    if (!propvalRet || propvalRet->empty())
     {
         return;
     }
 
-    const auto files = qwr::string::Split<char>( *propvalRet, ';' );
+    const auto files = qwr::string::Split<char>(*propvalRet, ';');
     std::string content;
-    for ( const auto& file: files )
+    for (const auto& file: files)
     {
         try
         {
             const auto path = std::string(file.data(), file.size());
-            const auto content = qwr::file::ReadFile(qwr::unicode::ToWide(path), CP_UTF8 );
-            readApi( content );
+            const auto content = qwr::file::ReadFile(qwr::unicode::ToWide(path), CP_UTF8);
+            readApi(content);
         }
-        catch ( const qwr::QwrException& e )
+        catch (const qwr::QwrException& e)
         {
-            smp::utils::LogWarning( fmt::format(
+            smp::utils::LogWarning(fmt::format(
                 "Could not load editor API file {}:\n"
                 "  {}",
                 std::string{ file.data(), file.size() },
-                e.what() ) );
+                e.what()));
         }
     }
 }
 
-void CScriptEditorCtrl::SetContent( const char* text, bool clear_undo_buffer )
+void CScriptEditorCtrl::SetContent(const char* text, bool clear_undo_buffer)
 {
-    SetText( text );
-    ConvertEOLs( SC_EOL_CRLF );
+    SetText(text);
+    ConvertEOLs(SC_EOL_CRLF);
 
-    if ( clear_undo_buffer )
+    if (clear_undo_buffer)
     {
         EmptyUndoBuffer();
     }
 
-    Colourise( 0, std::numeric_limits<unsigned int>::max() );
+    Colourise(0, std::numeric_limits<unsigned int>::max());
     GrabFocus();
     TrackWidth();
 }
@@ -563,66 +563,66 @@ void CScriptEditorCtrl::SetJScript()
     // clang-format on
 
     std::string keywords_str;
-    keywords_str.reserve( ( js_words.size() + js_builtins.size() + smp_words.size() ) * 6 );
-    keywords_str += JoinWithSpace( js_words ) + ' ';
-    keywords_str += JoinWithSpace( js_builtins ) + ' ';
-    keywords_str += JoinWithSpace( smp_words );
+    keywords_str.reserve((js_words.size() + js_builtins.size() + smp_words.size()) * 6);
+    keywords_str += JoinWithSpace(js_words) + ' ';
+    keywords_str += JoinWithSpace(js_builtins) + ' ';
+    keywords_str += JoinWithSpace(smp_words);
 
     RestoreDefaultStyle();
 
-    SetILexer( CreateLexer( "cpp" ) );
-    SetKeyWords( 0, keywords_str.c_str() );
+    SetILexer(CreateLexer("cpp"));
+    SetKeyWords(0, keywords_str.c_str());
     LoadStyleFromProperties();
-    Colourise( 0, std::numeric_limits<unsigned int>::max() );
+    Colourise(0, std::numeric_limits<unsigned int>::max());
 }
 
 void CScriptEditorCtrl::ReloadScintillaSettings()
 {
-    for ( const auto& prop: config::sci::props.val() )
+    for (const auto& prop: config::sci::props.val())
     {
-        SetProperty( prop.key.c_str(), prop.val.c_str() );
+        SetProperty(prop.key.c_str(), prop.val.c_str());
     }
 
-    auto getIntFromProp = [&]( const std::string& propName ) -> std::optional<int> {
-        const auto propvalRet = GetPropertyExpanded_Opt( propName.c_str() );
-        if ( !propvalRet )
+    auto getIntFromProp = [&](const std::string& propName) -> std::optional<int> {
+        const auto propvalRet = GetPropertyExpanded_Opt(propName.c_str());
+        if (!propvalRet)
         {
             return std::nullopt;
         }
 
-        return qwr::string::GetNumber<int>( static_cast<std::string_view>( *propvalRet ) );
+        return qwr::string::GetNumber<int>(static_cast<std::string_view>(*propvalRet));
     };
 
-    auto retVal = getIntFromProp( "style.wrap.mode" );
-    if ( retVal )
+    auto retVal = getIntFromProp("style.wrap.mode");
+    if (retVal)
     {
-        SetWrapMode( *retVal );
+        SetWrapMode(*retVal);
     }
 
-    retVal = getIntFromProp( "style.wrap.visualflags" );
-    if ( retVal )
+    retVal = getIntFromProp("style.wrap.visualflags");
+    if (retVal)
     {
-        SetWrapVisualFlags( *retVal );
+        SetWrapVisualFlags(*retVal);
     }
 
-    retVal = getIntFromProp( "style.wrap.visualflags.location" );
-    if ( retVal )
+    retVal = getIntFromProp("style.wrap.visualflags.location");
+    if (retVal)
     {
-        SetWrapVisualFlagsLocation( *retVal );
+        SetWrapVisualFlagsLocation(*retVal);
     }
 
-    retVal = getIntFromProp( "style.wrap.indentmode" );
-    if ( retVal )
+    retVal = getIntFromProp("style.wrap.indentmode");
+    if (retVal)
     {
-        SetWrapIndentMode( *retVal );
+        SetWrapIndentMode(*retVal);
     }
 }
 
-BOOL CScriptEditorCtrl::SubclassWindow( HWND hWnd )
+BOOL CScriptEditorCtrl::SubclassWindow(HWND hWnd)
 {
-    BOOL bRet = CScintillaCtrl::SubclassWindow( hWnd );
+    BOOL bRet = CScintillaCtrl::SubclassWindow(hWnd);
 
-    if ( bRet )
+    if (bRet)
     {
         Init();
     }
@@ -632,14 +632,14 @@ BOOL CScriptEditorCtrl::SubclassWindow( HWND hWnd )
 
 Sci_CharacterRange CScriptEditorCtrl::GetSelection()
 {
-    return Sci_CharacterRange{ static_cast<Sci_PositionCR>( GetSelectionStart() ), static_cast<Sci_PositionCR>( GetSelectionEnd() ) };
+    return Sci_CharacterRange{ static_cast<Sci_PositionCR>(GetSelectionStart()), static_cast<Sci_PositionCR>(GetSelectionEnd()) };
 }
 
 int CScriptEditorCtrl::GetCaretInLine()
 {
     const int caret = GetCurrentPos();
-    const int line = LineFromPosition( caret );
-    const int lineStart = PositionFromLine( line );
+    const int line = LineFromPosition(caret);
+    const int lineStart = PositionFromLine(line);
     return caret - lineStart;
 }
 
@@ -647,36 +647,36 @@ std::string CScriptEditorCtrl::GetCurrentLine()
 {
     std::string buf;
 
-    buf.resize( GetCurLine( nullptr, 0 ) + 1 );
-    GetCurLine( buf.data(), buf.size() );
-    buf.resize( strlen( buf.c_str() ) );
+    buf.resize(GetCurLine(nullptr, 0) + 1);
+    GetCurLine(buf.data(), buf.size());
+    buf.resize(strlen(buf.c_str()));
 
     return buf;
 }
 
-CScriptEditorCtrl::IndentationStatus CScriptEditorCtrl::GetIndentState( int line )
+CScriptEditorCtrl::IndentationStatus CScriptEditorCtrl::GetIndentState(int line)
 { // C like language indentation defined by braces and keywords
     constexpr int styles[] = { SCE_C_OPERATOR, SCE_C_WORD };
 
-    const auto styledParts = GetStyledParts( line, styles, 20 );
-    if ( styledParts.empty() )
+    const auto styledParts = GetStyledParts(line, styles, 20);
+    if (styledParts.empty())
     {
         return IndentationStatus::isNone;
     }
 
-    const auto reverseParts = ranges::views::reverse( styledParts );
-    const auto itBraces = ranges::find_if( reverseParts, []( const auto& elem ) {
+    const auto reverseParts = ranges::views::reverse(styledParts);
+    const auto itBraces = ranges::find_if(reverseParts, [](const auto& elem) {
         const auto& [part, style] = elem;
-        return ( style == SCE_C_OPERATOR && ( part == "{" || part == "}" ) );
-    } );
-    if ( itBraces != ranges::cend( reverseParts ) )
+        return (style == SCE_C_OPERATOR && (part == "{" || part == "}"));
+    });
+    if (itBraces != ranges::cend(reverseParts))
     { // braces have priority
         const auto& [part, style] = *itBraces;
-        if ( part == "{" )
+        if (part == "{")
         {
             return IndentationStatus::isBlockStart;
         }
-        else if ( part == "}" )
+        else if (part == "}")
         {
             return IndentationStatus::isBlockEnd;
         }
@@ -684,7 +684,7 @@ CScriptEditorCtrl::IndentationStatus CScriptEditorCtrl::GetIndentState( int line
     else
     {
         const auto& [part, style] = reverseParts[0];
-        if ( style == SCE_C_OPERATOR && part == ";" )
+        if (style == SCE_C_OPERATOR && part == ";")
         {
             return IndentationStatus::isNone;
         }
@@ -697,7 +697,7 @@ CScriptEditorCtrl::IndentationStatus CScriptEditorCtrl::GetIndentState( int line
                                               "for",
                                               "if",
                                               "while" };
-            if ( ranges::find( keywords, part ) != ranges::cend( keywords ) )
+            if (ranges::find(keywords, part) != ranges::cend(keywords))
             {
                 return IndentationStatus::isKeyWordStart;
             }
@@ -707,64 +707,64 @@ CScriptEditorCtrl::IndentationStatus CScriptEditorCtrl::GetIndentState( int line
     return IndentationStatus::isNone;
 }
 
-std::vector<CScriptEditorCtrl::StyledPart> CScriptEditorCtrl::GetStyledParts( int line, std::span<const int> styles, size_t maxParts )
+std::vector<CScriptEditorCtrl::StyledPart> CScriptEditorCtrl::GetStyledParts(int line, std::span<const int> styles, size_t maxParts)
 {
     std::vector<StyledPart> parts;
-    parts.reserve( maxParts );
+    parts.reserve(maxParts);
 
     std::string curPart;
-    const int thisLineStart = PositionFromLine( line );
-    const int nextLineStart = PositionFromLine( line + 1 );
+    const int thisLineStart = PositionFromLine(line);
+    const int nextLineStart = PositionFromLine(line + 1);
     int lastStyle = 0;
 
-    for ( int pos = thisLineStart; pos < nextLineStart; ++pos )
+    for (int pos = thisLineStart; pos < nextLineStart; ++pos)
     {
-        const auto curStyle = GetStyleAt( pos );
-        if ( ranges::find( styles, curStyle ) != styles.end() )
+        const auto curStyle = GetStyleAt(pos);
+        if (ranges::find(styles, curStyle) != styles.end())
         {
-            if ( curStyle != lastStyle && !curPart.empty() )
+            if (curStyle != lastStyle && !curPart.empty())
             {
-                parts.emplace_back( curPart, lastStyle );
+                parts.emplace_back(curPart, lastStyle);
                 curPart.clear();
             }
             lastStyle = curStyle;
 
-            if ( curStyle == SCE_C_OPERATOR )
+            if (curStyle == SCE_C_OPERATOR)
             {
-                curPart = GetCharAt( pos );
-                parts.emplace_back( curPart, curStyle );
+                curPart = GetCharAt(pos);
+                parts.emplace_back(curPart, curStyle);
                 curPart.clear();
             }
             else
             {
-                curPart += GetCharAt( pos );
+                curPart += GetCharAt(pos);
             }
         }
 
-        if ( parts.size() == maxParts )
+        if (parts.size() == maxParts)
         {
             curPart.clear();
             break;
         }
     }
 
-    if ( parts.size() != maxParts && !curPart.empty() )
+    if (parts.size() != maxParts && !curPart.empty())
     {
-        parts.emplace_back( curPart, lastStyle );
+        parts.emplace_back(curPart, lastStyle);
     }
 
     return parts;
 }
 
-bool CScriptEditorCtrl::RangeIsAllWhitespace( int start, int end )
+bool CScriptEditorCtrl::RangeIsAllWhitespace(int start, int end)
 {
-    start = std::max( 0, start );
-    end = std::min( end, GetLength() );
+    start = std::max(0, start);
+    end = std::min(end, GetLength());
 
-    for ( int i = start; i < end; ++i )
+    for (int i = start; i < end; ++i)
     {
-        const char c = GetCharAt( i );
-        if ( ( c != ' ' ) && ( c != '\t' ) )
+        const char c = GetCharAt(i);
+        if ((c != ' ') && (c != '\t'))
         {
             return false;
         }
@@ -784,13 +784,13 @@ bool CScriptEditorCtrl::StartCallTip()
 
     do
     {
-        while ( current > 0 && ( braces || line[current - 1] != '(' ) )
+        while (current > 0 && (braces || line[current - 1] != '('))
         {
-            if ( line[current - 1] == '(' )
+            if (line[current - 1] == '(')
             {
                 braces--;
             }
-            else if ( line[current - 1] == ')' )
+            else if (line[current - 1] == ')')
             {
                 braces++;
             }
@@ -799,7 +799,7 @@ bool CScriptEditorCtrl::StartCallTip()
             pos--;
         }
 
-        if ( current > 0 )
+        if (current > 0)
         {
             current--;
             pos--;
@@ -809,28 +809,28 @@ bool CScriptEditorCtrl::StartCallTip()
             break;
         }
 
-        while ( current > 0 && std::isspace( static_cast<unsigned char>( line[current - 1] ) ) )
+        while (current > 0 && std::isspace(static_cast<unsigned char>(line[current - 1])))
         {
             current--;
             pos--;
         }
-    } while ( current > 0 && !IsCSym( line[current - 1] ) );
+    } while (current > 0 && !IsCSym(line[current - 1]));
 
-    if ( current <= 0 )
+    if (current <= 0)
     {
         return true;
     }
 
     m_nStartCalltipWord = current - 1;
 
-    while ( m_nStartCalltipWord > 0 && ( IsCSym( line[m_nStartCalltipWord - 1] ) || ( line[m_nStartCalltipWord - 1] == '.' ) ) )
+    while (m_nStartCalltipWord > 0 && (IsCSym(line[m_nStartCalltipWord - 1]) || (line[m_nStartCalltipWord - 1] == '.')))
     {
         --m_nStartCalltipWord;
     }
 
-    line.resize( current );
+    line.resize(current);
     m_szCurrentCallTipWord = line.c_str() + m_nStartCalltipWord;
-    FillFunctionDefinition( pos );
+    FillFunctionDefinition(pos);
     return true;
 }
 
@@ -841,17 +841,17 @@ void CScriptEditorCtrl::ContinueCallTip()
     int braces = 0;
     int commas = 0;
 
-    for ( int i = m_nStartCalltipWord; i < current; ++i )
+    for (int i = m_nStartCalltipWord; i < current; ++i)
     {
-        if ( line[i] == '(' )
+        if (line[i] == '(')
         {
             braces++;
         }
-        else if ( line[i] == ')' && braces )
+        else if (line[i] == ')' && braces)
         {
             braces--;
         }
-        else if ( braces == 1 && line[i] == ',' )
+        else if (braces == 1 && line[i] == ',')
         {
             commas++;
         }
@@ -859,25 +859,25 @@ void CScriptEditorCtrl::ContinueCallTip()
 
     int startHighlight = 0;
 
-    while ( m_szFunctionDefinition[startHighlight] && m_szFunctionDefinition[startHighlight] != '(' )
+    while (m_szFunctionDefinition[startHighlight] && m_szFunctionDefinition[startHighlight] != '(')
     {
         startHighlight++;
     }
 
-    if ( m_szFunctionDefinition[startHighlight] == '(' )
+    if (m_szFunctionDefinition[startHighlight] == '(')
     {
         startHighlight++;
     }
 
-    while ( m_szFunctionDefinition[startHighlight] && commas )
+    while (m_szFunctionDefinition[startHighlight] && commas)
     {
-        if ( m_szFunctionDefinition[startHighlight] == ',' )
+        if (m_szFunctionDefinition[startHighlight] == ',')
         {
             commas--;
         }
         // If it reached the end of the argument list it means that the user typed in more
         // arguments than the ones listed in the calltip
-        if ( m_szFunctionDefinition[startHighlight] == ')' )
+        if (m_szFunctionDefinition[startHighlight] == ')')
         {
             commas = 0;
         }
@@ -887,106 +887,106 @@ void CScriptEditorCtrl::ContinueCallTip()
         }
     }
 
-    if ( m_szFunctionDefinition[startHighlight] == ',' )
+    if (m_szFunctionDefinition[startHighlight] == ',')
     {
         startHighlight++;
     }
 
     int endHighlight = startHighlight;
 
-    while ( m_szFunctionDefinition[endHighlight] && m_szFunctionDefinition[endHighlight] != ',' && m_szFunctionDefinition[endHighlight] != ')' )
+    while (m_szFunctionDefinition[endHighlight] && m_szFunctionDefinition[endHighlight] != ',' && m_szFunctionDefinition[endHighlight] != ')')
     {
         endHighlight++;
     }
 
-    CallTipSetHlt( startHighlight, endHighlight );
+    CallTipSetHlt(startHighlight, endHighlight);
 }
 
-void CScriptEditorCtrl::FillFunctionDefinition( int pos )
+void CScriptEditorCtrl::FillFunctionDefinition(int pos)
 {
     m_szFunctionDefinition.clear();
 
-    if ( pos )
+    if (pos)
     {
         m_nLastPosCallTip = pos;
     }
 
-    if ( m_apis.empty() )
+    if (m_apis.empty())
     {
         return;
     }
 
-    auto definitionRet = GetFullDefinitionForWord( m_szCurrentCallTipWord );
-    if ( !definitionRet )
+    auto definitionRet = GetFullDefinitionForWord(m_szCurrentCallTipWord);
+    if (!definitionRet)
     {
         return;
     }
 
     m_szFunctionDefinition = std::string{ definitionRet->data(), definitionRet->size() };
 
-    CallTipShow( m_nLastPosCallTip - m_szCurrentCallTipWord.length(), m_szFunctionDefinition.c_str() );
+    CallTipShow(m_nLastPosCallTip - m_szCurrentCallTipWord.length(), m_szFunctionDefinition.c_str());
     ContinueCallTip();
 }
 
 bool CScriptEditorCtrl::StartAutoComplete()
 {
-    if ( m_apis.empty() )
+    if (m_apis.empty())
     {
         return false;
     }
 
     const std::string line = GetCurrentLine();
-    const auto curPos = static_cast<size_t>( GetCaretInLine() );
+    const auto curPos = static_cast<size_t>(GetCaretInLine());
 
     const std::string_view word = [&line, curPos] {
         std::string_view wordBuffer{ line.c_str(), curPos };
 
-        const auto it = std::find_if( wordBuffer.crbegin(), wordBuffer.crend(), []( char ch ) {
-            return ( !IsCSym( ch ) && ch != '.' );
-        } );
-        if ( it != wordBuffer.crend() )
+        const auto it = std::find_if(wordBuffer.crbegin(), wordBuffer.crend(), [](char ch) {
+            return (!IsCSym(ch) && ch != '.');
+        });
+        if (it != wordBuffer.crend())
         {
-            wordBuffer.remove_prefix( std::distance( it, wordBuffer.crend() ) );
+            wordBuffer.remove_prefix(std::distance(it, wordBuffer.crend()));
         }
 
         return wordBuffer;
     }();
 
-    const auto acWordsRet = GetNearestWords( word, '(' );
-    if ( !acWordsRet )
+    const auto acWordsRet = GetNearestWords(word, '(');
+    if (!acWordsRet)
     {
         return false;
     }
 
-    const auto& acWordsStr = JoinWithSpace( *acWordsRet );
-    AutoCShow( word.length(), acWordsStr.c_str() );
+    const auto& acWordsStr = JoinWithSpace(*acWordsRet);
+    AutoCShow(word.length(), acWordsStr.c_str());
 
     return true;
 }
 
-int CScriptEditorCtrl::IndentOfBlock( int line )
+int CScriptEditorCtrl::IndentOfBlock(int line)
 {
-    if ( line < 0 )
+    if (line < 0)
     {
         return 0;
     }
 
     int indentSize = GetIndent();
-    int indentBlock = GetLineIndentation( line );
+    int indentBlock = GetLineIndentation(line);
     int backLine = line;
     IndentationStatus indentState = IndentationStatus::isNone;
 
-    const int lineLimit = std::max( 0, line - m_nStatementLookback );
+    const int lineLimit = std::max(0, line - m_nStatementLookback);
 
-    while ( ( backLine >= lineLimit ) && ( indentState == IndentationStatus::isNone ) )
+    while ((backLine >= lineLimit) && (indentState == IndentationStatus::isNone))
     {
-        indentState = GetIndentState( backLine );
-        if ( IndentationStatus::isNone != indentState )
+        indentState = GetIndentState(backLine);
+        if (IndentationStatus::isNone != indentState)
         {
-            indentBlock = GetLineIndentation( backLine );
+            indentBlock = GetLineIndentation(backLine);
         }
 
-        switch ( indentState )
+        switch (indentState)
         {
         case IndentationStatus::isBlockStart:
         {
@@ -995,12 +995,12 @@ int CScriptEditorCtrl::IndentOfBlock( int line )
         }
         case IndentationStatus::isBlockEnd:
         {
-            indentBlock = std::max( 0, indentBlock );
+            indentBlock = std::max(0, indentBlock);
             break;
         }
         case IndentationStatus::isKeyWordStart:
         {
-            if ( backLine == line )
+            if (backLine == line)
             {
                 indentBlock += indentSize;
             }
@@ -1018,52 +1018,52 @@ int CScriptEditorCtrl::IndentOfBlock( int line )
     return indentBlock;
 }
 
-void CScriptEditorCtrl::AutomaticIndentation( char ch )
+void CScriptEditorCtrl::AutomaticIndentation(char ch)
 {
     const Sci_CharacterRange crange = GetSelection();
     const int selStart = crange.cpMin;
-    const int curLine = LineFromPosition( GetCurrentPos() );
-    const int thisLineStart = PositionFromLine( curLine );
+    const int curLine = LineFromPosition(GetCurrentPos());
+    const int thisLineStart = PositionFromLine(curLine);
     const int indentSize = GetIndent();
-    const int indentBlock = IndentOfBlock( curLine - 1 );
+    const int indentBlock = IndentOfBlock(curLine - 1);
 
-    if ( ch == '}' )
+    if (ch == '}')
     {
         // Dedent maybe
-        if ( RangeIsAllWhitespace( thisLineStart, selStart - 1 ) )
+        if (RangeIsAllWhitespace(thisLineStart, selStart - 1))
         {
-            SetIndentation( curLine, indentBlock - indentSize );
+            SetIndentation(curLine, indentBlock - indentSize);
         }
     }
-    else if ( ch == '{' )
+    else if (ch == '{')
     {
         // Dedent maybe if first on line and previous line was starting keyword
-        if ( ( GetIndentState( curLine - 1 ) == IndentationStatus::isKeyWordStart ) )
+        if ((GetIndentState(curLine - 1) == IndentationStatus::isKeyWordStart))
         {
-            if ( RangeIsAllWhitespace( thisLineStart, selStart - 1 ) )
+            if (RangeIsAllWhitespace(thisLineStart, selStart - 1))
             {
-                SetIndentation( curLine, indentBlock - indentSize );
+                SetIndentation(curLine, indentBlock - indentSize);
             }
         }
     }
-    else if ( ( ch == '\r' || ch == '\n' ) && ( selStart == thisLineStart ) )
+    else if ((ch == '\r' || ch == '\n') && (selStart == thisLineStart))
     {
-        if ( ( GetIndentState( curLine - 1 ) == IndentationStatus::isKeyWordStart ) )
+        if ((GetIndentState(curLine - 1) == IndentationStatus::isKeyWordStart))
         {
             const auto line = GetCurrentLine();
-            const auto it = ranges::find_if( line, []( const auto& ch ) { return !std::isspace( static_cast<unsigned char>( ch ) ); } );
-            if ( it != line.cend() && *it == '{' )
+            const auto it = ranges::find_if(line, [](const auto& ch) { return !std::isspace(static_cast<unsigned char>(ch)); });
+            if (it != line.cend() && *it == '{')
             { // dedent open brace on keyword
-                SetIndentation( curLine, indentBlock - indentSize );
+                SetIndentation(curLine, indentBlock - indentSize);
             }
             else
             {
-                SetIndentation( curLine, indentBlock );
+                SetIndentation(curLine, indentBlock);
             }
         }
         else
         {
-            SetIndentation( curLine, indentBlock );
+            SetIndentation(curLine, indentBlock);
         }
     }
 }
@@ -1076,43 +1076,43 @@ CScriptEditorCtrl::BracePosition CScriptEditorCtrl::FindBraceMatchPos()
     char charBefore = '\0';
     const int lengthDoc = GetLength();
 
-    if ( lengthDoc > 0 && caretPos > 0 )
+    if (lengthDoc > 0 && caretPos > 0)
     {
         // Check to ensure not matching brace that is part of a multibyte character
-        int posBefore = PositionBefore( caretPos );
-        if ( posBefore == ( caretPos - 1 ) )
+        int posBefore = PositionBefore(caretPos);
+        if (posBefore == (caretPos - 1))
         {
-            charBefore = GetCharAt( posBefore );
+            charBefore = GetCharAt(posBefore);
         }
     }
 
-    if ( charBefore && IsBraceChar( charBefore ) )
+    if (charBefore && IsBraceChar(charBefore))
     { // Priority goes to character before caret
         braceAtCaret = caretPos - 1;
     }
-    if ( lengthDoc > 0 && braceAtCaret < 0 && caretPos < lengthDoc )
+    if (lengthDoc > 0 && braceAtCaret < 0 && caretPos < lengthDoc)
     {
         // No brace found so check other side
         // Check to ensure not matching brace that is part of a multibyte character
-        const char charAfter = GetCharAt( caretPos );
-        if ( charAfter == ( caretPos + 1 ) )
+        const char charAfter = GetCharAt(caretPos);
+        if (charAfter == (caretPos + 1))
         {
-            if ( charAfter && IsBraceChar( charAfter ) )
+            if (charAfter && IsBraceChar(charAfter))
             {
                 braceAtCaret = caretPos;
             }
         }
     }
-    if ( braceAtCaret >= 0 )
+    if (braceAtCaret >= 0)
     {
-        braceOpposite = BraceMatch( braceAtCaret );
+        braceOpposite = BraceMatch(braceAtCaret);
     }
 
     BracePosition position;
-    if ( braceAtCaret >= 0 )
+    if (braceAtCaret >= 0)
     {
         position.current = braceAtCaret;
-        if ( braceOpposite >= 0 )
+        if (braceOpposite >= 0)
         {
             position.matching = braceOpposite;
         }
@@ -1121,38 +1121,38 @@ CScriptEditorCtrl::BracePosition CScriptEditorCtrl::FindBraceMatchPos()
     return position;
 }
 
-std::optional<std::vector<std::string_view>> CScriptEditorCtrl::GetNearestWords( std::string_view wordPart, std::optional<char> separator )
+std::optional<std::vector<std::string_view>> CScriptEditorCtrl::GetNearestWords(std::string_view wordPart, std::optional<char> separator)
 {
-    if ( m_apis.empty() )
+    if (m_apis.empty())
     {
         return std::nullopt;
     }
 
-    const auto startsWithPart = [&wordPart]( std::string_view word ) -> bool {
-        return StartsWith_CaseInsensitive( word, wordPart );
+    const auto startsWithPart = [&wordPart](std::string_view word) -> bool {
+        return StartsWith_CaseInsensitive(word, wordPart);
     };
 
     std::vector<std::string_view> words;
-    for ( auto it = ranges::find_if( m_apis, startsWithPart ); it != m_apis.end() && startsWithPart( *it ); ++it )
+    for (auto it = ranges::find_if(m_apis, startsWithPart); it != m_apis.end() && startsWithPart(*it); ++it)
     {
         const auto& word = *it;
         std::string_view wordToPlace;
-        if ( separator )
+        if (separator)
         {
-            const auto charIt = ranges::find( word, *separator );
-            if ( word.cend() != charIt )
+            const auto charIt = ranges::find(word, *separator);
+            if (word.cend() != charIt)
             {
-                wordToPlace = std::string_view( word.c_str(), static_cast<size_t>( std::distance( word.cbegin(), charIt ) ) );
+                wordToPlace = std::string_view(word.c_str(), static_cast<size_t>(std::distance(word.cbegin(), charIt)));
             }
         }
-        if ( wordToPlace.empty() )
+        if (wordToPlace.empty())
         {
             wordToPlace = word;
         }
-        words.emplace_back( wordToPlace );
+        words.emplace_back(wordToPlace);
     }
 
-    if ( words.empty() )
+    if (words.empty())
     {
         return std::nullopt;
     }
@@ -1160,20 +1160,20 @@ std::optional<std::vector<std::string_view>> CScriptEditorCtrl::GetNearestWords(
     return words;
 }
 
-std::optional<std::string_view> CScriptEditorCtrl::GetFullDefinitionForWord( std::string_view word )
+std::optional<std::string_view> CScriptEditorCtrl::GetFullDefinitionForWord(std::string_view word)
 {
-    if ( m_apis.empty() )
+    if (m_apis.empty())
     {
         return std::nullopt;
     }
 
     const std::string wordWithBrace = std::string{ word.data(), word.size() } + '(';
-    const auto startsWithPart = [&wordWithBrace]( std::string_view word ) -> bool {
-        return StartsWith_CaseInsensitive( word, wordWithBrace );
+    const auto startsWithPart = [&wordWithBrace](std::string_view word) -> bool {
+        return StartsWith_CaseInsensitive(word, wordWithBrace);
     };
 
-    auto it = ranges::find_if( m_apis, startsWithPart );
-    if ( it == m_apis.cend() )
+    auto it = ranges::find_if(m_apis, startsWithPart);
+    if (it == m_apis.cend())
     {
         return std::nullopt;
     }
@@ -1181,15 +1181,15 @@ std::optional<std::string_view> CScriptEditorCtrl::GetFullDefinitionForWord( std
     return *it;
 }
 
-std::optional<DWORD> CScriptEditorCtrl::GetPropertyColor( const char* key )
+std::optional<DWORD> CScriptEditorCtrl::GetPropertyColor(const char* key)
 {
-    const auto propvalRet = GetPropertyExpanded_Opt( key );
-    if ( !propvalRet )
+    const auto propvalRet = GetPropertyExpanded_Opt(key);
+    if (!propvalRet)
     {
         return std::nullopt;
     }
 
-    return GetColourFromHex( *propvalRet );
+    return GetColourFromHex(*propvalRet);
 }
 
 void CScriptEditorCtrl::Init()
@@ -1198,54 +1198,54 @@ void CScriptEditorCtrl::Init()
     StyleResetDefault();
 
     // Common
-    SetCodePage( SC_CP_UTF8 );
-    SetEOLMode( SC_EOL_CRLF );
-    SetModEventMask( SC_MOD_INSERTTEXT | SC_MOD_DELETETEXT | SC_PERFORMED_UNDO | SC_PERFORMED_REDO );
-    UsePopUp( true );
+    SetCodePage(SC_CP_UTF8);
+    SetEOLMode(SC_EOL_CRLF);
+    SetModEventMask(SC_MOD_INSERTTEXT | SC_MOD_DELETETEXT | SC_PERFORMED_UNDO | SC_PERFORMED_REDO);
+    UsePopUp(true);
 
     // Disable Ctrl + some char
-    constexpr auto ctrlcode = std::to_array<int>( { 'Q', 'W', 'E', 'R', 'I', 'O', 'P', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'B', 'N', 'M', 186, 187, 226 } );
+    constexpr auto ctrlcode = std::to_array<int>({ 'Q', 'W', 'E', 'R', 'I', 'O', 'P', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'B', 'N', 'M', 186, 187, 226 });
 
-    for ( auto code: ctrlcode )
+    for (auto code: ctrlcode)
     {
-        ClearCmdKey( MAKELONG( code, SCMOD_CTRL ) );
+        ClearCmdKey(MAKELONG(code, SCMOD_CTRL));
     }
 
     // Disable Ctrl+Shift+some char
-    for ( auto code: ranges::views::indices( 48, 122 ) )
+    for (auto code: ranges::views::indices(48, 122))
     {
-        ClearCmdKey( MAKELONG( code, SCMOD_CTRL | SCMOD_SHIFT ) );
+        ClearCmdKey(MAKELONG(code, SCMOD_CTRL | SCMOD_SHIFT));
     }
 
     // Shortcut keys
-    AssignCmdKey( MAKELONG( SCK_NEXT, SCMOD_CTRL ), SCI_PARADOWN );
-    AssignCmdKey( MAKELONG( SCK_PRIOR, SCMOD_CTRL ), SCI_PARAUP );
-    AssignCmdKey( MAKELONG( SCK_NEXT, ( SCMOD_CTRL | SCMOD_SHIFT ) ), SCI_PARADOWNEXTEND );
-    AssignCmdKey( MAKELONG( SCK_PRIOR, ( SCMOD_CTRL | SCMOD_SHIFT ) ), SCI_PARAUPEXTEND );
-    AssignCmdKey( MAKELONG( SCK_HOME, SCMOD_NORM ), SCI_VCHOMEWRAP );
-    AssignCmdKey( MAKELONG( SCK_END, SCMOD_NORM ), SCI_LINEENDWRAP );
-    AssignCmdKey( MAKELONG( SCK_HOME, SCMOD_SHIFT ), SCI_VCHOMEWRAPEXTEND );
-    AssignCmdKey( MAKELONG( SCK_END, SCMOD_SHIFT ), SCI_LINEENDWRAPEXTEND );
+    AssignCmdKey(MAKELONG(SCK_NEXT, SCMOD_CTRL), SCI_PARADOWN);
+    AssignCmdKey(MAKELONG(SCK_PRIOR, SCMOD_CTRL), SCI_PARAUP);
+    AssignCmdKey(MAKELONG(SCK_NEXT, (SCMOD_CTRL | SCMOD_SHIFT)), SCI_PARADOWNEXTEND);
+    AssignCmdKey(MAKELONG(SCK_PRIOR, (SCMOD_CTRL | SCMOD_SHIFT)), SCI_PARAUPEXTEND);
+    AssignCmdKey(MAKELONG(SCK_HOME, SCMOD_NORM), SCI_VCHOMEWRAP);
+    AssignCmdKey(MAKELONG(SCK_END, SCMOD_NORM), SCI_LINEENDWRAP);
+    AssignCmdKey(MAKELONG(SCK_HOME, SCMOD_SHIFT), SCI_VCHOMEWRAPEXTEND);
+    AssignCmdKey(MAKELONG(SCK_END, SCMOD_SHIFT), SCI_LINEENDWRAPEXTEND);
 
     // Tabs and indentation
-    SetUseTabs( false );
-    SetTabIndents( false );
-    SetBackSpaceUnIndents( true );
-    SetTabWidth( 4 );
-    SetIndent( 4 );
+    SetUseTabs(false);
+    SetTabIndents(false);
+    SetBackSpaceUnIndents(true);
+    SetTabWidth(4);
+    SetIndent(4);
 
     // Scroll
-    SetEndAtLastLine( true );
-    SetScrollWidthTracking( true );
-    SetScrollWidth( 1 );
+    SetEndAtLastLine(true);
+    SetScrollWidthTracking(true);
+    SetScrollWidth(1);
 
     // Auto complete
-    AutoCSetIgnoreCase( true );
+    AutoCSetIgnoreCase(true);
 
     // Set embedded properties
-    SetProperty( "dir.base", ( qwr::path::Foobar2000() / "" ).u8string().c_str() );
-    SetProperty( "dir.component", ( qwr::path::Component() / "" ).u8string().c_str() );
-    SetProperty( "dir.profile", ( qwr::path::Profile() / "" ).u8string().c_str() );
+    SetProperty("dir.base", (qwr::path::Foobar2000() / "").u8string().c_str());
+    SetProperty("dir.component", (qwr::path::Component() / "").u8string().c_str());
+    SetProperty("dir.profile", (qwr::path::Profile() / "").u8string().c_str());
 
     // Load properties
     ReloadScintillaSettings();
@@ -1258,115 +1258,115 @@ void CScriptEditorCtrl::RestoreDefaultStyle()
     StyleResetDefault();
 
     // enable line numbering
-    SetMarginWidthN( 1, 0 );
-    SetMarginWidthN( 2, 0 );
-    SetMarginWidthN( 3, 0 );
-    SetMarginWidthN( 4, 0 );
-    SetMarginTypeN( 0, SC_MARGIN_NUMBER );
+    SetMarginWidthN(1, 0);
+    SetMarginWidthN(2, 0);
+    SetMarginWidthN(3, 0);
+    SetMarginWidthN(4, 0);
+    SetMarginTypeN(0, SC_MARGIN_NUMBER);
 
     // Additional styles
-    auto colorRet = GetPropertyColor( "style.selection.fore" );
-    SetSelFore( colorRet.has_value(), colorRet.value_or( 0 ) );
+    auto colorRet = GetPropertyColor("style.selection.fore");
+    SetSelFore(colorRet.has_value(), colorRet.value_or(0));
     const bool hasForegroundColour = colorRet.has_value();
 
-    colorRet = GetPropertyColor( "style.selection.back" );
-    if ( colorRet )
+    colorRet = GetPropertyColor("style.selection.back");
+    if (colorRet)
     {
-        SetSelBack( true, *colorRet );
+        SetSelBack(true, *colorRet);
     }
     else
     {
-        if ( hasForegroundColour )
+        if (hasForegroundColour)
         {
-            SetSelBack( true, RGB( 0xc0, 0xc0, 0xc0 ) );
+            SetSelBack(true, RGB(0xc0, 0xc0, 0xc0));
         }
     }
 
-    SetSelAlpha( GetPropertyInt( "style.selection.alpha", SC_ALPHA_NOALPHA ) );
-    SetCaretFore( GetPropertyColor( "style.caret.fore" ).value_or( 0 ) );
-    SetCaretWidth( GetPropertyInt( "style.caret.width", 1 ) );
+    SetSelAlpha(GetPropertyInt("style.selection.alpha", SC_ALPHA_NOALPHA));
+    SetCaretFore(GetPropertyColor("style.caret.fore").value_or(0));
+    SetCaretWidth(GetPropertyInt("style.caret.width", 1));
 
-    colorRet = GetPropertyColor( "style.caret.line.back" );
-    if ( colorRet )
+    colorRet = GetPropertyColor("style.caret.line.back");
+    if (colorRet)
     {
-        SetCaretLineVisible( true );
-        SetCaretLineBack( *colorRet );
+        SetCaretLineVisible(true);
+        SetCaretLineBack(*colorRet);
     }
     else
     {
-        SetCaretLineVisible( false );
+        SetCaretLineVisible(false);
     }
 
-    SetCaretLineBackAlpha( GetPropertyInt( "style.caret.line.back.alpha", SC_ALPHA_NOALPHA ) );
+    SetCaretLineBackAlpha(GetPropertyInt("style.caret.line.back.alpha", SC_ALPHA_NOALPHA));
 }
 
 void CScriptEditorCtrl::TrackWidth()
 {
     int max_width = 1;
 
-    for ( auto lineIdx: ranges::views::indices( GetLineCount() ) )
+    for (auto lineIdx: ranges::views::indices(GetLineCount()))
     {
         // Get max width
-        int pos = GetLineEndPosition( lineIdx );
-        int width = PointXFromPosition( pos );
+        int pos = GetLineEndPosition(lineIdx);
+        int width = PointXFromPosition(pos);
 
-        max_width = std::max( width, max_width );
+        max_width = std::max(width, max_width);
     }
 
-    SetScrollWidth( max_width );
+    SetScrollWidth(max_width);
 }
 
 void CScriptEditorCtrl::LoadStyleFromProperties()
 {
     std::string propval;
-    for ( const auto [style_num, propname]: js_style_table )
+    for (const auto [style_num, propname]: js_style_table)
     {
-        const auto propvalRet = GetPropertyExpanded_Opt( propname );
-        if ( propvalRet )
+        const auto propvalRet = GetPropertyExpanded_Opt(propname);
+        if (propvalRet)
         {
-            const ScintillaStyle style = ParseStyle( *propvalRet );
+            const ScintillaStyle style = ParseStyle(*propvalRet);
 
-            if ( style.flags & ESF_FONT )
+            if (style.flags & ESF_FONT)
             {
-                StyleSetFont( style_num, style.font.c_str() );
+                StyleSetFont(style_num, style.font.c_str());
             }
 
-            if ( style.flags & ESF_SIZE )
+            if (style.flags & ESF_SIZE)
             {
-                StyleSetSize( style_num, style.size );
+                StyleSetSize(style_num, style.size);
             }
-            if ( style.flags & ESF_FORE )
+            if (style.flags & ESF_FORE)
             {
-                StyleSetFore( style_num, style.fore );
-            }
-
-            if ( style.flags & ESF_BACK )
-            {
-                StyleSetBack( style_num, style.back );
+                StyleSetFore(style_num, style.fore);
             }
 
-            if ( style.flags & ESF_ITALICS )
+            if (style.flags & ESF_BACK)
             {
-                StyleSetItalic( style_num, style.italics );
+                StyleSetBack(style_num, style.back);
             }
 
-            if ( style.flags & ESF_BOLD )
+            if (style.flags & ESF_ITALICS)
             {
-                StyleSetBold( style_num, style.bold );
+                StyleSetItalic(style_num, style.italics);
             }
 
-            if ( style.flags & ESF_UNDERLINED )
+            if (style.flags & ESF_BOLD)
             {
-                StyleSetUnderline( style_num, style.underlined );
+                StyleSetBold(style_num, style.bold);
             }
 
-            if ( style.flags & ESF_CASEFORCE )
+            if (style.flags & ESF_UNDERLINED)
             {
-                StyleSetCase( style_num, style.case_force );
+                StyleSetUnderline(style_num, style.underlined);
+            }
+
+            if (style.flags & ESF_CASEFORCE)
+            {
+                StyleSetCase(style_num, style.case_force);
             }
         }
 
-        if ( style_num == STYLE_DEFAULT )
+        if (style_num == STYLE_DEFAULT)
         {
             StyleClearAll();
         }
@@ -1379,51 +1379,51 @@ void CScriptEditorCtrl::AutoMarginWidth()
     int linenumwidth = 1;
     int linecount = GetLineCount();
 
-    while ( linecount >= 10 )
+    while (linecount >= 10)
     {
         linecount /= 10;
         ++linenumwidth;
     }
 
-    const int oldmarginwidth = GetMarginWidthN( 0 );
-    const int marginwidth = 4 + linenumwidth * ( TextWidth( STYLE_LINENUMBER, "9" ) );
-    if ( oldmarginwidth != marginwidth )
+    const int oldmarginwidth = GetMarginWidthN(0);
+    const int marginwidth = 4 + linenumwidth * (TextWidth(STYLE_LINENUMBER, "9"));
+    if (oldmarginwidth != marginwidth)
     {
-        SetMarginWidthN( 0, marginwidth );
+        SetMarginWidthN(0, marginwidth);
     }
 }
 
-void CScriptEditorCtrl::SetIndentation( int line, int indent )
+void CScriptEditorCtrl::SetIndentation(int line, int indent)
 {
-    if ( indent < 0 )
+    if (indent < 0)
     {
         return;
     }
 
     Sci_CharacterRange crange = GetSelection();
-    int posBefore = GetLineIndentPosition( line );
-    SetLineIndentation( line, indent );
-    int posAfter = GetLineIndentPosition( line );
+    int posBefore = GetLineIndentPosition(line);
+    SetLineIndentation(line, indent);
+    int posAfter = GetLineIndentPosition(line);
     int posDifference = posAfter - posBefore;
-    if ( posAfter > posBefore )
+    if (posAfter > posBefore)
     {
         // Move selection on
-        if ( crange.cpMin >= posBefore )
+        if (crange.cpMin >= posBefore)
         {
             crange.cpMin += posDifference;
         }
 
-        if ( crange.cpMax >= posBefore )
+        if (crange.cpMax >= posBefore)
         {
             crange.cpMax += posDifference;
         }
     }
-    else if ( posAfter < posBefore )
+    else if (posAfter < posBefore)
     {
         // Move selection back
-        if ( crange.cpMin >= posAfter )
+        if (crange.cpMin >= posAfter)
         {
-            if ( crange.cpMin >= posBefore )
+            if (crange.cpMin >= posBefore)
             {
                 crange.cpMin += posDifference;
             }
@@ -1433,9 +1433,9 @@ void CScriptEditorCtrl::SetIndentation( int line, int indent )
             }
         }
 
-        if ( crange.cpMax >= posAfter )
+        if (crange.cpMax >= posAfter)
         {
-            if ( crange.cpMax >= posBefore )
+            if (crange.cpMax >= posBefore)
             {
                 crange.cpMax += posDifference;
             }
@@ -1446,21 +1446,21 @@ void CScriptEditorCtrl::SetIndentation( int line, int indent )
         }
     }
 
-    SetSel( crange.cpMin, crange.cpMax );
+    SetSel(crange.cpMin, crange.cpMax);
 }
 
-std::optional<std::string> CScriptEditorCtrl::GetPropertyExpanded_Opt( const char* key )
+std::optional<std::string> CScriptEditorCtrl::GetPropertyExpanded_Opt(const char* key)
 {
-    int len = GetPropertyExpanded( key, nullptr );
-    if ( !len )
+    int len = GetPropertyExpanded(key, nullptr);
+    if (!len)
     {
         return std::nullopt;
     }
 
     std::string propval;
-    propval.resize( len + 1 );
-    GetPropertyExpanded( key, propval.data() );
-    propval.resize( strlen( propval.c_str() ) );
+    propval.resize(len + 1);
+    GetPropertyExpanded(key, propval.data());
+    propval.resize(strlen(propval.c_str()));
 
     return propval;
 }

@@ -31,19 +31,19 @@ public:
 public:
     ~JsContextMenuManager() override = default;
 
-    static std::unique_ptr<JsContextMenuManager> CreateNative( JSContext* cx );
+    static std::unique_ptr<JsContextMenuManager> CreateNative(JSContext* cx);
     static size_t GetInternalSize();
 
 public:
-    void BuildMenu( JsMenuObject* menuObject, int32_t base_id, int32_t max_id = -1 );
-    void BuildMenuWithOpt( size_t optArgCount, JsMenuObject* menuObject, int32_t base_id, int32_t max_id );
-    bool ExecuteByID( uint32_t id );
-    void InitContext( JsFbMetadbHandleList* handles );
+    void BuildMenu(JsMenuObject* menuObject, int32_t base_id, int32_t max_id = -1);
+    void BuildMenuWithOpt(size_t optArgCount, JsMenuObject* menuObject, int32_t base_id, int32_t max_id);
+    bool ExecuteByID(uint32_t id);
+    void InitContext(JsFbMetadbHandleList* handles);
     void InitContextPlaylist();
     void InitNowPlaying();
 
 private:
-    JsContextMenuManager( JSContext* cx );
+    JsContextMenuManager(JSContext* cx);
 
 private:
     [[maybe_unused]] JSContext* pJsCtx_ = nullptr;

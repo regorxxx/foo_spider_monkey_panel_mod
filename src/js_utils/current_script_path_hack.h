@@ -13,6 +13,6 @@ namespace mozjs::hack
 /// @throw qwr::QwrException
 /// @throw smp::JsException
 [[nodiscard]] std::optional<std::filesystem::path>
-GetCurrentScriptPath( JSContext* cx );
+GetCurrentScriptPath(JSContext* cx);
 
 } // namespace mozjs::hack

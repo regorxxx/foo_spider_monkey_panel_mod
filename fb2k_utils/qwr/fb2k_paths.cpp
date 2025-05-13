@@ -29,7 +29,7 @@ fs::path Foobar2000()
 
 fs::path Profile()
 {
-    const auto path = filesystem::g_get_native_path( core_api::get_profile_path());
+    const auto path = filesystem::g_get_native_path(core_api::get_profile_path());
     const auto wpath = qwr::unicode::ToWide(path);
 
     return fs::path(wpath).lexically_normal();

@@ -13,9 +13,9 @@
 #include <ComDef.h>
 
 // foobar2000 SDK
-#pragma warning( push, 0 )
+#pragma warning(push, 0)
 #include <foobar2000/SDK/foobar2000.h>
-#pragma warning( pop ) 
+#pragma warning(pop)
 
 // fmt
 #define FMT_HEADER_ONLY

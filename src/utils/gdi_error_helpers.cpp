@@ -7,9 +7,9 @@
 namespace qwr::error
 {
 
-const char* GdiErrorCodeToText( Gdiplus::Status errorCode )
+const char* GdiErrorCodeToText(Gdiplus::Status errorCode)
 {
-    switch ( errorCode )
+    switch (errorCode)
     {
     case Gdiplus::Ok:
         return "No error";
@@ -58,11 +58,11 @@ const char* GdiErrorCodeToText( Gdiplus::Status errorCode )
     }
 }
 
-void CheckGdi( Gdiplus::Status gdiStatus, std::string_view functionName )
+void CheckGdi(Gdiplus::Status gdiStatus, std::string_view functionName)
 {
-    if ( gdiStatus > 0 )
+    if (gdiStatus > 0)
     {
-        throw qwr::QwrException( "GdiPlus error: {} failed with error ({:#x}): {}", functionName, static_cast<int>(gdiStatus), GdiErrorCodeToText( gdiStatus ) );
+        throw qwr::QwrException("GdiPlus error: {} failed with error ({:#x}): {}", functionName, static_cast<int>(gdiStatus), GdiErrorCodeToText(gdiStatus));
     }
 }
 

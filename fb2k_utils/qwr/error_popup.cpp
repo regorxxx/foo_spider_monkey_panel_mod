@@ -11,7 +11,7 @@ void ReportErrorWithPopup(const std::string& title, const std::string& errorText
             FB2K_console_formatter() << title.c_str() << ":\n" << errorText.c_str() << "\n";
             popup_message::g_show(errorText.c_str(), title.c_str());
 
-            MessageBeep( MB_ICONASTERISK );
+            MessageBeep(MB_ICONASTERISK);
         });
 }
 

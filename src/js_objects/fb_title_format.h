@@ -34,23 +34,23 @@ public:
 public:
     ~JsFbTitleFormat() override = default;
 
-    static std::unique_ptr<JsFbTitleFormat> CreateNative( JSContext* cx, const std::string& expr );
-    static size_t GetInternalSize( const std::string& expr );
+    static std::unique_ptr<JsFbTitleFormat> CreateNative(JSContext* cx, const std::string& expr);
+    static size_t GetInternalSize(const std::string& expr);
 
 public:
     titleformat_object::ptr GetTitleFormat();
 
 public: // ctor
-    static JSObject* Constructor( JSContext* cx, const std::string& expr );
+    static JSObject* Constructor(JSContext* cx, const std::string& expr);
 
 public:
-    pfc::string8_fast Eval( bool force = false );
-    pfc::string8_fast EvalWithOpt( size_t optArgCount, bool force );
-    pfc::string8_fast EvalWithMetadb( JsFbMetadbHandle* handle );
-    JS::Value EvalWithMetadbs( JsFbMetadbHandleList* handles );
+    pfc::string8_fast Eval(bool force = false);
+    pfc::string8_fast EvalWithOpt(size_t optArgCount, bool force);
+    pfc::string8_fast EvalWithMetadb(JsFbMetadbHandle* handle);
+    JS::Value EvalWithMetadbs(JsFbMetadbHandleList* handles);
 
 private:
-    JsFbTitleFormat( JSContext* cx, const std::string& expr );
+    JsFbTitleFormat(JSContext* cx, const std::string& expr);
 
 private:
     JSContext* pJsCtx_ = nullptr;

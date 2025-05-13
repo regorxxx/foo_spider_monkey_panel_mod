@@ -31,16 +31,16 @@ struct PanelProperties
 
 public:
     /// @throw qwr::QwrException
-    [[nodiscard]] static PanelProperties FromJson( const std::string& jsonString );
+    [[nodiscard]] static PanelProperties FromJson(const std::string& jsonString);
 
     /// @throw qwr::QwrException
     [[nodiscard]] std::string ToJson() const;
 
     /// @throw qwr::QwrException
-    [[nodiscard]] static PanelProperties Load( stream_reader& reader, abort_callback& abort, SerializationFormat format = SerializationFormat::Json );
+    [[nodiscard]] static PanelProperties Load(stream_reader& reader, abort_callback& abort, SerializationFormat format = SerializationFormat::Json);
 
     /// @throw qwr::QwrException
-    void Save( stream_writer& writer, abort_callback& abort ) const;
+    void Save(stream_writer& writer, abort_callback& abort) const;
 };
 
 struct PanelSettings_InMemory
@@ -86,13 +86,13 @@ public:
     void ResetToDefault();
 
     /// @throw qwr::QwrException
-    [[nodiscard]] static PanelSettings Load( stream_reader& reader, size_t size, abort_callback& abort );
+    [[nodiscard]] static PanelSettings Load(stream_reader& reader, size_t size, abort_callback& abort);
 
     /// @throw qwr::QwrException
-    void Save( stream_writer& writer, abort_callback& abort ) const;
+    void Save(stream_writer& writer, abort_callback& abort) const;
 
     /// @throw qwr::QwrException
-    static void SaveDefault( stream_writer& writer, abort_callback& abort );
+    static void SaveDefault(stream_writer& writer, abort_callback& abort);
 };
 
 } // namespace smp::config

@@ -15,23 +15,23 @@ std::atomic<int32_t> g_modalBlockingCounter = 0;
 namespace smp::modal
 {
 
-ConditionalModalScope::ConditionalModalScope( HWND hParent, bool isWhitelistedModal )
-    : needsModalScope_( modal_dialog_scope::can_create() )
-    , isWhitelistedModal_( isWhitelistedModal )
+ConditionalModalScope::ConditionalModalScope(HWND hParent, bool isWhitelistedModal)
+    : needsModalScope_(modal_dialog_scope::can_create())
+    , isWhitelistedModal_(isWhitelistedModal)
 {
-    if ( needsModalScope_ )
+    if (needsModalScope_)
     {
-        scope_.initialize( hParent );
+        scope_.initialize(hParent);
     }
 
     ++g_modalBlockingCounter;
-    g_whitelistedModalCounter += ( isWhitelistedModal_ ? 1 : 0 );
+    g_whitelistedModalCounter += (isWhitelistedModal_ ? 1 : 0);
 }
 
 ConditionalModalScope::~ConditionalModalScope()
 {
     --g_modalBlockingCounter;
-    g_whitelistedModalCounter -= ( isWhitelistedModal_ ? 1 : 0 );
+    g_whitelistedModalCounter -= (isWhitelistedModal_ ? 1 : 0);
 }
 
 MessageBlockingScope::MessageBlockingScope()
@@ -44,23 +44,23 @@ MessageBlockingScope::~MessageBlockingScope()
     --g_modalBlockingCounter;
 }
 
-ModalBlockingScope::ModalBlockingScope( HWND hParent, bool isWhitelistedModal )
-    : isWhitelistedModal_( isWhitelistedModal )
+ModalBlockingScope::ModalBlockingScope(HWND hParent, bool isWhitelistedModal)
+    : isWhitelistedModal_(isWhitelistedModal)
 {
-    scope_.initialize( hParent );
+    scope_.initialize(hParent);
     ++g_modalBlockingCounter;
-    g_whitelistedModalCounter += ( isWhitelistedModal_ ? 1 : 0 );
+    g_whitelistedModalCounter += (isWhitelistedModal_ ? 1 : 0);
 }
 
 ModalBlockingScope::~ModalBlockingScope()
 {
     --g_modalBlockingCounter;
-    g_whitelistedModalCounter -= ( isWhitelistedModal_ ? 1 : 0 );
+    g_whitelistedModalCounter -= (isWhitelistedModal_ ? 1 : 0);
 }
 
 bool IsModalBlocked()
 {
-    return ( ( core_api::is_main_thread() && !modal_dialog_scope::can_create() ) || g_modalBlockingCounter );
+    return ((core_api::is_main_thread() && !modal_dialog_scope::can_create()) || g_modalBlockingCounter);
 }
 
 bool IsInWhitelistedModal()

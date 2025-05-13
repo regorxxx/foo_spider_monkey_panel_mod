@@ -9,17 +9,17 @@ class TimerManager
 {
 public:
     TimerManager()
-        : hTimerQueue_( CreateTimerQueue() )
+        : hTimerQueue_(CreateTimerQueue())
     {
-        assert( hTimerQueue_ );
+        assert(hTimerQueue_);
     }
 
     ~TimerManager()
     {
-        (void)DeleteTimerQueueEx( hTimerQueue_, INVALID_HANDLE_VALUE );
+        (void)DeleteTimerQueueEx(hTimerQueue_, INVALID_HANDLE_VALUE);
     }
 
-    HANDLE CreateTimer( WAITORTIMERCALLBACK callback, void* data, uint32_t timeoutSeconds )
+    HANDLE CreateTimer(WAITORTIMERCALLBACK callback, void* data, uint32_t timeoutSeconds)
     {
         HANDLE hTimer = nullptr;
         (void)CreateTimerQueueTimer(
@@ -29,13 +29,13 @@ public:
             data,
             timeoutSeconds * 1000,
             0,
-            WT_EXECUTEINTIMERTHREAD | WT_EXECUTEONLYONCE );
+            WT_EXECUTEINTIMERTHREAD | WT_EXECUTEONLYONCE);
         return hTimer;
     }
 
-    void DeleteTimer( HANDLE hTimer )
+    void DeleteTimer(HANDLE hTimer)
     {
-        (void)DeleteTimerQueueTimer( hTimerQueue_, hTimer, INVALID_HANDLE_VALUE );
+        (void)DeleteTimerQueueTimer(hTimerQueue_, hTimer, INVALID_HANDLE_VALUE);
     }
 
 private:
@@ -55,29 +55,29 @@ GlobalAbortCallback& GlobalAbortCallback::GetInstance()
     return gac;
 }
 
-void GlobalAbortCallback::AddListener( pfc::event& listener )
+void GlobalAbortCallback::AddListener(pfc::event& listener)
 {
-    std::scoped_lock sl( listenerMutex_ );
+    std::scoped_lock sl(listenerMutex_);
 
-    assert( !listeners_.contains( &listener ) );
-    listeners_.emplace( &listener, listener );
+    assert(!listeners_.contains(&listener));
+    listeners_.emplace(&listener, listener);
 }
 
-void GlobalAbortCallback::RemoveListener( pfc::event& listener )
+void GlobalAbortCallback::RemoveListener(pfc::event& listener)
 {
-    std::scoped_lock sl( listenerMutex_ );
+    std::scoped_lock sl(listenerMutex_);
 
-    assert( listeners_.contains( &listener ) );
-    listeners_.erase( &listener );
+    assert(listeners_.contains(&listener));
+    listeners_.erase(&listener);
 }
 
 void GlobalAbortCallback::Abort()
 {
     {
-        std::scoped_lock sl( listenerMutex_ );
-        for ( auto& [key, listener]: listeners_ )
+        std::scoped_lock sl(listenerMutex_);
+        for (auto& [key, listener]: listeners_)
         {
-            listener.get().set_state( true );
+            listener.get().set_state(true);
         }
     }
     abortImpl_.set();
@@ -93,20 +93,20 @@ abort_callback_event GlobalAbortCallback::get_abort_event() const
     return abortImpl_.get_abort_event();
 }
 
-TimedAbortCallback::TimedAbortCallback( const std::string& timeoutLogMessage, uint32_t timeoutSeconds )
-    : timeoutLogMessage_( timeoutLogMessage )
-    , hTimer_( g_timerManager.CreateTimer( timerProc, this, timeoutSeconds ) )
+TimedAbortCallback::TimedAbortCallback(const std::string& timeoutLogMessage, uint32_t timeoutSeconds)
+    : timeoutLogMessage_(timeoutLogMessage)
+    , hTimer_(g_timerManager.CreateTimer(timerProc, this, timeoutSeconds))
 {
-    GlobalAbortCallback::GetInstance().AddListener( abortEvent_ );
+    GlobalAbortCallback::GetInstance().AddListener(abortEvent_);
 }
 
 TimedAbortCallback::~TimedAbortCallback()
 {
-    if ( hTimer_ )
+    if (hTimer_)
     {
-        g_timerManager.DeleteTimer( hTimer_ );
+        g_timerManager.DeleteTimer(hTimer_);
     }
-    GlobalAbortCallback::GetInstance().RemoveListener( abortEvent_ );
+    GlobalAbortCallback::GetInstance().RemoveListener(abortEvent_);
 }
 
 bool TimedAbortCallback::is_aborting() const
@@ -119,18 +119,18 @@ abort_callback_event TimedAbortCallback::get_abort_event() const
     return abortEvent_.get_handle();
 }
 
-void CALLBACK TimedAbortCallback::timerProc( PVOID lpParameter, BOOLEAN /*TimerOrWaitFired*/ )
+void CALLBACK TimedAbortCallback::timerProc(PVOID lpParameter, BOOLEAN /*TimerOrWaitFired*/)
 {
-    assert( lpParameter );
-    auto& parent = *static_cast<TimedAbortCallback*>( lpParameter );
+    assert(lpParameter);
+    auto& parent = *static_cast<TimedAbortCallback*>(lpParameter);
 
-    if ( !parent.timeoutLogMessage_.empty() )
+    if (!parent.timeoutLogMessage_.empty())
     {
         FB2K_console_formatter() << "Timer timeout: " << parent.timeoutLogMessage_.c_str();
     }
 
     parent.hasEnded_ = true;
-    parent.abortEvent_.set_state( true );
+    parent.abortEvent_.set_state(true);
 }
 
 } // namespace qwr

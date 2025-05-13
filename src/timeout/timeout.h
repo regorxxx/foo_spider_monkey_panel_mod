@@ -20,14 +20,14 @@ class Timeout;
 class Timeout
 {
 public:
-    Timeout( uint32_t id, TimeDuration interval, bool isRepeated, std::shared_ptr<mozjs::JsAsyncTask> task );
+    Timeout(uint32_t id, TimeDuration interval, bool isRepeated, std::shared_ptr<mozjs::JsAsyncTask> task);
     ~Timeout() = default;
 
-    void SetWhen( const TimeStamp& baseTime, const TimeDuration& delay );
-    void SetFiringId( uint32_t firingId );
+    void SetWhen(const TimeStamp& baseTime, const TimeDuration& delay);
+    void SetFiringId(uint32_t firingId);
     void DisableRepeat();
     void MarkAsStopped();
-    void SetRunningState( bool isRunning );
+    void SetRunningState(bool isRunning);
 
     [[nodiscard]] uint32_t Id() const;
     [[nodiscard]] std::shared_ptr<mozjs::JsAsyncTask> Task() const;

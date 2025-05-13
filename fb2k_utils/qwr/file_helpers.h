@@ -11,15 +11,15 @@ namespace qwr::file
 {
 
 /// @throw smp::SmpException
-std::string ReadFile( const std::filesystem::path& path, UINT codepage, bool checkFileExistense = true );
+std::string ReadFile(const std::filesystem::path& path, UINT codepage, bool checkFileExistense = true);
 
 /// @throw smp::SmpException
-std::wstring ReadFileW( const std::filesystem::path& path, UINT codepage, bool checkFileExistense = true );
+std::wstring ReadFileW(const std::filesystem::path& path, UINT codepage, bool checkFileExistense = true);
 
 /// @throw smp::SmpException
-void WriteFile( const std::filesystem::path& path, std::string_view content, bool write_bom = true );
+void WriteFile(const std::filesystem::path& path, std::string_view content, bool write_bom = true);
 
-UINT DetectFileCharset( const std::filesystem::path& path );
+UINT DetectFileCharset(const std::filesystem::path& path);
 
 struct FileDialogOptions
 {
@@ -30,8 +30,8 @@ struct FileDialogOptions
 };
 
 std::optional<std::filesystem::path>
-FileDialog( const std::wstring& title,
+FileDialog(const std::wstring& title,
             bool saveFile,
-            const FileDialogOptions& options = {} );
+            const FileDialogOptions& options = {});
 
 } // namespace qwr::file

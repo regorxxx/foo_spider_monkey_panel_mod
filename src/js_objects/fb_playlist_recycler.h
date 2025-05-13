@@ -27,20 +27,20 @@ public:
 public:
     ~JsFbPlaylistRecycler() override = default;
 
-    static std::unique_ptr<JsFbPlaylistRecycler> CreateNative( JSContext* cx );
+    static std::unique_ptr<JsFbPlaylistRecycler> CreateNative(JSContext* cx);
     static size_t GetInternalSize();
 
 public:
-    JSObject* GetContent( uint32_t index );
-    pfc::string8_fast GetName( uint32_t index );
-    void Purge( JS::HandleValue affectedItems );
-    void Restore( uint32_t index );
+    JSObject* GetContent(uint32_t index);
+    pfc::string8_fast GetName(uint32_t index);
+    void Purge(JS::HandleValue affectedItems);
+    void Restore(uint32_t index);
 
 public:
     uint32_t get_Count();
 
 private:
-    JsFbPlaylistRecycler( JSContext* cx );
+    JsFbPlaylistRecycler(JSContext* cx);
 
 private:
     JSContext* pJsCtx_ = nullptr;

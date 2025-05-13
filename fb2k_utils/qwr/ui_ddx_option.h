@@ -24,12 +24,12 @@ class UiDdxOption final
 {
 public:
     template <typename... Args>
-    UiDdxOption( OptionT& option, Args&&... args )
-        : option_( option )
-        , ddx_( option, std::forward<Args>( args )... )
+    UiDdxOption(OptionT& option, Args&&... args)
+        : option_(option)
+        , ddx_(option, std::forward<Args>(args)...)
 
     {
-        static_assert( std::is_base_of_v<IUiOption, OptionT> );
+        static_assert(std::is_base_of_v<IUiOption, OptionT>);
     }
     ~UiDdxOption() override = default;
 
@@ -56,9 +56,9 @@ private:
 };
 
 template <template <typename> typename DdxT, typename OptionT, typename... Args>
-std::unique_ptr<IUiDdxOption> CreateUiDdxOption( OptionT& value, Args&&... args )
+std::unique_ptr<IUiDdxOption> CreateUiDdxOption(OptionT& value, Args&&... args)
 {
-    return std::make_unique<UiDdxOption<DdxT, OptionT>>( value, std::forward<Args>( args )... );
+    return std::make_unique<UiDdxOption<DdxT, OptionT>>(value, std::forward<Args>(args)...);
 }
 
 } // namespace qwr::ui

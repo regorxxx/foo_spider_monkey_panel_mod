@@ -10,19 +10,19 @@ std::string ToU8(std::wstring_view src)
     return pfc::utf8FromWide(src.data(), src.length()).get_ptr();
 }
 
-std::wstring ToWide( std::string_view str )
+std::wstring ToWide(std::string_view str)
 {
     return pfc::wideFromUTF8(str.data(), str.length()).c_str();
 }
 
-std::wstring ToWide( const pfc::string_base& src)
+std::wstring ToWide(const pfc::string_base& src)
 {
     return pfc::wideFromUTF8(src, src.length()).c_str();
 }
 
-std::string ToU8_FromAcpToWide( std::string_view src )
+std::string ToU8_FromAcpToWide(std::string_view src)
 {
-    return ToU8( ToWide_FromAcp( src ) );
+    return ToU8(ToWide_FromAcp(src));
 }
 
 std::wstring ToWide_FromAcp(std::string_view src)

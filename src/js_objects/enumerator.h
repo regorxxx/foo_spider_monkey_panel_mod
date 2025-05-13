@@ -35,11 +35,11 @@ public:
 public:
     ~JsEnumerator() override = default;
 
-    static std::unique_ptr<JsEnumerator> CreateNative( JSContext* cx, IUnknown* pUnknown );
-    static size_t GetInternalSize( IUnknown* pUnknown );
+    static std::unique_ptr<JsEnumerator> CreateNative(JSContext* cx, IUnknown* pUnknown);
+    static size_t GetInternalSize(IUnknown* pUnknown);
 
 public: // ctor
-    static JSObject* Constructor( JSContext* cx, JsActiveXObject* pActiveXObject );
+    static JSObject* Constructor(JSContext* cx, JsActiveXObject* pActiveXObject);
 
 public:
     bool AtEnd() const;
@@ -49,9 +49,9 @@ public:
 
 private:
     // alias for IEnumVARIANTPtr: don't want to drag extra com headers
-    using EnumVARIANTComPtr = _com_ptr_t<_com_IIID<IEnumVARIANT, &__uuidof( IEnumVARIANT )>>;
+    using EnumVARIANTComPtr = _com_ptr_t<_com_IIID<IEnumVARIANT, &__uuidof(IEnumVARIANT)>>;
 
-    JsEnumerator( JSContext* cx, EnumVARIANTComPtr pEnum );
+    JsEnumerator(JSContext* cx, EnumVARIANTComPtr pEnum);
 
     void LoadCurrentElement();
 

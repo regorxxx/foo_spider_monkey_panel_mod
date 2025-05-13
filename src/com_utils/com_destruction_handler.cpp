@@ -13,17 +13,17 @@ std::vector<std::unique_ptr<smp::com::StorageObject>> g_objectsToDelete;
 namespace
 {
 
-void CleanObject( smp::com::StorageObject& object )
+void CleanObject(smp::com::StorageObject& object)
 {
-    if ( object.pDispatch )
+    if (object.pDispatch)
     {
         object.pDispatch->Release();
     }
-    if ( object.pUnknown )
+    if (object.pUnknown)
     {
         object.pUnknown->Release();
     }
-    if ( object.pTypeInfo )
+    if (object.pTypeInfo)
     {
         object.pTypeInfo->Release();
     }
@@ -31,7 +31,7 @@ void CleanObject( smp::com::StorageObject& object )
     {
         object.variant.Clear();
     }
-    catch ( const _com_error& )
+    catch (const _com_error&)
     {
     }
 
@@ -47,46 +47,46 @@ namespace smp::com
 
 StorageObject* GetNewStoredObject()
 {
-    assert( core_api::is_main_thread() );
+    assert(core_api::is_main_thread());
 
     auto pObject = std::make_unique<StorageObject>();
     auto* pObjectToReturn = pObject.get();
-    g_objectStorage.try_emplace( pObjectToReturn, std::move( pObject ) );
+    g_objectStorage.try_emplace(pObjectToReturn, std::move(pObject));
 
     return pObjectToReturn;
 }
 
-void MarkStoredObjectAsToBeDeleted( StorageObject* pObject )
+void MarkStoredObjectAsToBeDeleted(StorageObject* pObject)
 {
-    assert( core_api::is_main_thread() );
-    assert( pObject );
-    assert( g_objectStorage.count( pObject ) );
+    assert(core_api::is_main_thread());
+    assert(pObject);
+    assert(g_objectStorage.count(pObject));
 
-    g_objectsToDelete.emplace_back( std::move( g_objectStorage.at( pObject ) ) );
-    g_objectStorage.erase( pObject );
+    g_objectsToDelete.emplace_back(std::move(g_objectStorage.at(pObject)));
+    g_objectStorage.erase(pObject);
 }
 
 void DeleteMarkedObjects()
 {
-    assert( core_api::is_main_thread() );
+    assert(core_api::is_main_thread());
 
     // cause re-entrancy...
-    auto localCopy = std::move( g_objectsToDelete );
+    auto localCopy = std::move(g_objectsToDelete);
     g_objectsToDelete.clear();
 
-    for ( auto& pObject: localCopy )
+    for (auto& pObject: localCopy)
     {
-        CleanObject( *pObject );
+        CleanObject(*pObject);
     }
 }
 
 void DeleteAllStoredObject()
 {
-    assert( core_api::is_main_thread() );
+    assert(core_api::is_main_thread());
 
-    for ( auto& [dummy, pObject]: g_objectStorage )
+    for (auto& [dummy, pObject]: g_objectStorage)
     {
-        CleanObject( *pObject );
+        CleanObject(*pObject);
     }
     g_objectStorage.clear();
 

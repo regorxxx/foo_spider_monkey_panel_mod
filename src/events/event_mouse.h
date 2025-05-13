@@ -12,11 +12,11 @@ class Event_Mouse
     : public Event_JsExecutor
 {
 public:
-    Event_Mouse( EventId id, int32_t x, int32_t y, uint32_t mask, uint32_t modifiers );
+    Event_Mouse(EventId id, int32_t x, int32_t y, uint32_t mask, uint32_t modifiers);
 
     [[nodiscard]] Event_Mouse* AsMouseEvent() override;
 
-    std::optional<bool> JsExecute( mozjs::JsContainer& jsContainer ) override;
+    std::optional<bool> JsExecute(mozjs::JsContainer& jsContainer) override;
 
     [[nodiscard]] int32_t GetX() const;
     [[nodiscard]] int32_t GetY() const;

@@ -6,7 +6,7 @@ namespace qwr
 class HookHandler
 {
 private:
-    using HookCallback = std::function<void( int, WPARAM, LPARAM )>;
+    using HookCallback = std::function<void(int, WPARAM, LPARAM)>;
 
 public:
     ~HookHandler();
@@ -14,31 +14,31 @@ public:
 
     /// @throw smp::SmpException
     template <typename T>
-    uint32_t RegisterHook( T&& callback )
+    uint32_t RegisterHook(T&& callback)
     {
-        if ( callbacks_.empty() )
+        if (callbacks_.empty())
         {
             MaybeRegisterGlobalHook();
         }
 
         uint32_t id = curId_++;
-        while ( callbacks_.contains( id ) || !id )
+        while (callbacks_.contains(id) || !id)
         {
             id = curId_++;
         }
 
-        callbacks_.emplace( id, std::make_shared<HookCallback>( std::move( callback ) ) );
+        callbacks_.emplace(id, std::make_shared<HookCallback>(std::move(callback)));
         return id;
     }
 
-    void UnregisterHook( uint32_t hookId );
+    void UnregisterHook(uint32_t hookId);
 
 private:
     HookHandler() = default;
 
     /// @throw smp::SmpException
     void MaybeRegisterGlobalHook();
-    static LRESULT CALLBACK GetMsgProc( int code, WPARAM wParam, LPARAM lParam );
+    static LRESULT CALLBACK GetMsgProc(int code, WPARAM wParam, LPARAM lParam);
 
 private:
     uint32_t curId_ = 1;

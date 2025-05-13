@@ -39,7 +39,7 @@ enum class PanelType : uint8_t
 class js_panel_window : public ui_config_callback_impl
 {
 public:
-    js_panel_window( PanelType instanceType );
+    js_panel_window(PanelType instanceType);
     virtual ~js_panel_window();
 
 public:
@@ -48,21 +48,21 @@ public:
     void ui_fonts_changed() override;
 
     void ReloadScript();
-    void LoadSettings( stream_reader& reader, t_size size, abort_callback& abort, bool reloadPanel = true );
-    void SetSettings( const smp::config::ParsedPanelSettings& settings );
-    bool UpdateSettings( const smp::config::PanelSettings& settings, bool reloadPanel = true );
-    bool SaveSettings( stream_writer& writer, abort_callback& abort ) const;
+    void LoadSettings(stream_reader& reader, t_size size, abort_callback& abort, bool reloadPanel = true);
+    void SetSettings(const smp::config::ParsedPanelSettings& settings);
+    bool UpdateSettings(const smp::config::PanelSettings& settings, bool reloadPanel = true);
+    bool SaveSettings(stream_writer& writer, abort_callback& abort) const;
 
     bool IsPanelIdOverridenByScript() const;
 
-    void Fail( const std::string& errorText );
+    void Fail(const std::string& errorText);
 
-    void Repaint( bool force = false );
-    void RepaintRect( const CRect& rc, bool force = false );
+    void Repaint(bool force = false);
+    void RepaintRect(const CRect& rc, bool force = false);
 
 public: // accessors
     [[nodiscard]] std::string GetPanelId();
-    [[nodiscard]] std::string GetPanelDescription( bool includeVersionAndAuthor = true );
+    [[nodiscard]] std::string GetPanelDescription(bool includeVersionAndAuthor = true);
     [[nodiscard]] HDC GetHDC() const;
     [[nodiscard]] HWND GetHWND() const;
     [[nodiscard]] POINT& MaxSize();
@@ -76,71 +76,71 @@ public: // accessors
 
     [[nodiscard]] t_size& DlgCode();
     [[nodiscard]] PanelType GetPanelType() const;
-    virtual DWORD GetColour( unsigned type, const GUID& guid ) = 0;
-    virtual HFONT GetFont( unsigned type, const GUID& guid ) = 0;
+    virtual DWORD GetColour(unsigned type, const GUID& guid) = 0;
+    virtual HFONT GetFont(unsigned type, const GUID& guid) = 0;
 
-    void SetSettings_ScriptInfo( const std::string& scriptName, const std::string& scriptAuthor, const std::string& scriptVersion );
-    void SetSettings_PanelName( const std::string& panelName );
+    void SetSettings_ScriptInfo(const std::string& scriptName, const std::string& scriptAuthor, const std::string& scriptVersion);
+    void SetSettings_PanelName(const std::string& panelName);
     /// @throw qwr::QwrException
-    void SetSettings_DragAndDropStatus( bool isEnabled );
-    void SetSettings_CaptureFocusStatus( bool isEnabled );
+    void SetSettings_DragAndDropStatus(bool isEnabled);
+    void SetSettings_CaptureFocusStatus(bool isEnabled);
 
     void ResetLastDragParams();
     [[nodiscard]] const std::optional<DragActionParams>& GetLastDragParams() const;
     [[nodiscard]] bool HasInternalDrag() const;
 
 protected:
-    virtual void notify_size_limit_changed( LPARAM lp ) = 0;
+    virtual void notify_size_limit_changed(LPARAM lp) = 0;
 
     LRESULT OnMessage(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
     void EditScript();
-    void ShowConfigure( HWND parent, ui::CDialogConf::Tab tab = ui::CDialogConf::Tab::def );
+    void ShowConfigure(HWND parent, ui::CDialogConf::Tab tab = ui::CDialogConf::Tab::def);
 
-    void GenerateContextMenu( HMENU hMenu, int x, int y, uint32_t id_base );
-    void ExecuteContextMenu( uint32_t id, uint32_t id_base );
+    void GenerateContextMenu(HMENU hMenu, int x, int y, uint32_t id_base);
+    void ExecuteContextMenu(uint32_t id, uint32_t id_base);
 
 private:
     bool ReloadSettings();
-    bool LoadScript( bool isFirstLoad );
-    void UnloadScript( bool force = false );
+    bool LoadScript(bool isFirstLoad);
+    void UnloadScript(bool force = false);
 
     void CreateDrawContext();
     void DeleteDrawContext();
 
-    void SetCaptureMouseState( bool shouldCapture );
+    void SetCaptureMouseState(bool shouldCapture);
     /// @throw qwr::QwrException
-    void SetDragAndDropStatus( bool isEnabled );
+    void SetDragAndDropStatus(bool isEnabled);
 
 public: // event handling
-    void ExecuteEvent_JsTask( EventId id, Event_JsExecutor& task );
-    bool ExecuteEvent_JsCode( mozjs::JsAsyncTask& task );
-    void ExecuteEvent_Basic( EventId id );
+    void ExecuteEvent_JsTask(EventId id, Event_JsExecutor& task);
+    bool ExecuteEvent_JsCode(mozjs::JsAsyncTask& task);
+    void ExecuteEvent_Basic(EventId id);
 
 private: // callback handling
     void OnProcessingEventStart();
     void OnProcessingEventFinish();
     std::optional<LRESULT> ProcessEvent();
-    void ProcessEventManually( Runnable& runnable );
+    void ProcessEventManually(Runnable& runnable);
 
     std::optional<MSG> GetStalledMessage();
-    std::optional<LRESULT> ProcessStalledMessage( const MSG& msg );
-    std::optional<LRESULT> ProcessSyncMessage( const MSG& msg );
-    std::optional<LRESULT> ProcessCreationMessage( const MSG& msg );
-    std::optional<LRESULT> ProcessWindowMessage( const MSG& msg );
-    std::optional<LRESULT> ProcessInternalSyncMessage( InternalSyncMessage msg, WPARAM wp, LPARAM lp );
+    std::optional<LRESULT> ProcessStalledMessage(const MSG& msg);
+    std::optional<LRESULT> ProcessSyncMessage(const MSG& msg);
+    std::optional<LRESULT> ProcessCreationMessage(const MSG& msg);
+    std::optional<LRESULT> ProcessWindowMessage(const MSG& msg);
+    std::optional<LRESULT> ProcessInternalSyncMessage(InternalSyncMessage msg, WPARAM wp, LPARAM lp);
 
     // Internal callbacks
-    void OnContextMenu( int x, int y );
-    void OnCreate( HWND hWnd );
+    void OnContextMenu(int x, int y);
+    void OnCreate(HWND hWnd);
     void OnDestroy();
 
     // JS callbacks
-    void OnPaint( HDC dc, const CRect& updateRc );
-    void OnPaintErrorScreen( HDC memdc );
-    void OnPaintJs( HDC memdc, const CRect& updateRc );
-    void OnSizeDefault( uint32_t w, uint32_t h );
-    void OnSizeUser( uint32_t w, uint32_t h );
+    void OnPaint(HDC dc, const CRect& updateRc);
+    void OnPaintErrorScreen(HDC memdc);
+    void OnPaintJs(HDC memdc, const CRect& updateRc);
+    void OnSizeDefault(uint32_t w, uint32_t h);
+    void OnSizeUser(uint32_t w, uint32_t h);
 
 private:
     const PanelType panelType_;

@@ -12,10 +12,10 @@ struct Fields
     uint32_t rating = 0;
 };
 
-[[nodiscard]] bool HashHandle( metadb_handle_ptr const& pMetadb, metadb_index_hash& hash );
-[[nodiscard]] Fields GetStats( metadb_index_hash hash );
-void SetStats( metadb_index_hash hash, const Fields& f );
-void RefreshStats( const pfc::list_base_const_t<metadb_index_hash>& hashes );
-void RefreshStats( const metadb_index_hash& hash );
+[[nodiscard]] bool HashHandle(metadb_handle_ptr const& pMetadb, metadb_index_hash& hash);
+[[nodiscard]] Fields GetStats(metadb_index_hash hash);
+void SetStats(metadb_index_hash hash, const Fields& f);
+void RefreshStats(const pfc::list_base_const_t<metadb_index_hash>& hashes);
+void RefreshStats(const metadb_index_hash& hash);
 
 } // namespace smp::stats

@@ -32,28 +32,28 @@ public:
     // @remark No need to cleanup JS here, since it must be performed manually beforehand anyway
     ~JsFbTooltip() override = default;
 
-    static std::unique_ptr<JsFbTooltip> CreateNative( JSContext* cx, HWND hParentWnd );
-    static size_t GetInternalSize( HWND hParentWnd );
+    static std::unique_ptr<JsFbTooltip> CreateNative(JSContext* cx, HWND hParentWnd);
+    static size_t GetInternalSize(HWND hParentWnd);
 
     void PrepareForGc();
 
 public:
     void Activate();
     void Deactivate();
-    uint32_t GetDelayTime( uint32_t type );
-    void SetDelayTime( uint32_t type, int32_t time );
-    void SetFont( const std::wstring& name, uint32_t pxSize = 12, uint32_t style = 0 );
-    void SetFontWithOpt( size_t optArgCount, const std::wstring& name, uint32_t pxSize, uint32_t style );
-    void SetMaxWidth( uint32_t width );
-    void TrackPosition( int x, int y );
+    uint32_t GetDelayTime(uint32_t type);
+    void SetDelayTime(uint32_t type, int32_t time);
+    void SetFont(const std::wstring& name, uint32_t pxSize = 12, uint32_t style = 0);
+    void SetFontWithOpt(size_t optArgCount, const std::wstring& name, uint32_t pxSize, uint32_t style);
+    void SetMaxWidth(uint32_t width);
+    void TrackPosition(int x, int y);
 
 public:
     std::wstring get_Text();
-    void put_Text( const std::wstring& text );
-    void put_TrackActivate( bool activate );
+    void put_Text(const std::wstring& text);
+    void put_TrackActivate(bool activate);
 
 private:
-    JsFbTooltip( JSContext* cx, HWND hParentWnd );
+    JsFbTooltip(JSContext* cx, HWND hParentWnd);
 
 private:
     [[maybe_unused]] JSContext* pJsCtx_ = nullptr;

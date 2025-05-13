@@ -20,7 +20,7 @@ metadb_index_manager::ptr GetIndexManagerInstance();
 class metadb_index_client_impl : public metadb_index_client
 {
 public:
-    metadb_index_hash transform( const file_info& info, const playable_location& location ) override;
+    metadb_index_hash transform(const file_info& info, const playable_location& location) override;
 
 private:
     titleformat_object::ptr titleFormat_;
@@ -29,7 +29,7 @@ private:
 class init_stage_callback_impl : public init_stage_callback
 {
 public:
-    void on_init_stage( t_uint32 stage ) override;
+    void on_init_stage(t_uint32 stage) override;
 };
 
 class initquit_impl : public initquit
@@ -42,18 +42,18 @@ class metadb_display_field_provider_impl : public metadb_display_field_provider
 {
 public:
     t_uint32 get_field_count() override;
-    void get_field_name( t_uint32 index, pfc::string_base& out ) override;
-    bool process_field( t_uint32 index, metadb_handle* handle, titleformat_text_out* out ) override;
+    void get_field_name(t_uint32 index, pfc::string_base& out) override;
+    bool process_field(t_uint32 index, metadb_handle* handle, titleformat_text_out* out) override;
 };
 
 class track_property_provider_impl : public track_property_provider_v2
 {
 public:
-    void enumerate_properties( metadb_handle_list_cref p_tracks, track_property_callback& p_out ) override;
+    void enumerate_properties(metadb_handle_list_cref p_tracks, track_property_callback& p_out) override;
 
-    void enumerate_properties_v2( metadb_handle_list_cref p_tracks, track_property_callback_v2& p_out ) override;
+    void enumerate_properties_v2(metadb_handle_list_cref p_tracks, track_property_callback_v2& p_out) override;
 
-    bool is_our_tech_info( const char* ) override;
+    bool is_our_tech_info(const char*) override;
 };
 
 } // namespace
@@ -73,38 +73,38 @@ using namespace smp::stats;
 metadb_index_manager::ptr GetIndexManagerInstance()
 {
     static metadb_index_manager::ptr mimp = metadb_index_manager::get();
-    assert( !mimp.is_empty() );
+    assert(!mimp.is_empty());
     return mimp;
 }
 
-metadb_index_hash metadb_index_client_impl::transform( const file_info& info, const playable_location& location )
+metadb_index_hash metadb_index_client_impl::transform(const file_info& info, const playable_location& location)
 {
-    if ( titleFormat_.is_empty() )
+    if (titleFormat_.is_empty())
     {
-        titleformat_compiler::get()->compile_force( titleFormat_, pinTo );
+        titleformat_compiler::get()->compile_force(titleFormat_, pinTo);
     }
 
     pfc::string_formatter str;
-    titleFormat_->run_simple( location, &info, str );
-    return hasher_md5::get()->process_single_string( str ).xorHalve();
+    titleFormat_->run_simple(location, &info, str);
+    return hasher_md5::get()->process_single_string(str).xorHalve();
 }
 
-void init_stage_callback_impl::on_init_stage( t_uint32 stage )
+void init_stage_callback_impl::on_init_stage(t_uint32 stage)
 {
-    if ( stage == init_stages::before_config_read )
+    if (stage == init_stages::before_config_read)
     {
         auto api = GetIndexManagerInstance();
         try
         {
-            api->add( g_client, smp::guid::metadb_index, retentionPeriod );
+            api->add(g_client, smp::guid::metadb_index, retentionPeriod);
         }
-        catch ( const std::exception& e )
+        catch (const std::exception& e)
         {
-            api->remove( smp::guid::metadb_index );
-            smp::utils::LogError( fmt::format(
+            api->remove(smp::guid::metadb_index);
+            smp::utils::LogError(fmt::format(
                 "Stats initialization failed:\n"
                 "  {}",
-                e.what() ) );
+                e.what()));
             return;
         }
         api->dispatch_global_refresh();
@@ -121,9 +121,9 @@ t_uint32 metadb_display_field_provider_impl::get_field_count()
     return 5;
 }
 
-void metadb_display_field_provider_impl::get_field_name( t_uint32 index, pfc::string_base& out )
+void metadb_display_field_provider_impl::get_field_name(t_uint32 index, pfc::string_base& out)
 {
-    switch ( index )
+    switch (index)
     {
     case 0:
         out = "smp_playcount";
@@ -141,70 +141,70 @@ void metadb_display_field_provider_impl::get_field_name( t_uint32 index, pfc::st
         out = "smp_rating";
         break;
     default:
-        assert( false );
+        assert(false);
         break;
     }
 }
 
-bool metadb_display_field_provider_impl::process_field( t_uint32 index, metadb_handle* handle, titleformat_text_out* out )
+bool metadb_display_field_provider_impl::process_field(t_uint32 index, metadb_handle* handle, titleformat_text_out* out)
 {
     metadb_index_hash hash;
-    if ( !g_client->hashHandle( handle, hash ) )
+    if (!g_client->hashHandle(handle, hash))
     {
         return false;
     }
 
-    const auto tmp = GetStats( hash );
-    switch ( index )
+    const auto tmp = GetStats(hash);
+    switch (index)
     {
     case 0:
     {
         auto value = tmp.playcount;
-        if ( !value )
+        if (!value)
         {
             return false;
         }
-        out->write_int( titleformat_inputtypes::meta, value );
+        out->write_int(titleformat_inputtypes::meta, value);
         return true;
     }
     case 1:
     {
         auto value = tmp.loved;
-        if ( !value )
+        if (!value)
         {
             return false;
         }
-        out->write_int( titleformat_inputtypes::meta, value );
+        out->write_int(titleformat_inputtypes::meta, value);
         return true;
     }
     case 2:
     {
         const auto& value = tmp.first_played;
-        if ( value.empty() )
+        if (value.empty())
         {
             return false;
         }
-        out->write( titleformat_inputtypes::meta, value.c_str(), value.length() );
+        out->write(titleformat_inputtypes::meta, value.c_str(), value.length());
         return true;
     }
     case 3:
     {
         const auto& value = tmp.last_played;
-        if ( value.empty() )
+        if (value.empty())
         {
             return false;
         }
-        out->write( titleformat_inputtypes::meta, value.c_str(), value.length() );
+        out->write(titleformat_inputtypes::meta, value.c_str(), value.length());
         return true;
     }
     case 4:
     {
         auto value = tmp.rating;
-        if ( !value )
+        if (!value)
         {
             return false;
         }
-        out->write_int( titleformat_inputtypes::meta, value );
+        out->write_int(titleformat_inputtypes::meta, value);
         return true;
     }
     default:
@@ -212,72 +212,72 @@ bool metadb_display_field_provider_impl::process_field( t_uint32 index, metadb_h
     }
 }
 
-void track_property_provider_impl::enumerate_properties( metadb_handle_list_cref p_tracks, track_property_callback& p_out )
+void track_property_provider_impl::enumerate_properties(metadb_handle_list_cref p_tracks, track_property_callback& p_out)
 {
-    const auto stlHandleList = qwr::pfc_x::Make_Stl_CRef( p_tracks );
-    if ( stlHandleList.size() == 1 )
+    const auto stlHandleList = qwr::pfc_x::Make_Stl_CRef(p_tracks);
+    if (stlHandleList.size() == 1)
     {
         metadb_index_hash hash;
-        if ( g_client->hashHandle( stlHandleList.front(), hash ) )
+        if (g_client->hashHandle(stlHandleList.front(), hash))
         {
-            Fields tmp = GetStats( hash );
-            if ( tmp.playcount > 0 )
+            Fields tmp = GetStats(hash);
+            if (tmp.playcount > 0)
             {
-                p_out.set_property( SMP_NAME, 0, "Playcount", std::to_string( tmp.playcount ).c_str() );
+                p_out.set_property(SMP_NAME, 0, "Playcount", std::to_string(tmp.playcount).c_str());
             }
-            if ( tmp.loved > 0 )
+            if (tmp.loved > 0)
             {
-                p_out.set_property( SMP_NAME, 1, "Loved", std::to_string( tmp.loved ).c_str() );
+                p_out.set_property(SMP_NAME, 1, "Loved", std::to_string(tmp.loved).c_str());
             }
-            if ( !tmp.first_played.empty() )
+            if (!tmp.first_played.empty())
             {
-                p_out.set_property( SMP_NAME, 2, "First Played", tmp.first_played.c_str() );
+                p_out.set_property(SMP_NAME, 2, "First Played", tmp.first_played.c_str());
             }
-            if ( !tmp.last_played.empty() )
+            if (!tmp.last_played.empty())
             {
-                p_out.set_property( SMP_NAME, 3, "Last Played", tmp.last_played.c_str() );
+                p_out.set_property(SMP_NAME, 3, "Last Played", tmp.last_played.c_str());
             }
-            if ( tmp.rating > 0 )
+            if (tmp.rating > 0)
             {
-                p_out.set_property( SMP_NAME, 4, "Rating", std::to_string( tmp.rating ).c_str() );
+                p_out.set_property(SMP_NAME, 4, "Rating", std::to_string(tmp.rating).c_str());
             }
         }
     }
     else
     {
         std::vector<metadb_index_hash> hashes;
-        hashes.reserve( stlHandleList.size() );
+        hashes.reserve(stlHandleList.size());
 
-        for ( const auto& handle: stlHandleList )
+        for (const auto& handle: stlHandleList)
         {
             metadb_index_hash hash;
-            if ( g_client->hashHandle( handle, hash ) )
+            if (g_client->hashHandle(handle, hash))
             {
-                hashes.emplace_back( hash );
+                hashes.emplace_back(hash);
             }
         }
 
         const auto total =
-            ranges::accumulate( hashes, 0, []( auto sum, auto&& hash ) {
-                return sum + GetStats( hash ).playcount;
-            } );
+            ranges::accumulate(hashes, 0, [](auto sum, auto&& hash) {
+                return sum + GetStats(hash).playcount;
+            });
 
-        if ( total )
+        if (total)
         {
-            p_out.set_property( SMP_NAME, 0, "Playcount", pfc::format_uint( total ) );
+            p_out.set_property(SMP_NAME, 0, "Playcount", pfc::format_uint(total));
         }
     }
 }
 
-void track_property_provider_impl::enumerate_properties_v2( metadb_handle_list_cref p_tracks, track_property_callback_v2& p_out )
+void track_property_provider_impl::enumerate_properties_v2(metadb_handle_list_cref p_tracks, track_property_callback_v2& p_out)
 {
-    if ( p_out.is_group_wanted( SMP_NAME ) )
+    if (p_out.is_group_wanted(SMP_NAME))
     {
-        enumerate_properties( p_tracks, p_out );
+        enumerate_properties(p_tracks, p_out);
     }
 }
 
-bool track_property_provider_impl::is_our_tech_info( const char* )
+bool track_property_provider_impl::is_our_tech_info(const char*)
 {
     return false;
 }
@@ -287,34 +287,34 @@ bool track_property_provider_impl::is_our_tech_info( const char* )
 namespace
 {
 
-FB2K_SERVICE_FACTORY( init_stage_callback_impl );
-FB2K_SERVICE_FACTORY( initquit_impl );
-FB2K_SERVICE_FACTORY( metadb_display_field_provider_impl );
-FB2K_SERVICE_FACTORY( track_property_provider_impl );
+FB2K_SERVICE_FACTORY(init_stage_callback_impl);
+FB2K_SERVICE_FACTORY(initquit_impl);
+FB2K_SERVICE_FACTORY(metadb_display_field_provider_impl);
+FB2K_SERVICE_FACTORY(track_property_provider_impl);
 
 } // namespace
 
 namespace smp::stats
 {
 
-bool HashHandle( metadb_handle_ptr const& pMetadb, metadb_index_hash& hash )
+bool HashHandle(metadb_handle_ptr const& pMetadb, metadb_index_hash& hash)
 {
-    return g_client->hashHandle( pMetadb, hash );
+    return g_client->hashHandle(pMetadb, hash);
 }
 
-Fields GetStats( metadb_index_hash hash )
+Fields GetStats(metadb_index_hash hash)
 {
     mem_block_container_impl temp;
-    GetIndexManagerInstance()->get_user_data( smp::guid::metadb_index, hash, temp );
+    GetIndexManagerInstance()->get_user_data(smp::guid::metadb_index, hash, temp);
 
-    if ( !temp.get_size() )
+    if (!temp.get_size())
     {
         return {};
     }
 
     try
     {
-        stream_reader_formatter_simple_ref<false> reader( temp.get_ptr(), temp.get_size() );
+        stream_reader_formatter_simple_ref<false> reader(temp.get_ptr(), temp.get_size());
 
         Fields ret;
         reader >> ret.playcount;
@@ -324,13 +324,13 @@ Fields GetStats( metadb_index_hash hash )
         reader >> ret.rating;
         return ret;
     }
-    catch ( const exception_io_data& )
+    catch (const exception_io_data&)
     {
         return {};
     }
 }
 
-void SetStats( metadb_index_hash hash, const Fields& f )
+void SetStats(metadb_index_hash hash, const Fields& f)
 {
     stream_writer_formatter_simple<false> writer;
     writer << f.playcount;
@@ -338,17 +338,17 @@ void SetStats( metadb_index_hash hash, const Fields& f )
     writer << f.first_played.c_str();
     writer << f.last_played.c_str();
     writer << f.rating;
-    GetIndexManagerInstance()->set_user_data( smp::guid::metadb_index, hash, writer.m_buffer.get_ptr(), writer.m_buffer.get_size() );
+    GetIndexManagerInstance()->set_user_data(smp::guid::metadb_index, hash, writer.m_buffer.get_ptr(), writer.m_buffer.get_size());
 }
 
-void RefreshStats( const pfc::list_base_const_t<metadb_index_hash>& hashes )
+void RefreshStats(const pfc::list_base_const_t<metadb_index_hash>& hashes)
 {
-    GetIndexManagerInstance()->dispatch_refresh( smp::guid::metadb_index, hashes );
+    GetIndexManagerInstance()->dispatch_refresh(smp::guid::metadb_index, hashes);
 }
 
-void RefreshStats( const metadb_index_hash& hash )
+void RefreshStats(const metadb_index_hash& hash)
 {
-    GetIndexManagerInstance()->dispatch_refresh( smp::guid::metadb_index, hash );
+    GetIndexManagerInstance()->dispatch_refresh(smp::guid::metadb_index, hash);
 }
 
 } // namespace smp::stats

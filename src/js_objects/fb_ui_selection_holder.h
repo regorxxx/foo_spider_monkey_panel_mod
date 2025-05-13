@@ -30,17 +30,17 @@ public:
 public:
     ~JsFbUiSelectionHolder() override = default;
 
-    static std::unique_ptr<JsFbUiSelectionHolder> CreateNative( JSContext* cx, const ui_selection_holder::ptr& holder );
-    static size_t GetInternalSize( const ui_selection_holder::ptr& holder );
+    static std::unique_ptr<JsFbUiSelectionHolder> CreateNative(JSContext* cx, const ui_selection_holder::ptr& holder);
+    static size_t GetInternalSize(const ui_selection_holder::ptr& holder);
 
 public:
     void SetPlaylistSelectionTracking();
     void SetPlaylistTracking();
-    void SetSelection( JsFbMetadbHandleList* handles, uint8_t type = 0);
-    void SetSelectionWithOpt( size_t optArgCount, JsFbMetadbHandleList* handles, uint8_t type );
+    void SetSelection(JsFbMetadbHandleList* handles, uint8_t type = 0);
+    void SetSelectionWithOpt(size_t optArgCount, JsFbMetadbHandleList* handles, uint8_t type);
 
 private:
-    JsFbUiSelectionHolder( JSContext* cx, const ui_selection_holder::ptr& holder );
+    JsFbUiSelectionHolder(JSContext* cx, const ui_selection_holder::ptr& holder);
 
 private:
     [[maybe_unused]] JSContext* pJsCtx_ = nullptr;

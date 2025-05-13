@@ -19,12 +19,12 @@ public:
     void Finalize();
 
     [[nodiscard]] static const TimeDuration& GetAllowedEarlyFiringTime();
-    [[nodiscard]] std::unique_ptr<Timer_Native> CreateTimer( std::shared_ptr<PanelTarget> pTarget );
+    [[nodiscard]] std::unique_ptr<Timer_Native> CreateTimer(std::shared_ptr<PanelTarget> pTarget);
 
 public:
-    [[nodiscard]] HANDLE CreateNativeTimer( std::shared_ptr<Timer_Native> pTimer );
-    void DestroyNativeTimer( HANDLE hTimer, bool waitForDestruction );
-    void PostTimerEvent( std::shared_ptr<Timer_Native> pTimer );
+    [[nodiscard]] HANDLE CreateNativeTimer(std::shared_ptr<Timer_Native> pTimer);
+    void DestroyNativeTimer(HANDLE hTimer, bool waitForDestruction);
+    void PostTimerEvent(std::shared_ptr<Timer_Native> pTimer);
 
 private:
     TimerManager_Native();

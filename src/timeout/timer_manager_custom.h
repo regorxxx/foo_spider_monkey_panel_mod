@@ -23,11 +23,11 @@ public:
     void Finalize();
 
     [[nodiscard]] static const TimeDuration& GetAllowedEarlyFiringTime();
-    [[nodiscard]] std::unique_ptr<Timer_Custom> CreateTimer( std::shared_ptr<PanelTarget> pTarget );
+    [[nodiscard]] std::unique_ptr<Timer_Custom> CreateTimer(std::shared_ptr<PanelTarget> pTarget);
 
 public:
-    void AddTimer( std::shared_ptr<Timer_Custom> pTimer );
-    void RemoveTimer( std::shared_ptr<Timer_Custom> pTimer );
+    void AddTimer(std::shared_ptr<Timer_Custom> pTimer);
+    void RemoveTimer(std::shared_ptr<Timer_Custom> pTimer);
 
 private:
     TimerManager_Custom();
@@ -40,7 +40,7 @@ private:
     void RemoveLeadingCanceledTimersInternal();
     void RemoveFirstTimerInternal();
 
-    static bool TimerSorter( const std::unique_ptr<TimerHolder>& a, const std::unique_ptr<TimerHolder>& b );
+    static bool TimerSorter(const std::unique_ptr<TimerHolder>& a, const std::unique_ptr<TimerHolder>& b);
 
 private:
     std::atomic_bool isTimeToDie_{ false };

@@ -28,8 +28,8 @@ public:
 public:
     ~JsFbPlaybackQueueItem() override = default;
 
-    static std::unique_ptr<JsFbPlaybackQueueItem> CreateNative( JSContext* cx, const t_playback_queue_item& playbackQueueItem );
-    static size_t GetInternalSize( const t_playback_queue_item& playbackQueueItem );
+    static std::unique_ptr<JsFbPlaybackQueueItem> CreateNative(JSContext* cx, const t_playback_queue_item& playbackQueueItem);
+    static size_t GetInternalSize(const t_playback_queue_item& playbackQueueItem);
 
 public:
     JSObject* get_Handle();
@@ -37,7 +37,7 @@ public:
     uint32_t get_PlaylistItemIndex();
 
 private:
-    JsFbPlaybackQueueItem( JSContext* cx, const t_playback_queue_item& playbackQueueItem );
+    JsFbPlaybackQueueItem(JSContext* cx, const t_playback_queue_item& playbackQueueItem);
 
 private:
     JSContext* pJsCtx_ = nullptr;

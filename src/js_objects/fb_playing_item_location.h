@@ -28,8 +28,8 @@ public:
 public:
     ~JsFbPlayingItemLocation() override = default;
 
-    static std::unique_ptr<JsFbPlayingItemLocation> CreateNative( JSContext* cx, bool isValid, uint32_t playlistIndex, uint32_t playlistItemIndex );
-    static size_t GetInternalSize( bool isValid, uint32_t playlistIndex, uint32_t playlistItemIndex );
+    static std::unique_ptr<JsFbPlayingItemLocation> CreateNative(JSContext* cx, bool isValid, uint32_t playlistIndex, uint32_t playlistItemIndex);
+    static size_t GetInternalSize(bool isValid, uint32_t playlistIndex, uint32_t playlistItemIndex);
 
 public:
     bool get_IsValid();
@@ -37,7 +37,7 @@ public:
     uint32_t get_PlaylistItemIndex();
 
 private:
-    JsFbPlayingItemLocation( JSContext* cx, bool isValid, uint32_t playlistIndex, uint32_t playlistItemIndex );
+    JsFbPlayingItemLocation(JSContext* cx, bool isValid, uint32_t playlistIndex, uint32_t playlistItemIndex);
 
 private:
     [[maybe_unused]] JSContext* pJsCtx_ = nullptr;

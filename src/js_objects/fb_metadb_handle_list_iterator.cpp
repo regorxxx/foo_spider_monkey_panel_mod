@@ -35,18 +35,18 @@ JSClass jsClass = {
     &jsOps
 };
 
-MJS_DEFINE_JS_FN_FROM_NATIVE( next, JsFbMetadbHandleList_Iterator::Next )
+MJS_DEFINE_JS_FN_FROM_NATIVE(next, JsFbMetadbHandleList_Iterator::Next)
 
 constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
     {
-        JS_FN( "next", next, 0, kDefaultPropsFlags ),
+        JS_FN("next", next, 0, kDefaultPropsFlags),
         JS_FS_END,
-    } );
+    });
 
 constexpr auto jsProperties = std::to_array<JSPropertySpec>(
     {
         JS_PS_END,
-    } );
+    });
 
 } // namespace
 
@@ -58,10 +58,10 @@ const JSFunctionSpec* JsFbMetadbHandleList_Iterator::JsFunctions = jsFunctions.d
 const JSPropertySpec* JsFbMetadbHandleList_Iterator::JsProperties = jsProperties.data();
 const JsPrototypeId JsFbMetadbHandleList_Iterator::PrototypeId = JsPrototypeId::FbMetadbHandleList_Iterator;
 
-JsFbMetadbHandleList_Iterator::JsFbMetadbHandleList_Iterator( JSContext* cx, JsFbMetadbHandleList& handleList )
-    : pJsCtx_( cx )
-    , handleList_( handleList )
-    , heapHelper_( cx )
+JsFbMetadbHandleList_Iterator::JsFbMetadbHandleList_Iterator(JSContext* cx, JsFbMetadbHandleList& handleList)
+    : pJsCtx_(cx)
+    , handleList_(handleList)
+    , heapHelper_(cx)
 {
 }
 
@@ -71,54 +71,54 @@ JsFbMetadbHandleList_Iterator::~JsFbMetadbHandleList_Iterator()
 }
 
 std::unique_ptr<JsFbMetadbHandleList_Iterator>
-JsFbMetadbHandleList_Iterator::CreateNative( JSContext* cx, JsFbMetadbHandleList& handleList )
+JsFbMetadbHandleList_Iterator::CreateNative(JSContext* cx, JsFbMetadbHandleList& handleList)
 {
-    return std::unique_ptr<JsFbMetadbHandleList_Iterator>( new JsFbMetadbHandleList_Iterator( cx, handleList ) );
+    return std::unique_ptr<JsFbMetadbHandleList_Iterator>(new JsFbMetadbHandleList_Iterator(cx, handleList));
 }
 
-size_t JsFbMetadbHandleList_Iterator::GetInternalSize( JsFbMetadbHandleList& /*handleList*/ )
+size_t JsFbMetadbHandleList_Iterator::GetInternalSize(JsFbMetadbHandleList& /*handleList*/)
 {
     return 0;
 }
 
 JSObject* JsFbMetadbHandleList_Iterator::Next()
 {
-    const bool isAtEnd = ( curPosition_ >= handleList_.get_Count() );
-    const auto autoIncrement = qwr::final_action( [&] {
-        if ( !isAtEnd )
+    const bool isAtEnd = (curPosition_ >= handleList_.get_Count());
+    const auto autoIncrement = qwr::final_action([&] {
+        if (!isAtEnd)
         {
             ++curPosition_;
         }
-    } );
+    });
 
-    if ( !jsNextId_ )
+    if (!jsNextId_)
     {
-        JS::RootedObject jsObject( pJsCtx_, JS_NewPlainObject( pJsCtx_ ) );
+        JS::RootedObject jsObject(pJsCtx_, JS_NewPlainObject(pJsCtx_));
 
-        JS::RootedObject jsValueObject( pJsCtx_ );
-        if ( !isAtEnd )
+        JS::RootedObject jsValueObject(pJsCtx_);
+        if (!isAtEnd)
         {
-            jsValueObject = handleList_.get_Item( curPosition_ );
+            jsValueObject = handleList_.get_Item(curPosition_);
         }
-        AddProperty( pJsCtx_, jsObject, "value", static_cast<JS::HandleObject>( jsValueObject ) );
-        AddProperty( pJsCtx_, jsObject, "done", isAtEnd );
+        AddProperty(pJsCtx_, jsObject, "value", static_cast<JS::HandleObject>(jsValueObject));
+        AddProperty(pJsCtx_, jsObject, "done", isAtEnd);
 
-        jsNextId_ = heapHelper_.Store( jsObject );
+        jsNextId_ = heapHelper_.Store(jsObject);
 
-        JS::RootedObject jsNext( pJsCtx_, &heapHelper_.Get( *jsNextId_ ).toObject() );
+        JS::RootedObject jsNext(pJsCtx_, &heapHelper_.Get(*jsNextId_).toObject());
         return jsNext;
     }
     else
     {
-        JS::RootedObject jsNext( pJsCtx_, &heapHelper_.Get( *jsNextId_ ).toObject() );
+        JS::RootedObject jsNext(pJsCtx_, &heapHelper_.Get(*jsNextId_).toObject());
 
-        JS::RootedObject jsValueObject( pJsCtx_ );
-        if ( !isAtEnd )
+        JS::RootedObject jsValueObject(pJsCtx_);
+        if (!isAtEnd)
         {
-            jsValueObject = handleList_.get_Item( curPosition_ );
+            jsValueObject = handleList_.get_Item(curPosition_);
         }
-        SetProperty( pJsCtx_, jsNext, "value", static_cast<JS::HandleObject>( jsValueObject ) );
-        SetProperty( pJsCtx_, jsNext, "done", isAtEnd );
+        SetProperty(pJsCtx_, jsNext, "value", static_cast<JS::HandleObject>(jsValueObject));
+        SetProperty(pJsCtx_, jsNext, "done", isAtEnd);
 
         return jsNext;
     }

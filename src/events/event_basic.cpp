@@ -7,25 +7,25 @@
 namespace smp
 {
 
-Event_Basic::Event_Basic( EventId id )
-    : EventBase( id )
+Event_Basic::Event_Basic(EventId id)
+    : EventBase(id)
 {
 }
 
 void Event_Basic::Run()
 {
-    if ( !pTarget_ )
+    if (!pTarget_)
     {
         return;
     }
 
     auto pPanel = pTarget_->GetPanel();
-    if ( !pPanel )
+    if (!pPanel)
     {
         return;
     }
 
-    pPanel->ExecuteEvent_Basic( id_ );
+    pPanel->ExecuteEvent_Basic(id_);
 }
 
 } // namespace smp

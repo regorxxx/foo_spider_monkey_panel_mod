@@ -15,11 +15,11 @@
 namespace
 {
 
-constexpr auto k_DialogExtFilter = std::to_array<COMDLG_FILTERSPEC>( {
+constexpr auto k_DialogExtFilter = std::to_array<COMDLG_FILTERSPEC>({
     { L"JavaScript files", L"*.js" },
     { L"Text files", L"*.txt" },
     { L"All files", L"*.*" },
-} );
+});
 
 WINDOWPLACEMENT g_WindowPlacement{};
 
@@ -28,40 +28,40 @@ WINDOWPLACEMENT g_WindowPlacement{};
 namespace smp::ui
 {
 
-CEditor::CEditor( const std::string& caption, std::string& text, SaveCallback callback )
-    : callback_( callback )
-    , text_( text )
-    , caption_( caption )
+CEditor::CEditor(const std::string& caption, std::string& text, SaveCallback callback)
+    : callback_(callback)
+    , text_(text)
+    , caption_(caption)
 {
 }
 
-LRESULT CEditor::OnInitDialog( HWND, LPARAM )
+LRESULT CEditor::OnInitDialog(HWND, LPARAM)
 {
     menu = GetMenu();
-    assert( menu.m_hMenu );
+    assert(menu.m_hMenu);
 
     DlgResize_Init();
 
     // Apply window placement
-    if ( !g_WindowPlacement.length )
+    if (!g_WindowPlacement.length)
     {
         WINDOWPLACEMENT tmpPlacement{};
-        tmpPlacement.length = sizeof( WINDOWPLACEMENT );
+        tmpPlacement.length = sizeof(WINDOWPLACEMENT);
 
-        if ( GetWindowPlacement( &tmpPlacement ) )
+        if (GetWindowPlacement(&tmpPlacement))
         {
             g_WindowPlacement = tmpPlacement;
         }
     }
     else
     {
-        SetWindowPlacement( &g_WindowPlacement );
+        SetWindowPlacement(&g_WindowPlacement);
     }
 
     // Edit Control
-    sciEditor_.SubclassWindow( GetDlgItem( IDC_EDIT ) );
+    sciEditor_.SubclassWindow(GetDlgItem(IDC_EDIT));
     ReloadProperties();
-    sciEditor_.SetContent( text_.c_str(), true );
+    sciEditor_.SetContent(text_.c_str(), true);
     sciEditor_.SetSavePoint();
 
     UpdateUiElements();
@@ -69,24 +69,24 @@ LRESULT CEditor::OnInitDialog( HWND, LPARAM )
     return TRUE; // set focus to default control
 }
 
-LRESULT CEditor::OnCloseCmd( WORD, WORD wID, HWND )
+LRESULT CEditor::OnCloseCmd(WORD, WORD wID, HWND)
 {
     // Window position
     {
         WINDOWPLACEMENT tmpPlacement{};
-        tmpPlacement.length = sizeof( WINDOWPLACEMENT );
-        if ( GetWindowPlacement( &tmpPlacement ) )
+        tmpPlacement.length = sizeof(WINDOWPLACEMENT);
+        if (GetWindowPlacement(&tmpPlacement))
         {
             g_WindowPlacement = tmpPlacement;
         }
     }
 
-    switch ( wID )
+    switch (wID)
     {
     case IDOK:
     {
         Apply();
-        EndDialog( IDOK );
+        EndDialog(IDOK);
         break;
     }
     case IDAPPLY:
@@ -97,17 +97,17 @@ LRESULT CEditor::OnCloseCmd( WORD, WORD wID, HWND )
     case IDCANCEL:
     case ID_APP_EXIT:
     {
-        if ( sciEditor_.GetModify() )
+        if (sciEditor_.GetModify())
         {
-            const int ret = popup_message_v3::get()->messageBox( *this,
+            const int ret = popup_message_v3::get()->messageBox(*this,
                                                          "Do you want to apply your changes?",
                                                          caption_.c_str(),
-                                                         MB_ICONWARNING | MB_SETFOREGROUND | MB_YESNOCANCEL );
-            switch ( ret )
+                                                         MB_ICONWARNING | MB_SETFOREGROUND | MB_YESNOCANCEL);
+            switch (ret)
             {
             case IDYES:
                 Apply();
-                EndDialog( IDOK );
+                EndDialog(IDOK);
                 break;
             case IDCANCEL:
                 return 0;
@@ -116,23 +116,23 @@ LRESULT CEditor::OnCloseCmd( WORD, WORD wID, HWND )
             }
         }
 
-        EndDialog( wID );
+        EndDialog(wID);
         break;
     }
     default:
     {
-        assert( 0 );
+        assert(0);
     }
     }
 
     return 0;
 }
 
-LRESULT CEditor::OnNotify( int, LPNMHDR pnmh )
+LRESULT CEditor::OnNotify(int, LPNMHDR pnmh)
 {
-    // SCNotification* notification = reinterpret_cast<SCNotification*>( pnmh );
+    // SCNotification* notification = reinterpret_cast<SCNotification*>(pnmh);
 
-    switch ( pnmh->code )
+    switch (pnmh->code)
     {
     case SCN_SAVEPOINTLEFT:
     { // dirty
@@ -148,96 +148,96 @@ LRESULT CEditor::OnNotify( int, LPNMHDR pnmh )
     }
     }
 
-    SetMsgHandled( FALSE );
+    SetMsgHandled(FALSE);
     return 0;
 }
 
-LRESULT CEditor::OnUwmKeyDown( UINT, WPARAM wParam, LPARAM, BOOL& bHandled )
+LRESULT CEditor::OnUwmKeyDown(UINT, WPARAM wParam, LPARAM, BOOL& bHandled)
 {
     const auto vk = (uint32_t)wParam;
-    bHandled = BOOL( ProcessKey( vk ) || sciEditor_.ProcessKey( vk ) );
-    return ( bHandled ? 0 : 1 );
+    bHandled = BOOL(ProcessKey(vk) || sciEditor_.ProcessKey(vk));
+    return (bHandled ? 0 : 1);
 }
 
-LRESULT CEditor::OnFileSave( WORD, WORD, HWND )
+LRESULT CEditor::OnFileSave(WORD, WORD, HWND)
 {
     Apply();
     return 0;
 }
 
-LRESULT CEditor::OnFileImport( WORD, WORD, HWND )
+LRESULT CEditor::OnFileImport(WORD, WORD, HWND)
 {
     qwr::file::FileDialogOptions fdOpts{};
     fdOpts.savePathGuid = guid::dialog_path;
-    fdOpts.filterSpec.assign( k_DialogExtFilter.begin(), k_DialogExtFilter.end() );
+    fdOpts.filterSpec.assign(k_DialogExtFilter.begin(), k_DialogExtFilter.end());
     fdOpts.defaultExtension = L"js";
 
-    const auto filename = qwr::file::FileDialog( L"Import File", false, fdOpts );
-    if ( !filename || filename->empty() )
+    const auto filename = qwr::file::FileDialog(L"Import File", false, fdOpts);
+    if (!filename || filename->empty())
     {
         return 0;
     }
 
     try
     {
-        const auto text = qwr::file::ReadFile( *filename, CP_UTF8 );
-        sciEditor_.SetContent( text.c_str() );
+        const auto text = qwr::file::ReadFile(*filename, CP_UTF8);
+        sciEditor_.SetContent(text.c_str());
     }
-    catch ( const qwr::QwrException& e )
+    catch (const qwr::QwrException& e)
     {
-        const auto errorMsg = fmt::format( "Failed to read file: {}", e.what() );
-        popup_message_v3::get()->messageBox( *this,
+        const auto errorMsg = fmt::format("Failed to read file: {}", e.what());
+        popup_message_v3::get()->messageBox(*this,
                                            errorMsg.c_str(),
                                            caption_.c_str(),
-                                           MB_ICONWARNING | MB_SETFOREGROUND );
+                                           MB_ICONWARNING | MB_SETFOREGROUND);
     }
 
     return 0;
 }
 
-LRESULT CEditor::OnFileExport( WORD, WORD, HWND )
+LRESULT CEditor::OnFileExport(WORD, WORD, HWND)
 {
     qwr::file::FileDialogOptions fdOpts{};
     fdOpts.savePathGuid = guid::dialog_path;
-    fdOpts.filterSpec.assign( k_DialogExtFilter.begin(), k_DialogExtFilter.end() );
+    fdOpts.filterSpec.assign(k_DialogExtFilter.begin(), k_DialogExtFilter.end());
     fdOpts.defaultExtension = L"js";
 
-    const auto filename = qwr::file::FileDialog( L"Export File", true, fdOpts );
-    if ( !filename || filename->empty() )
+    const auto filename = qwr::file::FileDialog(L"Export File", true, fdOpts);
+    if (!filename || filename->empty())
     {
         return 0;
     }
 
     std::string text;
-    text.resize( sciEditor_.GetTextLength() + 1 );
+    text.resize(sciEditor_.GetTextLength() + 1);
 
-    sciEditor_.GetText( text.data(), text.size() );
-    text.resize( strlen( text.data() ) );
+    sciEditor_.GetText(text.data(), text.size());
+    text.resize(strlen(text.data()));
 
-    (void)qwr::file::WriteFile( *filename, text );
+    (void)qwr::file::WriteFile(*filename, text);
 
     return 0;
 }
 
-LRESULT CEditor::OnOptionProperties( WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/ )
+LRESULT CEditor::OnOptionProperties(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/)
 {
     CDialogEditorConfig config;
-    config.DoModal( m_hWnd );
+    config.DoModal(m_hWnd);
 
     ReloadProperties();
 
     return 0;
 }
 
-LRESULT CEditor::OnHelp( WORD, WORD, HWND )
+LRESULT CEditor::OnHelp(WORD, WORD, HWND)
 {
-    ShellExecute( nullptr, L"open", path::JsDocsIndex().c_str(), nullptr, nullptr, SW_SHOW );
+    ShellExecute(nullptr, L"open", path::JsDocsIndex().c_str(), nullptr, nullptr, SW_SHOW);
     return 0;
 }
 
-LRESULT CEditor::OnAbout( WORD, WORD, HWND )
+LRESULT CEditor::OnAbout(WORD, WORD, HWND)
 {
-    popup_message_v3::get()->messageBox( *this, SMP_ABOUT, "About Spider Monkey Panel", MB_SETFOREGROUND );
+    popup_message_v3::get()->messageBox(*this, SMP_ABOUT, "About Spider Monkey Panel", MB_SETFOREGROUND);
     return 0;
 }
 
@@ -250,26 +250,26 @@ void CEditor::ReloadProperties()
 
 void CEditor::UpdateUiElements()
 {
-    if ( isDirty_ )
+    if (isDirty_)
     {
-        CButton( GetDlgItem( IDAPPLY ) ).EnableWindow( TRUE );
-        uSetWindowText( m_hWnd, ( caption_ + " *" ).c_str() );
+        CButton(GetDlgItem(IDAPPLY)).EnableWindow(TRUE);
+        uSetWindowText(m_hWnd, (caption_ + " *").c_str());
     }
     else
     {
-        CButton( GetDlgItem( IDAPPLY ) ).EnableWindow( FALSE );
-        uSetWindowText( m_hWnd, caption_.c_str() );
+        CButton(GetDlgItem(IDAPPLY)).EnableWindow(FALSE);
+        uSetWindowText(m_hWnd, caption_.c_str());
     }
 }
 
-bool CEditor::ProcessKey( uint32_t vk )
+bool CEditor::ProcessKey(uint32_t vk)
 {
-    const int modifiers = ( IsKeyPressed( VK_SHIFT ) ? SCMOD_SHIFT : 0 )
-                          | ( IsKeyPressed( VK_CONTROL ) ? SCMOD_CTRL : 0 )
-                          | ( IsKeyPressed( VK_MENU ) ? SCMOD_ALT : 0 );
+    const int modifiers = (IsKeyPressed(VK_SHIFT) ? SCMOD_SHIFT : 0)
+                          | (IsKeyPressed(VK_CONTROL) ? SCMOD_CTRL : 0)
+                          | (IsKeyPressed(VK_MENU) ? SCMOD_ALT : 0);
 
     // Hotkeys
-    if ( modifiers == SCMOD_CTRL && vk == 'S' )
+    if (modifiers == SCMOD_CTRL && vk == 'S')
     {
         Apply();
         return true;
@@ -282,11 +282,11 @@ void CEditor::Apply()
 {
     sciEditor_.SetSavePoint();
 
-    std::vector<char> textBuffer( sciEditor_.GetTextLength() + 1 );
-    sciEditor_.GetText( textBuffer.data(), textBuffer.size() );
+    std::vector<char> textBuffer(sciEditor_.GetTextLength() + 1);
+    sciEditor_.GetText(textBuffer.data(), textBuffer.size());
     text_ = textBuffer.data();
 
-    if ( callback_ )
+    if (callback_)
     {
         callback_();
     }

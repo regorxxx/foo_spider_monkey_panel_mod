@@ -7,25 +7,25 @@
 namespace smp
 {
 
-Event_JsExecutor::Event_JsExecutor( EventId id )
-    : EventBase( id )
+Event_JsExecutor::Event_JsExecutor(EventId id)
+    : EventBase(id)
 {
 }
 
 void Event_JsExecutor::Run()
 {
-    if ( !pTarget_ )
+    if (!pTarget_)
     {
         return;
     }
 
     auto pPanel = pTarget_->GetPanel();
-    if ( !pPanel )
+    if (!pPanel)
     {
         return;
     }
 
-    pPanel->ExecuteEvent_JsTask( id_, *this );
+    pPanel->ExecuteEvent_JsTask(id_, *this);
 }
 
 } // namespace smp

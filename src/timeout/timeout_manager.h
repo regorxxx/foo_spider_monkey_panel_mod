@@ -26,34 +26,34 @@ class TimeoutExecutor;
 class TimeoutManager
 {
 public:
-    TimeoutManager( std::shared_ptr<PanelTarget> pTarget );
+    TimeoutManager(std::shared_ptr<PanelTarget> pTarget);
     ~TimeoutManager();
 
     void Finalize();
 
-    void SetLoadingStatus( bool isLoading );
+    void SetLoadingStatus(bool isLoading);
 
-    [[nodiscard]] uint32_t SetInterval( uint32_t interval, std::unique_ptr<mozjs::JsAsyncTask> pJsTask );
-    [[nodiscard]] uint32_t SetTimeout( uint32_t delay, std::unique_ptr<mozjs::JsAsyncTask> pJsTask );
+    [[nodiscard]] uint32_t SetInterval(uint32_t interval, std::unique_ptr<mozjs::JsAsyncTask> pJsTask);
+    [[nodiscard]] uint32_t SetTimeout(uint32_t delay, std::unique_ptr<mozjs::JsAsyncTask> pJsTask);
 
-    void ClearTimeout( uint32_t timerId );
+    void ClearTimeout(uint32_t timerId);
     void StopAllTimeouts();
 
     // Should be called only by TimeoutExecutor
-    void RunTimeout( const TimeStamp& now,
-                     const TimeStamp& targetDeadline );
+    void RunTimeout(const TimeStamp& now,
+                     const TimeStamp& targetDeadline);
 
 private:
-    [[nodiscard]] uint32_t CreateTimeout( uint32_t interval, bool isRepeated, std::unique_ptr<mozjs::JsAsyncTask> pJsTask );
+    [[nodiscard]] uint32_t CreateTimeout(uint32_t interval, bool isRepeated, std::unique_ptr<mozjs::JsAsyncTask> pJsTask);
 
-    void MaybeSchedule( const TimeStamp& whenToTrigger );
-    bool RescheduleTimeout( Timeout& timeout,
+    void MaybeSchedule(const TimeStamp& whenToTrigger);
+    bool RescheduleTimeout(Timeout& timeout,
                             const TimeStamp& lastCallbackTime,
-                            const TimeStamp& currentNow );
+                            const TimeStamp& currentNow);
 
     [[nodiscard]] uint32_t CreateFiringId();
-    void DestroyFiringId( uint32_t id );
-    [[nodiscard]] bool IsValidFiringId( uint32_t id ) const;
+    void DestroyFiringId(uint32_t id);
+    [[nodiscard]] bool IsValidFiringId(uint32_t id) const;
 
 private:
     class TimeoutStorage
@@ -62,15 +62,15 @@ private:
         using TimeoutList = std::list<std::shared_ptr<Timeout>>;
         using TimeoutIterator = TimeoutList::iterator;
 
-        TimeoutStorage( TimeoutManager& pParent );
+        TimeoutStorage(TimeoutManager& pParent);
 
-        [[nodiscard]] TimeoutIterator Get( uint32_t id );
+        [[nodiscard]] TimeoutIterator Get(uint32_t id);
         [[nodiscard]] TimeoutIterator GetFirst();
         [[nodiscard]] TimeoutIterator GetLast();
-        [[nodiscard]] TimeoutIterator GetNext( const TimeoutIterator& it );
-        [[nodiscard]] bool IsEnd( const TimeoutIterator& it ) const;
-        void Insert( std::shared_ptr<Timeout> pTimeout );
-        void Erase( TimeoutIterator it );
+        [[nodiscard]] TimeoutIterator GetNext(const TimeoutIterator& it);
+        [[nodiscard]] bool IsEnd(const TimeoutIterator& it) const;
+        void Insert(std::shared_ptr<Timeout> pTimeout);
+        void Erase(TimeoutIterator it);
         [[nodiscard]] bool IsEmpty() const;
         void Clear();
 

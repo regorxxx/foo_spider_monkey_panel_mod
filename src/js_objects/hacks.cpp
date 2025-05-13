@@ -36,12 +36,12 @@ JSClass jsClass = {
 constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
     {
         JS_FS_END,
-    } );
+    });
 
 constexpr auto jsProperties = std::to_array<JSPropertySpec>(
     {
         JS_PS_END,
-    } );
+    });
 
 } // namespace
 
@@ -52,15 +52,15 @@ const JSClass JsHacks::JsClass = jsClass;
 const JSFunctionSpec* JsHacks::JsFunctions = jsFunctions.data();
 const JSPropertySpec* JsHacks::JsProperties = jsProperties.data();
 
-JsHacks::JsHacks( JSContext* cx )
-    : pJsCtx_( cx )
+JsHacks::JsHacks(JSContext* cx)
+    : pJsCtx_(cx)
 {
 }
 
 std::unique_ptr<JsHacks>
-JsHacks::CreateNative( JSContext* cx )
+JsHacks::CreateNative(JSContext* cx)
 {
-    return std::unique_ptr<JsHacks>( new JsHacks( cx ) );
+    return std::unique_ptr<JsHacks>(new JsHacks(cx));
 }
 
 size_t JsHacks::GetInternalSize()
@@ -68,9 +68,9 @@ size_t JsHacks::GetInternalSize()
     return 0;
 }
 
-bool JsHacks::PostCreate( JSContext* cx, JS::HandleObject self )
+bool JsHacks::PostCreate(JSContext* cx, JS::HandleObject self)
 {
-    CreateAndInstallObject<JsFbWindow>( cx, self, "FbWindow" );
+    CreateAndInstallObject<JsFbWindow>(cx, self, "FbWindow");
     return true;
 }
 

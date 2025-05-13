@@ -12,11 +12,11 @@
 namespace smp::panel
 {
 
-js_panel_window_dui::js_panel_window_dui( ui_element_config::ptr cfg, ui_element_instance_callback::ptr callback )
-    : js_panel_window( PanelType::DUI )
-    , uiCallback_( callback )
+js_panel_window_dui::js_panel_window_dui(ui_element_config::ptr cfg, ui_element_instance_callback::ptr callback)
+    : js_panel_window(PanelType::DUI)
+    , uiCallback_(callback)
 {
-    set_configuration( cfg );
+    set_configuration(cfg);
 }
 
 GUID js_panel_window_dui::g_get_guid()
@@ -37,11 +37,11 @@ pfc::string8 js_panel_window_dui::g_get_description()
 ui_element_config::ptr js_panel_window_dui::g_get_default_configuration()
 {
     ui_element_config_builder builder;
-    config::PanelSettings::SaveDefault( builder.m_stream, fb2k::noAbort );
-    return builder.finish( g_get_guid() );
+    config::PanelSettings::SaveDefault(builder.m_stream, fb2k::noAbort);
+    return builder.finish(g_get_guid());
 }
 
-void js_panel_window_dui::g_get_name( pfc::string_base& out )
+void js_panel_window_dui::g_get_name(pfc::string_base& out)
 {
     out = SMP_NAME;
 }
@@ -56,7 +56,7 @@ GUID js_panel_window_dui::get_subclass()
     return g_get_subclass();
 }
 
-DWORD js_panel_window_dui::GetColour( unsigned type, const GUID& guid )
+DWORD js_panel_window_dui::GetColour(unsigned type, const GUID& guid)
 {
     const auto& guidToQuery = [type, &guid] {
         // Take care when changing this array:
@@ -68,11 +68,11 @@ DWORD js_panel_window_dui::GetColour( unsigned type, const GUID& guid )
             &ui_color_selection,
         };
 
-        if ( guid != pfc::guid_null )
+        if (guid != pfc::guid_null)
         {
             return guid;
         }
-        else if ( type < guids.size() )
+        else if (type < guids.size())
         {
             return *guids[type];
         }
@@ -83,15 +83,15 @@ DWORD js_panel_window_dui::GetColour( unsigned type, const GUID& guid )
     }();
 
     t_ui_color colour = 0; ///< black
-    if ( guidToQuery != pfc::guid_null )
+    if (guidToQuery != pfc::guid_null)
     {
-        colour = uiCallback_->query_std_color( guidToQuery );
+        colour = uiCallback_->query_std_color(guidToQuery);
     }
 
-    return smp::colour::ColorrefToArgb( colour );
+    return smp::colour::ColorrefToArgb(colour);
 }
 
-HFONT js_panel_window_dui::GetFont( unsigned type, const GUID& guid )
+HFONT js_panel_window_dui::GetFont(unsigned type, const GUID& guid)
 {
     const auto& guidToQuery = [type, &guid] {
         // Take care when changing this array:
@@ -105,11 +105,11 @@ HFONT js_panel_window_dui::GetFont( unsigned type, const GUID& guid )
             &ui_font_console,
         };
 
-        if ( guid != pfc::guid_null )
+        if (guid != pfc::guid_null)
         {
             return guid;
         }
-        else if ( type < guids.size() )
+        else if (type < guids.size())
         {
             return *guids[type];
         }
@@ -119,7 +119,7 @@ HFONT js_panel_window_dui::GetFont( unsigned type, const GUID& guid )
         }
     }();
 
-    return ( guidToQuery != pfc::guid_null ? uiCallback_->query_font_ex( guidToQuery ) : nullptr );
+    return (guidToQuery != pfc::guid_null ? uiCallback_->query_font_ex(guidToQuery) : nullptr);
 }
 
 BOOL js_panel_window_dui::ProcessWindowMessage(HWND wnd, uint32_t msg, WPARAM wp, LPARAM lp, LRESULT& lres, DWORD)
@@ -148,7 +148,7 @@ BOOL js_panel_window_dui::ProcessWindowMessage(HWND wnd, uint32_t msg, WPARAM wp
     return TRUE;
 }
 
-bool js_panel_window_dui::edit_mode_context_menu_test( const POINT&, bool )
+bool js_panel_window_dui::edit_mode_context_menu_test(const POINT&, bool)
 {
     return true;
 }
@@ -156,34 +156,34 @@ bool js_panel_window_dui::edit_mode_context_menu_test( const POINT&, bool )
 ui_element_config::ptr js_panel_window_dui::get_configuration()
 {
     ui_element_config_builder builder;
-    SaveSettings( builder.m_stream, fb2k::noAbort );
-    return builder.finish( g_get_guid() );
+    SaveSettings(builder.m_stream, fb2k::noAbort);
+    return builder.finish(g_get_guid());
 }
 
-void js_panel_window_dui::edit_mode_context_menu_build( const POINT& p_point, bool, HMENU p_menu, unsigned p_id_base )
+void js_panel_window_dui::edit_mode_context_menu_build(const POINT& p_point, bool, HMENU p_menu, unsigned p_id_base)
 {
-    GenerateContextMenu( p_menu, p_point.x, p_point.y, p_id_base );
+    GenerateContextMenu(p_menu, p_point.x, p_point.y, p_id_base);
 }
 
-void js_panel_window_dui::edit_mode_context_menu_command( const POINT&, bool, unsigned p_id, unsigned p_id_base )
+void js_panel_window_dui::edit_mode_context_menu_command(const POINT&, bool, unsigned p_id, unsigned p_id_base)
 {
-    ExecuteContextMenu( p_id, p_id_base );
+    ExecuteContextMenu(p_id, p_id_base);
 }
 
-void js_panel_window_dui::set_configuration( ui_element_config::ptr data )
+void js_panel_window_dui::set_configuration(ui_element_config::ptr data)
 {
-    ui_element_config_parser parser( data );
+    ui_element_config_parser parser(data);
 
     // FIX: If window already created, DUI won't destroy it and create it again.
-    LoadSettings( parser.m_stream, parser.get_remaining(), fb2k::noAbort, !!GetHWND() );
+    LoadSettings(parser.m_stream, parser.get_remaining(), fb2k::noAbort, !!GetHWND());
 }
 
-void js_panel_window_dui::initialize_window( HWND parent )
+void js_panel_window_dui::initialize_window(HWND parent)
 {
     Create(parent);
 }
 
-void js_panel_window_dui::notify_size_limit_changed( LPARAM )
+void js_panel_window_dui::notify_size_limit_changed(LPARAM)
 {
     uiCallback_->on_min_max_info_change();
 }

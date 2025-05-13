@@ -42,38 +42,38 @@ public:
 
     // Get: get a property's value
     template <class DispatchItem, typename... Args>
-    CDispatchVariant Get( DispatchItem property, const Args&... args );
+    CDispatchVariant Get(DispatchItem property, const Args&... args);
 
     // Set: set a property's value
     template <class DispatchItem>
-    void Set( DispatchItem property, const _variant_t& value );
+    void Set(DispatchItem property, const _variant_t& value);
 
     // SetRef: set a reference to a property's value
     template <class DispatchItem>
-    void SetRef( DispatchItem property, const _variant_t& value );
+    void SetRef(DispatchItem property, const _variant_t& value);
 
     // Invoke: invoke a method
     template <class DispatchItem, typename... Args>
-    CDispatchVariant Invoke( DispatchItem method, const Args&... args );
+    CDispatchVariant Invoke(DispatchItem method, const Args&... args);
 
 protected:
     template <class DispatchItem, typename... Args>
-    CDispatchVariant InvokeWrapper( DispatchItem method, WORD invokeType, const Args&... args );
+    CDispatchVariant InvokeWrapper(DispatchItem method, WORD invokeType, const Args&... args);
 
-    void InvokeHelper( DISPID dispatchItem,
+    void InvokeHelper(DISPID dispatchItem,
                        const VARIANT* params,
                        UINT cParams,
                        WORD invokeType,
-                       VARIANT* result )
+                       VARIANT* result)
     {
         IDispatch* disp = *(Derived*)this;
-        DISPPARAMS dispparams = { const_cast<VARIANT*>( params ), 0, cParams, 0 };
+        DISPPARAMS dispparams = { const_cast<VARIANT*>(params), 0, cParams, 0 };
         HRESULT hr;
         DISPID dispidSet;
         EXCEPINFO excepInfo;
-        SecureZeroMemory( &excepInfo, sizeof( EXCEPINFO ) );
+        SecureZeroMemory(&excepInfo, sizeof(EXCEPINFO));
 
-        if ( invokeType == DISPATCH_PROPERTYPUT || invokeType == DISPATCH_PROPERTYPUTREF )
+        if (invokeType == DISPATCH_PROPERTYPUT || invokeType == DISPATCH_PROPERTYPUTREF)
         {
             dispidSet = DISPID_PROPERTYPUT;
 
@@ -83,67 +83,67 @@ protected:
 
         // A hard-coded assumption that "result" does NOT already
         // contain a valid variant!
-        if ( result )
-            V_VT( result ) = VT_EMPTY;
+        if (result)
+            V_VT(result) = VT_EMPTY;
 
-        hr = disp->Invoke( dispatchItem, IID_NULL, LOCALE_SYSTEM_DEFAULT, invokeType, &dispparams, result, &excepInfo, NULL );
-        if ( FAILED( hr ) )
+        hr = disp->Invoke(dispatchItem, IID_NULL, LOCALE_SYSTEM_DEFAULT, invokeType, &dispparams, result, &excepInfo, NULL);
+        if (FAILED(hr))
         {
-            if ( hr == DISP_E_EXCEPTION )
+            if (hr == DISP_E_EXCEPTION)
             {
-                if ( excepInfo.wCode != 0 )
-                    hr = _com_error::WCodeToHRESULT( excepInfo.wCode );
-                else if ( excepInfo.scode != 0 )
+                if (excepInfo.wCode != 0)
+                    hr = _com_error::WCodeToHRESULT(excepInfo.wCode);
+                else if (excepInfo.scode != 0)
                     hr = excepInfo.scode;
             }
-            _com_raise_error( hr );
+            _com_raise_error(hr);
         }
     }
 
     // dispatchItem is (wchar_t*) -- convert it to a DISPID
-    void InvokeHelper( LPCOLESTR dispatchItem,
+    void InvokeHelper(LPCOLESTR dispatchItem,
                        const VARIANT* params,
                        UINT cParams,
                        WORD invokeType,
-                       VARIANT* result )
+                       VARIANT* result)
     {
         IDispatch* disp = *(Derived*)this;
-        if ( !disp )
-            throw _com_error( E_POINTER );
+        if (!disp)
+            throw _com_error(E_POINTER);
 
         DISPID dispid;
-        HRESULT hr = disp->GetIDsOfNames( IID_NULL, const_cast<LPOLESTR*>( &dispatchItem ), 1, LOCALE_SYSTEM_DEFAULT, &dispid );
-        if ( FAILED( hr ) )
+        HRESULT hr = disp->GetIDsOfNames(IID_NULL, const_cast<LPOLESTR*>(&dispatchItem), 1, LOCALE_SYSTEM_DEFAULT, &dispid);
+        if (FAILED(hr))
         {
-            if ( hr == DISP_E_UNKNOWNNAME && invokeType == DISPATCH_PROPERTYGET )
+            if (hr == DISP_E_UNKNOWNNAME && invokeType == DISPATCH_PROPERTYGET)
             {
-                if ( result )
-                    V_VT( result ) = VT_EMPTY;
+                if (result)
+                    V_VT(result) = VT_EMPTY;
                 return;
             }
             else
             {
-                _com_raise_error( hr );
+                _com_raise_error(hr);
             }
         }
 
         // call the DISPID overload of InvokeHelper()
-        InvokeHelper( dispid, params, cParams, invokeType, result );
+        InvokeHelper(dispid, params, cParams, invokeType, result);
     }
 
 #ifndef _UNICODE
     // dispatchItem is an Ansi LPSTR  -- convert it to an LPOLESTR
-    void InvokeHelper( LPCSTR dispatchItem,
+    void InvokeHelper(LPCSTR dispatchItem,
                        const VARIANT* params,
                        UINT cParams,
                        WORD invokeType,
-                       VARIANT* result )
+                       VARIANT* result)
     {
         OLECHAR nameBuff[256]; // try to avoid doing an allocation
         LPOLESTR wideName;
 
-        int cch = lstrlen( dispatchItem ) + 1;
-        if ( cch <= sizeof( nameBuff ) / sizeof( OLECHAR ) )
+        int cch = lstrlen(dispatchItem) + 1;
+        if (cch <= sizeof(nameBuff) / sizeof(OLECHAR))
             wideName = nameBuff;
         else
         {
@@ -154,17 +154,17 @@ protected:
             // within a loop
 
             wideName = new OLECHAR[cch]; // cch may be just a bit bigger than necessary
-            if ( wideName == NULL )
-                _com_raise_error( E_OUTOFMEMORY );
+            if (wideName == NULL)
+                _com_raise_error(E_OUTOFMEMORY);
         }
 
         wideName[0] = '\0';
-        MultiByteToWideChar( CP_ACP, 0, dispatchItem, -1, wideName, cch );
+        MultiByteToWideChar(CP_ACP, 0, dispatchItem, -1, wideName, cch);
 
         // call the LPOLESTR overload of InvokeHelper()
-        InvokeHelper( wideName, params, cParams, invokeType, result );
+        InvokeHelper(wideName, params, cParams, invokeType, result);
 
-        if ( wideName != nameBuff )
+        if (wideName != nameBuff)
             delete[] wideName;
     }
 #endif
@@ -195,55 +195,55 @@ public:
     {
     }
 
-    CDispatchVariant( const VARIANT& varSrc )
-        : _variant_t( varSrc )
+    CDispatchVariant(const VARIANT& varSrc)
+        : _variant_t(varSrc)
     {
     }
-    CDispatchVariant( const VARIANT* pSrc )
-        : _variant_t( pSrc )
+    CDispatchVariant(const VARIANT* pSrc)
+        : _variant_t(pSrc)
     {
     }
-    CDispatchVariant( const _variant_t& varSrc )
-        : _variant_t( varSrc )
-    {
-    }
-
-    CDispatchVariant( VARIANT& varSrc, bool fCopy )
-        : _variant_t( varSrc, fCopy )
+    CDispatchVariant(const _variant_t& varSrc)
+        : _variant_t(varSrc)
     {
     }
 
-    CDispatchVariant( IDispatch* pSrc, bool fAddRef = true ) throw()
-        : _variant_t( pSrc, fAddRef )
+    CDispatchVariant(VARIANT& varSrc, bool fCopy)
+        : _variant_t(varSrc, fCopy)
     {
     }
-    CDispatchVariant( IUnknown* pSrc, bool fAddRef = true ) throw()
-        : _variant_t( pSrc, fAddRef )
+
+    CDispatchVariant(IDispatch* pSrc, bool fAddRef = true) throw()
+        : _variant_t(pSrc, fAddRef)
+    {
+    }
+    CDispatchVariant(IUnknown* pSrc, bool fAddRef = true) throw()
+        : _variant_t(pSrc, fAddRef)
     {
     }
 
     // operator=() -- just copied (with slight modifications) from _variant_t
 
-    _variant_t& operator=( const VARIANT& varSrc )
+    _variant_t& operator=(const VARIANT& varSrc)
     {
-        return _variant_t::operator=( varSrc );
+        return _variant_t::operator=(varSrc);
     }
-    _variant_t& operator=( const VARIANT* pSrc )
+    _variant_t& operator=(const VARIANT* pSrc)
     {
-        return _variant_t::operator=( pSrc );
+        return _variant_t::operator=(pSrc);
     }
-    _variant_t& operator=( const _variant_t& varSrc )
+    _variant_t& operator=(const _variant_t& varSrc)
     {
-        return _variant_t::operator=( varSrc );
+        return _variant_t::operator=(varSrc);
     }
 
-    _variant_t& operator=( IDispatch* pSrc )
+    _variant_t& operator=(IDispatch* pSrc)
     {
-        return _variant_t::operator=( pSrc );
+        return _variant_t::operator=(pSrc);
     }
-    _variant_t& operator=( IUnknown* pSrc )
+    _variant_t& operator=(IUnknown* pSrc)
     {
-        return _variant_t::operator=( pSrc );
+        return _variant_t::operator=(pSrc);
     }
 
     // operator->()
@@ -257,8 +257,8 @@ public:
 
     operator bool() const
     {
-        if ( vt == VT_DISPATCH )
-            return ( pdispVal != NULL );
+        if (vt == VT_DISPATCH)
+            return (pdispVal != NULL);
         else
             return _variant_t::operator bool();
     }
@@ -280,54 +280,54 @@ public:
     // constructors -- just copied (with slight modifications) from _com_ptr_t
 
     template <typename _InterfacePtr>
-    CDispatchPtr( const _InterfacePtr& p )
-        : IDispatchPtr( p )
+    CDispatchPtr(const _InterfacePtr& p)
+        : IDispatchPtr(p)
     {
     }
     CDispatchPtr() throw()
     {
     }
-    CDispatchPtr( int null )
-        : IDispatchPtr( null )
+    CDispatchPtr(int null)
+        : IDispatchPtr(null)
     {
     }
-    CDispatchPtr( Interface* pInterface ) throw()
-        : IDispatchPtr( pInterface )
+    CDispatchPtr(Interface* pInterface) throw()
+        : IDispatchPtr(pInterface)
     {
     }
-    CDispatchPtr( Interface* pInterface, bool fAddRef ) throw()
-        : IDispatchPtr( pInterface, fAddRef )
+    CDispatchPtr(Interface* pInterface, bool fAddRef) throw()
+        : IDispatchPtr(pInterface, fAddRef)
     {
     }
-    explicit CDispatchPtr( const CLSID& clsid, IUnknown* pOuter = NULL, DWORD dwClsContext = CLSCTX_ALL )
-        : IDispatchPtr( clsid, pOuter, dwClsContext )
+    explicit CDispatchPtr(const CLSID& clsid, IUnknown* pOuter = NULL, DWORD dwClsContext = CLSCTX_ALL)
+        : IDispatchPtr(clsid, pOuter, dwClsContext)
     {
     }
-    explicit CDispatchPtr( LPOLESTR str, IUnknown* pOuter = NULL, DWORD dwClsContext = CLSCTX_ALL )
-        : IDispatchPtr( str, pOuter, dwClsContext )
+    explicit CDispatchPtr(LPOLESTR str, IUnknown* pOuter = NULL, DWORD dwClsContext = CLSCTX_ALL)
+        : IDispatchPtr(str, pOuter, dwClsContext)
     {
     }
-    explicit CDispatchPtr( LPCSTR str, IUnknown* pOuter = NULL, DWORD dwClsContext = CLSCTX_ALL )
-        : IDispatchPtr( str, pOuter, dwClsContext )
+    explicit CDispatchPtr(LPCSTR str, IUnknown* pOuter = NULL, DWORD dwClsContext = CLSCTX_ALL)
+        : IDispatchPtr(str, pOuter, dwClsContext)
     {
     }
 
     // operator=() -- just copied (with slight modifications) from _com_ptr_t
 
     template <typename _InterfacePtr>
-    CDispatchPtr& operator=( const _InterfacePtr& p )
+    CDispatchPtr& operator=(const _InterfacePtr& p)
     {
-        IDispatchPtr::operator=( p );
+        IDispatchPtr::operator=(p);
         return *this;
     }
-    CDispatchPtr& operator=( Interface* pInterface ) throw()
+    CDispatchPtr& operator=(Interface* pInterface) throw()
     {
-        IDispatchPtr::operator=( pInterface );
+        IDispatchPtr::operator=(pInterface);
         return *this;
     }
-    CDispatchPtr& operator=( int null )
+    CDispatchPtr& operator=(int null)
     {
-        IDispatchPtr::operator=( null );
+        IDispatchPtr::operator=(null);
         return *this;
     }
 };
@@ -339,55 +339,55 @@ public:
 // Get: get a property's value
 template <class Derived>
 template <class DispatchItem, typename... Args>
-CDispatchVariant CDispatchFunctions<Derived>::Get( DispatchItem property, const Args&... args )
+CDispatchVariant CDispatchFunctions<Derived>::Get(DispatchItem property, const Args&... args)
 {
-    return InvokeWrapper( property, DISPATCH_PROPERTYGET, args... );
+    return InvokeWrapper(property, DISPATCH_PROPERTYGET, args...);
 }
 
 // Set: set a property's value
 template <class Derived>
 template <class DispatchItem>
-void CDispatchFunctions<Derived>::Set( DispatchItem property, const _variant_t& value )
+void CDispatchFunctions<Derived>::Set(DispatchItem property, const _variant_t& value)
 {
-    InvokeHelper( property, &value, 1, DISPATCH_PROPERTYPUT, NULL );
+    InvokeHelper(property, &value, 1, DISPATCH_PROPERTYPUT, NULL);
 }
 
 // SetRef: set a reference to a property's value
 template <class Derived>
 template <class DispatchItem>
-void CDispatchFunctions<Derived>::SetRef( DispatchItem property, const _variant_t& value )
+void CDispatchFunctions<Derived>::SetRef(DispatchItem property, const _variant_t& value)
 {
-    InvokeHelper( property, &value, 1, DISPATCH_PROPERTYPUTREF, NULL );
+    InvokeHelper(property, &value, 1, DISPATCH_PROPERTYPUTREF, NULL);
 }
 
 // Invoke: invoke a method
 template <class Derived>
 template <class DispatchItem, typename... Args>
-CDispatchVariant CDispatchFunctions<Derived>::Invoke( DispatchItem method, const Args&... args )
+CDispatchVariant CDispatchFunctions<Derived>::Invoke(DispatchItem method, const Args&... args)
 {
-    return InvokeWrapper( method, DISPATCH_METHOD, args... );
+    return InvokeWrapper(method, DISPATCH_METHOD, args...);
 }
 
 template <class Derived>
 template <class DispatchItem, typename... Args>
-CDispatchVariant CDispatchFunctions<Derived>::InvokeWrapper( DispatchItem method, WORD invokeType, const Args&... args )
+CDispatchVariant CDispatchFunctions<Derived>::InvokeWrapper(DispatchItem method, WORD invokeType, const Args&... args)
 {
-    constexpr size_t argCount = sizeof...( Args );
+    constexpr size_t argCount = sizeof...(Args);
 
     VARIANT result;
-    if constexpr ( !argCount )
+    if constexpr (!argCount)
     {
-        InvokeHelper( method, nullptr, argCount, invokeType, &result );
+        InvokeHelper(method, nullptr, argCount, invokeType, &result);
     }
     else
     {
         VARIANT args_v[argCount];
         { // Reverse assign
-            auto it = std::rbegin( args_v );
-            ( ( *it++ = args ), ... );
+            auto it = std::rbegin(args_v);
+            ((*it++ = args), ...);
         }
 
-        InvokeHelper( method, args_v, argCount, invokeType, &result );
+        InvokeHelper(method, args_v, argCount, invokeType, &result);
     }
     return result;
 }

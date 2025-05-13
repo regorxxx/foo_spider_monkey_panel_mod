@@ -32,117 +32,117 @@ std::filesystem::path GetFixedEditorPath()
     return fs::path();
 }
 
-void NotifyParentPanel( HWND hParent )
+void NotifyParentPanel(HWND hParent)
 {
-    SendMessage( hParent, static_cast<INT>( InternalSyncMessage::ui_script_editor_saved ), 0, 0 );
+    SendMessage(hParent, static_cast<INT>(InternalSyncMessage::ui_script_editor_saved), 0, 0);
 }
 
-void EditTextFileInternal( HWND hParent, const std::filesystem::path& file, bool isPanelScript )
+void EditTextFileInternal(HWND hParent, const std::filesystem::path& file, bool isPanelScript)
 {
     // TODO: handle BOM
-    auto text = qwr::file::ReadFile( file, CP_ACP, true );
+    auto text = qwr::file::ReadFile(file, CP_ACP, true);
     {
-        modal::ConditionalModalScope scope( hParent, isPanelScript );
-        smp::ui::CEditor dlg( file.filename().u8string(), text, [&] {
-            qwr::file::WriteFile( file, text );
-            if ( isPanelScript )
+        modal::ConditionalModalScope scope(hParent, isPanelScript);
+        smp::ui::CEditor dlg(file.filename().u8string(), text, [&] {
+            qwr::file::WriteFile(file, text);
+            if (isPanelScript)
             {
-                NotifyParentPanel( hParent );
+                NotifyParentPanel(hParent);
             }
-        } );
-        dlg.DoModal( hParent );
+        });
+        dlg.DoModal(hParent);
     }
 }
 
-bool EditTextFileExternal( HWND hParent, const std::filesystem::path& file, const std::filesystem::path& pathToEditor, bool isModal, bool isPanelScript )
+bool EditTextFileExternal(HWND hParent, const std::filesystem::path& file, const std::filesystem::path& pathToEditor, bool isModal, bool isPanelScript)
 {
-    if ( isModal )
+    if (isModal)
     {
-        modal::ConditionalModalScope scope( hParent, isPanelScript );
+        modal::ConditionalModalScope scope(hParent, isPanelScript);
         ui::CEditInProgress dlg{ pathToEditor, file };
-        return ( dlg.DoModal( hParent ) == IDOK );
+        return (dlg.DoModal(hParent) == IDOK);
     }
     else
     {
         const auto qPath = L"\"" + file.wstring() + L"\"";
-        const auto hInstance = ShellExecute( nullptr,
+        const auto hInstance = ShellExecute(nullptr,
                                              L"open",
                                              pathToEditor.c_str(),
                                              qPath.c_str(),
                                              nullptr,
-                                             SW_SHOW );
-        if ( (int)hInstance < 32 )
+                                             SW_SHOW);
+        if ((int)hInstance < 32)
         { // As per WinAPI
-            qwr::error::CheckWin32( (int)hInstance, "ShellExecute" );
+            qwr::error::CheckWin32((int)hInstance, "ShellExecute");
         }
 
         return true;
     }
 }
 
-void EditTextInternal( HWND hParent, std::string& text, bool isPanelScript )
+void EditTextInternal(HWND hParent, std::string& text, bool isPanelScript)
 {
-    modal::ConditionalModalScope scope( hParent, isPanelScript );
-    smp::ui::CEditor dlg( "Temporary file", text, [&] {  
+    modal::ConditionalModalScope scope(hParent, isPanelScript);
+    smp::ui::CEditor dlg("Temporary file", text, [&] {  
         if (isPanelScript)
             {
-                NotifyParentPanel( hParent );
-            } } );
-    dlg.DoModal( hParent );
+                NotifyParentPanel(hParent);
+            } });
+    dlg.DoModal(hParent);
 }
 
-void EditTextExternal( HWND hParent, std::string& text, const std::filesystem::path& pathToEditor, bool isPanelScript )
+void EditTextExternal(HWND hParent, std::string& text, const std::filesystem::path& pathToEditor, bool isPanelScript)
 {
     namespace fs = std::filesystem;
 
     // keep .tmp for the uniqueness
     const auto fsTmpFilePath = [] {
         std::wstring tmpFilePath;
-        tmpFilePath.resize( MAX_PATH - 14 ); // max allowed size of path in GetTempFileName
+        tmpFilePath.resize(MAX_PATH - 14); // max allowed size of path in GetTempFileName
 
-        DWORD dwRet = GetTempPath( tmpFilePath.size(), tmpFilePath.data() );
-        qwr::error::CheckWinApi( dwRet && dwRet <= tmpFilePath.size(), "GetTempPath" );
+        DWORD dwRet = GetTempPath(tmpFilePath.size(), tmpFilePath.data());
+        qwr::error::CheckWinApi(dwRet && dwRet <= tmpFilePath.size(), "GetTempPath");
 
         std::wstring filename;
-        filename.resize( MAX_PATH );
-        UINT uRet = GetTempFileName( tmpFilePath.c_str(),
+        filename.resize(MAX_PATH);
+        UINT uRet = GetTempFileName(tmpFilePath.c_str(),
                                      L"smp",
                                      0,
-                                     filename.data() ); // buffer for name
-        qwr::error::CheckWinApi( uRet, "GetTempFileName" );
+                                     filename.data()); // buffer for name
+        qwr::error::CheckWinApi(uRet, "GetTempFileName");
 
-        filename.resize( wcslen( filename.c_str() ) );
+        filename.resize(wcslen(filename.c_str()));
 
-        return fs::path( tmpFilePath ) / filename;
+        return fs::path(tmpFilePath) / filename;
     }();
-    const qwr::final_action autoRemove( [&fsTmpFilePath] {
+    const qwr::final_action autoRemove([&fsTmpFilePath] {
         try
             {
-            fs::remove( fsTmpFilePath );
+            fs::remove(fsTmpFilePath);
             }
-            catch ( const fs::filesystem_error& )
+            catch (const fs::filesystem_error&)
             {
-            } } );
+            } });
 
     // use .tmp.js for proper file association
-    const auto fsJsTmpFilePath = fs::path( fsTmpFilePath ).concat( L".js" );
+    const auto fsJsTmpFilePath = fs::path(fsTmpFilePath).concat(L".js");
 
-    qwr::file::WriteFile( fsJsTmpFilePath, text );
-    const qwr::final_action autoRemove2( [&fsJsTmpFilePath] { 
+    qwr::file::WriteFile(fsJsTmpFilePath, text);
+    const qwr::final_action autoRemove2([&fsJsTmpFilePath] { 
         try
             {
-            fs::remove( fsJsTmpFilePath );
+            fs::remove(fsJsTmpFilePath);
             }
-            catch ( const fs::filesystem_error& )
+            catch (const fs::filesystem_error&)
             {
-            } } );
+            } });
 
-    if ( !EditTextFileExternal( hParent, fsJsTmpFilePath, pathToEditor, true, isPanelScript ) )
+    if (!EditTextFileExternal(hParent, fsJsTmpFilePath, pathToEditor, true, isPanelScript))
     {
         return;
     }
 
-    text = qwr::file::ReadFile( fsJsTmpFilePath, CP_UTF8 );
+    text = qwr::file::ReadFile(fsJsTmpFilePath, CP_UTF8);
 }
 
 } // namespace
@@ -150,36 +150,36 @@ void EditTextExternal( HWND hParent, std::string& text, const std::filesystem::p
 namespace smp
 {
 
-void EditTextFile( HWND hParent, const std::filesystem::path& file, bool isPanelScript, bool isModal )
+void EditTextFile(HWND hParent, const std::filesystem::path& file, bool isPanelScript, bool isModal)
 {
     const auto editorPath = GetFixedEditorPath();
-    if ( editorPath.empty() )
+    if (editorPath.empty())
     {
-        EditTextFileInternal( hParent, file, isPanelScript );
+        EditTextFileInternal(hParent, file, isPanelScript);
     }
     else
     {
-        EditTextFileExternal( hParent, file, editorPath, isModal, isPanelScript );
-        if ( isPanelScript )
+        EditTextFileExternal(hParent, file, editorPath, isModal, isPanelScript);
+        if (isPanelScript)
         {
-            NotifyParentPanel( hParent );
+            NotifyParentPanel(hParent);
         }
     }
 }
 
-void EditText( HWND hParent, std::string& text, bool isPanelScript )
+void EditText(HWND hParent, std::string& text, bool isPanelScript)
 {
     const auto editorPath = GetFixedEditorPath();
-    if ( editorPath.empty() )
+    if (editorPath.empty())
     {
-        EditTextInternal( hParent, text, isPanelScript );
+        EditTextInternal(hParent, text, isPanelScript);
     }
     else
     {
-        EditTextExternal( hParent, text, editorPath, isPanelScript );
-        if ( isPanelScript )
+        EditTextExternal(hParent, text, editorPath, isPanelScript);
+        if (isPanelScript)
         {
-            NotifyParentPanel( hParent );
+            NotifyParentPanel(hParent);
         }
     }
 }

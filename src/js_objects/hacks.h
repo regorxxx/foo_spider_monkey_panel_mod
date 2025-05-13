@@ -27,12 +27,12 @@ public:
 public:
     ~JsHacks() override = default;
 
-    static std::unique_ptr<JsHacks> CreateNative( JSContext* cx );
+    static std::unique_ptr<JsHacks> CreateNative(JSContext* cx);
     static size_t GetInternalSize();
-    static bool PostCreate( JSContext* cx, JS::HandleObject self );
+    static bool PostCreate(JSContext* cx, JS::HandleObject self);
 
 private:
-    JsHacks( JSContext* cx );
+    JsHacks(JSContext* cx);
 
 private:
     [[maybe_unused]] JSContext* pJsCtx_ = nullptr;

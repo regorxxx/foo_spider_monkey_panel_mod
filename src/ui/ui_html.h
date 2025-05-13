@@ -24,114 +24,114 @@ public:
     };
 
     BEGIN_COM_QI_IMPL()
-        COM_QI_ENTRY_MULTI( IUnknown, IServiceProvider )
-        COM_QI_ENTRY( IHTMLOMWindowServices )
-        COM_QI_ENTRY( IServiceProvider )
+        COM_QI_ENTRY_MULTI(IUnknown, IServiceProvider)
+        COM_QI_ENTRY(IHTMLOMWindowServices)
+        COM_QI_ENTRY(IServiceProvider)
     END_COM_QI_IMPL()
 
-#pragma warning( push )
-#pragma warning( disable : 6388 ) // might not be '0'
-    BEGIN_SERVICE_MAP( CDialogHtml )
-#pragma warning( pop )
-        SERVICE_ENTRY( SID_SHTMLOMWindowServices )
+#pragma warning(push)
+#pragma warning(disable : 6388) // might not be '0'
+    BEGIN_SERVICE_MAP(CDialogHtml)
+#pragma warning(pop)
+        SERVICE_ENTRY(SID_SHTMLOMWindowServices)
     END_SERVICE_MAP()
 
-    BEGIN_MSG_MAP( CDialogHtml )
-        CHAIN_MSG_MAP( CAxDialogImpl<CDialogHtml> )
-        MSG_WM_INITDIALOG( OnInitDialog )
-        MSG_WM_DESTROY( OnDestroyDialog )
-        MSG_WM_SIZE( OnSize )
-        MSG_WM_CLOSE( OnClose )
-        COMMAND_RANGE_HANDLER_EX( IDOK, IDCANCEL, OnCloseCmd )
+    BEGIN_MSG_MAP(CDialogHtml)
+        CHAIN_MSG_MAP(CAxDialogImpl<CDialogHtml>)
+        MSG_WM_INITDIALOG(OnInitDialog)
+        MSG_WM_DESTROY(OnDestroyDialog)
+        MSG_WM_SIZE(OnSize)
+        MSG_WM_CLOSE(OnClose)
+        COMMAND_RANGE_HANDLER_EX(IDOK, IDCANCEL, OnCloseCmd)
     END_MSG_MAP()
 
-    BEGIN_SINK_MAP( CDialogHtml )
-        SINK_ENTRY( IDC_IE, DISPID_BEFORENAVIGATE2, &CDialogHtml::OnBeforeNavigate2 )
-        SINK_ENTRY( IDC_IE, DISPID_TITLECHANGE, &CDialogHtml::OnTitleChange )
-        SINK_ENTRY( IDC_IE, DISPID_WINDOWCLOSING, &CDialogHtml::OnWindowClosing )
+    BEGIN_SINK_MAP(CDialogHtml)
+        SINK_ENTRY(IDC_IE, DISPID_BEFORENAVIGATE2, &CDialogHtml::OnBeforeNavigate2)
+        SINK_ENTRY(IDC_IE, DISPID_TITLECHANGE, &CDialogHtml::OnTitleChange)
+        SINK_ENTRY(IDC_IE, DISPID_WINDOWCLOSING, &CDialogHtml::OnWindowClosing)
     END_SINK_MAP()
 
 public:
-    CDialogHtml( JSContext* cx, const std::wstring& htmlCodeOrPath, JS::HandleValue options );
+    CDialogHtml(JSContext* cx, const std::wstring& htmlCodeOrPath, JS::HandleValue options);
     ~CDialogHtml() override;
 
-    LRESULT OnInitDialog( HWND hwndFocus, LPARAM lParam );
+    LRESULT OnInitDialog(HWND hwndFocus, LPARAM lParam);
     LRESULT OnDestroyDialog();
-    void OnSize( UINT nType, CSize size );
+    void OnSize(UINT nType, CSize size);
     void OnClose();
-    void OnCloseCmd( WORD wNotifyCode, WORD wID, HWND hWndCtl );
+    void OnCloseCmd(WORD wNotifyCode, WORD wID, HWND hWndCtl);
 
-    void __stdcall OnBeforeNavigate2( IDispatch* pDisp, VARIANT* URL, VARIANT* Flags,
+    void __stdcall OnBeforeNavigate2(IDispatch* pDisp, VARIANT* URL, VARIANT* Flags,
                                       VARIANT* TargetFrameName, VARIANT* PostData, VARIANT* Headers,
-                                      VARIANT_BOOL* Cancel );
-    void __stdcall OnTitleChange( BSTR title );
-    void __stdcall OnWindowClosing( VARIANT_BOOL bIsChildWindow, VARIANT_BOOL* Cancel );
+                                      VARIANT_BOOL* Cancel);
+    void __stdcall OnTitleChange(BSTR title);
+    void __stdcall OnWindowClosing(VARIANT_BOOL bIsChildWindow, VARIANT_BOOL* Cancel);
 
     // IHTMLOMWindowServices
-    STDMETHODIMP moveTo( LONG x, LONG y ) override;
-    STDMETHODIMP moveBy( LONG x, LONG y ) override;
-    STDMETHODIMP resizeTo( LONG x, LONG y ) override;
-    STDMETHODIMP resizeBy( LONG x, LONG y ) override;
+    STDMETHODIMP moveTo(LONG x, LONG y) override;
+    STDMETHODIMP moveBy(LONG x, LONG y) override;
+    STDMETHODIMP resizeTo(LONG x, LONG y) override;
+    STDMETHODIMP resizeBy(LONG x, LONG y) override;
 
     // IDocHostUIHandler
     STDMETHODIMP ShowContextMenu(
         DWORD dwID,
         POINT* ppt,
         IUnknown* pcmdtReserved,
-        IDispatch* pdispReserved ) override;
+        IDispatch* pdispReserved) override;
 
     STDMETHODIMP GetHostInfo(
-        DOCHOSTUIINFO* pInfo ) override;
+        DOCHOSTUIINFO* pInfo) override;
 
     STDMETHODIMP ShowUI(
         DWORD dwID,
         IOleInPlaceActiveObject* pActiveObject,
         IOleCommandTarget* pCommandTarget,
         IOleInPlaceFrame* pFrame,
-        IOleInPlaceUIWindow* pDoc ) override;
+        IOleInPlaceUIWindow* pDoc) override;
 
     STDMETHODIMP HideUI() override;
 
     STDMETHODIMP UpdateUI() override;
 
     STDMETHODIMP EnableModeless(
-        BOOL fEnable ) override;
+        BOOL fEnable) override;
 
     STDMETHODIMP OnDocWindowActivate(
-        BOOL fActivate ) override;
+        BOOL fActivate) override;
 
     STDMETHODIMP OnFrameWindowActivate(
-        BOOL fActivate ) override;
+        BOOL fActivate) override;
 
     STDMETHODIMP ResizeBorder(
         LPCRECT prcBorder,
         IOleInPlaceUIWindow* pUIWindow,
-        BOOL fRameWindow ) override;
+        BOOL fRameWindow) override;
 
     STDMETHODIMP TranslateAccelerator(
         LPMSG lpMsg,
         const GUID* pguidCmdGroup,
-        DWORD nCmdID ) override;
+        DWORD nCmdID) override;
 
     STDMETHODIMP GetOptionKeyPath(
         LPOLESTR* pchKey,
-        DWORD dw ) override;
+        DWORD dw) override;
 
     STDMETHODIMP GetDropTarget(
         IDropTarget* pDropTarget,
-        IDropTarget** ppDropTarget ) override;
+        IDropTarget** ppDropTarget) override;
 
     STDMETHODIMP GetExternal(
-        IDispatch** ppDispatch ) override;
+        IDispatch** ppDispatch) override;
 
     STDMETHODIMP TranslateUrl(
         DWORD dwTranslate,
         LPWSTR pchURLIn,
-        LPWSTR* ppchURLOut ) override;
+        LPWSTR* ppchURLOut) override;
 
     STDMETHODIMP FilterDataObject(
         IDataObject* pDO,
-        IDataObject** ppDORet ) override;
+        IDataObject** ppDORet) override;
 
     // IUnknown
     ULONG STDMETHODCALLTYPE AddRef() override;
@@ -140,10 +140,10 @@ public:
 private:
     /// @throw qwr::QwrException
     /// @throw smp::JsException
-    void ParseOptions( JS::HandleValue options );
+    void ParseOptions(JS::HandleValue options);
     void SetOptions();
 
-    static void GetMsgProc( int code, WPARAM wParam, LPARAM lParam, HWND hParent, CDialogHtml* pParent );
+    static void GetMsgProc(int code, WPARAM wParam, LPARAM lParam, HWND hParent, CDialogHtml* pParent);
 
 private:
     JSContext* pJsCtx_ = nullptr;

@@ -10,8 +10,8 @@ class JsRealmInner final
 public:
     JsRealmInner() = default;
     ~JsRealmInner() = default;
-    JsRealmInner( const JsRealmInner& ) = delete;
-    JsRealmInner& operator=( const JsRealmInner& ) = delete;
+    JsRealmInner(const JsRealmInner&) = delete;
+    JsRealmInner& operator=(const JsRealmInner&) = delete;
 
 public:
     void MarkForDeletion();
@@ -27,8 +27,8 @@ public:
     [[nodiscard]] uint32_t GetCurrentAllocCount() const;
     [[nodiscard]] uint32_t GetLastAllocCount() const;
 
-    void OnHeapAllocate( uint32_t size );
-    void OnHeapDeallocate( uint32_t size );
+    void OnHeapAllocate(uint32_t size);
+    void OnHeapDeallocate(uint32_t size);
 
 private:
     bool isMarkedForDeletion_ = false;

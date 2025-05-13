@@ -31,16 +31,16 @@ public:
 public:
     ~JsMainMenuManager() override = default;
 
-    static std::unique_ptr<JsMainMenuManager> CreateNative( JSContext* cx );
+    static std::unique_ptr<JsMainMenuManager> CreateNative(JSContext* cx);
     static size_t GetInternalSize();
 
 public:
-    void BuildMenu( JsMenuObject* menu, int32_t base_id, int32_t count );
-    bool ExecuteByID( uint32_t id );
-    void Init( const std::string& root_name );
+    void BuildMenu(JsMenuObject* menu, int32_t base_id, int32_t count);
+    bool ExecuteByID(uint32_t id);
+    void Init(const std::string& root_name);
 
 private:
-    JsMainMenuManager( JSContext* cx );
+    JsMainMenuManager(JSContext* cx);
 
 private:
     [[maybe_unused]] JSContext* pJsCtx_ = nullptr;

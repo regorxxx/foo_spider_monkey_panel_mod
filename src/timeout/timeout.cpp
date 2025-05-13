@@ -5,20 +5,20 @@
 namespace smp
 {
 
-Timeout::Timeout( uint32_t id, TimeDuration interval, bool isRepeated, std::shared_ptr<mozjs::JsAsyncTask> task )
-    : id_( id )
-    , interval_( interval )
-    , task_( task )
-    , isRepeated_( isRepeated )
+Timeout::Timeout(uint32_t id, TimeDuration interval, bool isRepeated, std::shared_ptr<mozjs::JsAsyncTask> task)
+    : id_(id)
+    , interval_(interval)
+    , task_(task)
+    , isRepeated_(isRepeated)
 {
 }
 
-void Timeout::SetWhen( const TimeStamp& baseTime, const TimeDuration& delay )
+void Timeout::SetWhen(const TimeStamp& baseTime, const TimeDuration& delay)
 {
     executeAt_ = baseTime + delay;
 }
 
-void Timeout::SetFiringId( uint32_t firingId )
+void Timeout::SetFiringId(uint32_t firingId)
 {
     firingId_ = firingId;
 }
@@ -33,7 +33,7 @@ void Timeout::MarkAsStopped()
     isStopped_ = true;
 }
 
-void Timeout::SetRunningState( bool isRunning )
+void Timeout::SetRunningState(bool isRunning)
 {
     isRunning_ = isRunning;
 }

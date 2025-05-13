@@ -10,13 +10,13 @@ namespace internal
 {
 
 template <typename F, typename... Args>
-void Execute_JsWithSehStackTrace( JSContext* cx, F&& func, Args&&... args )
+void Execute_JsWithSehStackTrace(JSContext* cx, F&& func, Args&&... args)
 {
     __try
     {
-        func( cx, std::forward<Args>( args )... );
+        func(cx, std::forward<Args>(args)...);
     }
-    __except ( smp::SehHandler_ConsoleStacktrace( GetExceptionInformation(), GetExceptionCode() ) )
+    __except (smp::SehHandler_ConsoleStacktrace(GetExceptionInformation(), GetExceptionCode()))
     {
         throw;
     }
@@ -24,36 +24,36 @@ void Execute_JsWithSehStackTrace( JSContext* cx, F&& func, Args&&... args )
 
 } // namespace internal
 
-[[nodiscard]] std::string JsErrorToText( JSContext* cx );
-void ExceptionToJsError( JSContext* cx );
-[[nodiscard]] std::string ExceptionToText( JSContext* cx );
-void SuppressException( JSContext* cx );
-void PrependTextToJsError( JSContext* cx, const std::string& text );
+[[nodiscard]] std::string JsErrorToText(JSContext* cx);
+void ExceptionToJsError(JSContext* cx);
+[[nodiscard]] std::string ExceptionToText(JSContext* cx);
+void SuppressException(JSContext* cx);
+void PrependTextToJsError(JSContext* cx, const std::string& text);
 
 template <typename F, typename... Args>
-[[nodiscard]] bool Execute_JsSafe( JSContext* cx, std::string_view functionName, F&& func, Args&&... args )
+[[nodiscard]] bool Execute_JsSafe(JSContext* cx, std::string_view functionName, F&& func, Args&&... args)
 {
     try
     {
 #ifdef SMP_ENABLE_CXX_STACKTRACE
-        if ( smp::config::advanced::stacktrace.GetValue() )
+        if (smp::config::advanced::stacktrace.GetValue())
         {
-            internal::Execute_JsWithSehStackTrace( cx, std::forward<F>( func ), std::forward<Args>( args )... );
+            internal::Execute_JsWithSehStackTrace(cx, std::forward<F>(func), std::forward<Args>(args)...);
         }
         else
 #endif //SMP_ENABLE_CXX_STACKTRACE
         {
-            func( cx, std::forward<Args>( args )... );
+            func(cx, std::forward<Args>(args)...);
         }
     }
-    catch ( ... )
+    catch (...)
     {
-        mozjs::error::ExceptionToJsError( cx );
+        mozjs::error::ExceptionToJsError(cx);
     }
 
-    if ( JS_IsExceptionPending( cx ) )
+    if (JS_IsExceptionPending(cx))
     {
-        mozjs::error::PrependTextToJsError( cx, fmt::format( "{} failed", functionName ) );
+        mozjs::error::PrependTextToJsError(cx, fmt::format("{} failed", functionName));
         return false;
     }
 
@@ -63,7 +63,7 @@ template <typename F, typename... Args>
 class AutoJsReport
 {
 public:
-    explicit [[nodiscard]] AutoJsReport( JSContext* cx );
+    explicit [[nodiscard]] AutoJsReport(JSContext* cx);
     ~AutoJsReport() noexcept;
 
     void Disable();

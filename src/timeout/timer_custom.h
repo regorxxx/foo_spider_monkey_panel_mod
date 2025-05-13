@@ -12,7 +12,7 @@ namespace smp
 class TimerHolder
 {
 public:
-    TimerHolder( std::shared_ptr<Timer_Custom> pTimer );
+    TimerHolder(std::shared_ptr<Timer_Custom> pTimer);
     ~TimerHolder();
 
     void ResetValue();
@@ -37,12 +37,12 @@ class Timer_Custom final
 public:
     ~Timer_Custom() = default;
 
-    void Start( TimerNotifyTask& task, const TimeStamp& when );
-    void Cancel( bool waitForDestruction );
+    void Start(TimerNotifyTask& task, const TimeStamp& when);
+    void Cancel(bool waitForDestruction);
 
-    void SetHolder( TimerHolder* pHolder );
+    void SetHolder(TimerHolder* pHolder);
 
-    void Fire( uint64_t generation );
+    void Fire(uint64_t generation);
 
     [[nodiscard]] PanelTarget& Target() const;
     [[nodiscard]] const TimeStamp& When() const;
@@ -50,7 +50,7 @@ public:
     [[nodiscard]] TimerHolder* Holder() const;
 
 private:
-    Timer_Custom( TimerManager_Custom& pParent, std::shared_ptr<PanelTarget> pTarget );
+    Timer_Custom(TimerManager_Custom& pParent, std::shared_ptr<PanelTarget> pTarget);
 
 private:
     TimerManager_Custom& pParent_;

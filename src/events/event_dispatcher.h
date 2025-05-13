@@ -18,44 +18,44 @@ class EventDispatcher
 {
 public:
     EventDispatcher() = default;
-    EventDispatcher( const EventDispatcher& ) = delete;
-    EventDispatcher& operator=( const EventDispatcher& ) = delete;
+    EventDispatcher(const EventDispatcher&) = delete;
+    EventDispatcher& operator=(const EventDispatcher&) = delete;
 
     static [[nodiscard]] EventDispatcher& Get();
 
 public:
-    void AddWindow( HWND hWnd, std::shared_ptr<PanelTarget> pTarget );
-    void RemoveWindow( HWND hWnd );
+    void AddWindow(HWND hWnd, std::shared_ptr<PanelTarget> pTarget);
+    void RemoveWindow(HWND hWnd);
 
     void NotifyAllAboutExit();
 
 public:
-    static [[nodiscard]] bool IsRequestEventMessage( UINT msg );
-    bool ProcessNextEvent( HWND hWnd );
-    void RequestNextEvent( HWND hWnd );
-    void OnRequestEventMessageReceived( HWND hWnd );
+    static [[nodiscard]] bool IsRequestEventMessage(UINT msg);
+    bool ProcessNextEvent(HWND hWnd);
+    void RequestNextEvent(HWND hWnd);
+    void OnRequestEventMessageReceived(HWND hWnd);
 
 public: // these can be invoked from worker threads
-    void PutRunnable( HWND hWnd, std::shared_ptr<Runnable> pRunnable, EventPriority priority = EventPriority::kNormal );
-    void PutEvent( HWND hWnd, std::unique_ptr<EventBase> pEvent, EventPriority priority = EventPriority::kNormal );
+    void PutRunnable(HWND hWnd, std::shared_ptr<Runnable> pRunnable, EventPriority priority = EventPriority::kNormal);
+    void PutEvent(HWND hWnd, std::unique_ptr<EventBase> pEvent, EventPriority priority = EventPriority::kNormal);
 
     /// @remark Be careful when using this:
     ///         - Event must be cloneable.
     ///         - Clone operation should not be CPU intensive (e.g. don't copy vectors, but rather wrap it in shared_ptr)
-    void PutEventToAll( std::unique_ptr<EventBase> pEvent, EventPriority priority = EventPriority::kNormal );
+    void PutEventToAll(std::unique_ptr<EventBase> pEvent, EventPriority priority = EventPriority::kNormal);
 
     /// @remark Be careful when using this:
     ///         - Event must be cloneable.
     ///         - Clone operation should not be CPU intensive (e.g. don't copy vectors, but rather wrap it in shared_ptr)
-    void PutEventToOthers( HWND hWnd, std::unique_ptr<EventBase> pEvent, EventPriority priority = EventPriority::kNormal );
+    void PutEventToOthers(HWND hWnd, std::unique_ptr<EventBase> pEvent, EventPriority priority = EventPriority::kNormal);
 
 public:
     // TODO: remove in v2
     /// @remark This is a compatibility hack for window.NotifyOthers()
-    void NotifyOthers( HWND hWnd, std::unique_ptr<EventBase> pEvent );
+    void NotifyOthers(HWND hWnd, std::unique_ptr<EventBase> pEvent);
 
 private:
-    void RequestNextEventImpl( HWND hWnd, TaskController& taskController, std::scoped_lock<std::mutex>& proof );
+    void RequestNextEventImpl(HWND hWnd, TaskController& taskController, std::scoped_lock<std::mutex>& proof);
 
 private:
     std::mutex taskControllerMapMutex_;

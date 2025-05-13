@@ -38,9 +38,9 @@ struct ParsedPanelSettings
     [[nodiscard]] static ParsedPanelSettings GetDefault();
 
     /// @throw qwr::QwrException
-    [[nodiscard]] static ParsedPanelSettings Parse( const PanelSettings& settings );
+    [[nodiscard]] static ParsedPanelSettings Parse(const PanelSettings& settings);
     /// @throw qwr::QwrException
-    [[nodiscard]] static ParsedPanelSettings Reparse( const ParsedPanelSettings& parsedSettings );
+    [[nodiscard]] static ParsedPanelSettings Reparse(const ParsedPanelSettings& parsedSettings);
 
     [[nodiscard]] PanelSettings GeneratePanelSettings() const;
 

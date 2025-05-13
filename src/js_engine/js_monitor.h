@@ -23,20 +23,20 @@ class JsMonitor final
 public:
     JsMonitor();
     ~JsMonitor() = default;
-    JsMonitor( const JsMonitor& ) = delete;
-    JsMonitor& operator=( const JsMonitor& ) = delete;
+    JsMonitor(const JsMonitor&) = delete;
+    JsMonitor& operator=(const JsMonitor&) = delete;
 
     /// @detail Assumes that JSContext is freshly created
     ///
     /// @throw qwr::QwrException
-    void Start( JSContext* cx );
+    void Start(JSContext* cx);
     void Stop();
 
-    void AddContainer( JsContainer& jsContainer );
-    void RemoveContainer( JsContainer& jsContainer );
+    void AddContainer(JsContainer& jsContainer);
+    void RemoveContainer(JsContainer& jsContainer);
 
-    void OnJsActionStart( JsContainer& jsContainer );
-    void OnJsActionEnd( JsContainer& jsContainer );
+    void OnJsActionStart(JsContainer& jsContainer);
+    void OnJsActionEnd(JsContainer& jsContainer);
 
     [[nodiscard]] bool OnInterrupt();
 
@@ -45,7 +45,7 @@ private:
     void StartMonitorThread();
     void StopMonitorThread();
 
-    [[nodiscard]] bool HasActivePopup( bool isMainThread ) const;
+    [[nodiscard]] bool HasActivePopup(bool isMainThread) const;
 
 private:
     JSContext* pJsCtx_ = nullptr;
@@ -54,8 +54,8 @@ private:
 
     struct ContainerData
     {
-        ContainerData( JsContainer* pContainer )
-            : pContainer( pContainer )
+        ContainerData(JsContainer* pContainer)
+            : pContainer(pContainer)
         {
         }
 

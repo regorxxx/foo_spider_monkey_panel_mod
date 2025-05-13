@@ -21,30 +21,30 @@ namespace
 
 using namespace mozjs;
 
-std::string ParseJsValue( JSContext* cx, JS::HandleValue jsValue, JS::MutableHandleObjectVector curObjects, uint32_t& logDepth, bool isParentObject );
+std::string ParseJsValue(JSContext* cx, JS::HandleValue jsValue, JS::MutableHandleObjectVector curObjects, uint32_t& logDepth, bool isParentObject);
 
-std::string ParseJsArray( JSContext* cx, JS::HandleObject jsObject, JS::MutableHandleObjectVector curObjects, uint32_t& logDepth )
+std::string ParseJsArray(JSContext* cx, JS::HandleObject jsObject, JS::MutableHandleObjectVector curObjects, uint32_t& logDepth)
 {
     std::string output;
 
     output += "[";
 
     uint32_t arraySize;
-    if ( !JS_GetArrayLength( cx, jsObject, &arraySize ) )
+    if (!JS_GetArrayLength(cx, jsObject, &arraySize))
     {
         throw JsException();
     }
 
-    JS::RootedValue arrayElement( cx );
-    for ( uint32_t i = 0; i < arraySize; ++i )
+    JS::RootedValue arrayElement(cx);
+    for (uint32_t i = 0; i < arraySize; ++i)
     {
-        if ( !JS_GetElement( cx, jsObject, i, &arrayElement ) )
+        if (!JS_GetElement(cx, jsObject, i, &arrayElement))
         {
             throw JsException();
         }
 
-        output += ParseJsValue( cx, arrayElement, curObjects, logDepth, true );
-        if ( i != arraySize - 1 )
+        output += ParseJsValue(cx, arrayElement, curObjects, logDepth, true);
+        if (i != arraySize - 1)
         {
             output += ", ";
         }
@@ -55,60 +55,60 @@ std::string ParseJsArray( JSContext* cx, JS::HandleObject jsObject, JS::MutableH
     return output;
 }
 
-std::string ParseJsObject( JSContext* cx, JS::HandleObject jsObject, JS::MutableHandleObjectVector curObjects, uint32_t& logDepth )
+std::string ParseJsObject(JSContext* cx, JS::HandleObject jsObject, JS::MutableHandleObjectVector curObjects, uint32_t& logDepth)
 {
     std::string output;
 
     {
-        JS::RootedObject jsUnwrappedObject( cx, jsObject );
-        if ( js::IsWrapper( jsObject ) )
+        JS::RootedObject jsUnwrappedObject(cx, jsObject);
+        if (js::IsWrapper(jsObject))
         {
-            jsUnwrappedObject = js::UncheckedUnwrap( jsObject );
+            jsUnwrappedObject = js::UncheckedUnwrap(jsObject);
         }
-        if ( js::IsProxy( jsUnwrappedObject ) && js::GetProxyHandler( jsUnwrappedObject )->family() == GetSmpProxyFamily() )
+        if (js::IsProxy(jsUnwrappedObject) && js::GetProxyHandler(jsUnwrappedObject)->family() == GetSmpProxyFamily())
         {
-            jsUnwrappedObject = js::GetProxyTargetObject( jsUnwrappedObject );
+            jsUnwrappedObject = js::GetProxyTargetObject(jsUnwrappedObject);
         }
 
-        output += JS::InformalValueTypeName( JS::ObjectValue( *jsUnwrappedObject ) );
+        output += JS::InformalValueTypeName(JS::ObjectValue(*jsUnwrappedObject));
     }
     output += " {";
 
-    JS::RootedIdVector jsVector( cx );
-    if ( !js::GetPropertyKeys( cx, jsObject, 0, &jsVector ) )
+    JS::RootedIdVector jsVector(cx);
+    if (!js::GetPropertyKeys(cx, jsObject, 0, &jsVector))
     {
         throw JsException();
     }
 
-    JS::RootedValue jsIdValue( cx );
-    JS::RootedValue jsValue( cx );
+    JS::RootedValue jsIdValue(cx);
+    JS::RootedValue jsValue(cx);
     bool hasFunctions = false;
-    for ( size_t i = 0, length = jsVector.length(); i < length; ++i )
+    for (size_t i = 0, length = jsVector.length(); i < length; ++i)
     {
         const auto& jsId = jsVector[i];
-        if ( !JS_GetPropertyById( cx, jsObject, jsId, &jsValue ) )
+        if (!JS_GetPropertyById(cx, jsObject, jsId, &jsValue))
         {
             throw JsException();
         }
 
-        if ( jsValue.isObject() && JS_ObjectIsFunction( &jsValue.toObject() ) )
+        if (jsValue.isObject() && JS_ObjectIsFunction(&jsValue.toObject()))
         {
             hasFunctions = true;
         }
         else
         {
-            jsIdValue = js::IdToValue( jsId );
-            output += convert::to_native::ToValue<std::string>( cx, jsIdValue );
+            jsIdValue = js::IdToValue(jsId);
+            output += convert::to_native::ToValue<std::string>(cx, jsIdValue);
             output += "=";
-            output += ParseJsValue( cx, jsValue, curObjects, logDepth, true );
-            if ( i != length - 1 || hasFunctions )
+            output += ParseJsValue(cx, jsValue, curObjects, logDepth, true);
+            if (i != length - 1 || hasFunctions)
             {
                 output += ", ";
             }
         }
     }
 
-    if ( hasFunctions )
+    if (hasFunctions)
     {
         output += "...";
     }
@@ -118,68 +118,68 @@ std::string ParseJsObject( JSContext* cx, JS::HandleObject jsObject, JS::Mutable
     return output;
 }
 
-std::string ParseJsValue( JSContext* cx, JS::HandleValue jsValue, JS::MutableHandleObjectVector curObjects, uint32_t& logDepth, bool isParentObject )
+std::string ParseJsValue(JSContext* cx, JS::HandleValue jsValue, JS::MutableHandleObjectVector curObjects, uint32_t& logDepth, bool isParentObject)
 {
     std::string output;
 
     ++logDepth;
-    qwr::final_action autoDecrement( [&logDepth] { --logDepth; } );
+    qwr::final_action autoDecrement([&logDepth] { --logDepth; });
 
-    if ( !jsValue.isObject() )
+    if (!jsValue.isObject())
     {
         const bool showQuotes = isParentObject && jsValue.isString();
 
-        if ( showQuotes )
+        if (showQuotes)
         {
             output += "\"";
         }
-        output += convert::to_native::ToValue<std::string>( cx, jsValue );
-        if ( showQuotes )
+        output += convert::to_native::ToValue<std::string>(cx, jsValue);
+        if (showQuotes)
         {
             output += "\"";
         }
     }
     else
     {
-        if ( logDepth > kMaxLogDepth )
+        if (logDepth > kMaxLogDepth)
         { // Don't parse object, if we reached the depth limit
-            output += JS::InformalValueTypeName( jsValue );
+            output += JS::InformalValueTypeName(jsValue);
             return output;
         }
 
-        JS::RootedObject jsObject( cx, &jsValue.toObject() );
+        JS::RootedObject jsObject(cx, &jsValue.toObject());
 
-        if ( JS_ObjectIsFunction( jsObject ) )
+        if (JS_ObjectIsFunction(jsObject))
         {
-            output += JS::InformalValueTypeName( jsValue );
+            output += JS::InformalValueTypeName(jsValue);
         }
         else
         {
-            for ( const auto& curObject: curObjects )
+            for (const auto& curObject: curObjects)
             {
-                if ( jsObject.get() == curObject )
+                if (jsObject.get() == curObject)
                 {
                     output += "<Circular>";
                     return output;
                 }
             }
 
-            curObjects.emplaceBack( jsObject );
-            qwr::final_action autoPop( [&curObjects] { curObjects.popBack(); } );
+            curObjects.emplaceBack(jsObject);
+            qwr::final_action autoPop([&curObjects] { curObjects.popBack(); });
 
             bool is;
-            if ( !JS_IsArrayObject( cx, jsObject, &is ) )
+            if (!JS_IsArrayObject(cx, jsObject, &is))
             {
                 throw JsException();
             }
 
-            if ( is )
+            if (is)
             {
-                output += ParseJsArray( cx, jsObject, curObjects, logDepth );
+                output += ParseJsArray(cx, jsObject, curObjects, logDepth);
             }
             else
             {
-                output += ParseJsObject( cx, jsObject, curObjects, logDepth );
+                output += ParseJsObject(cx, jsObject, curObjects, logDepth);
             }
         }
     }
@@ -187,22 +187,22 @@ std::string ParseJsValue( JSContext* cx, JS::HandleValue jsValue, JS::MutableHan
     return output;
 }
 
-std::optional<std::string> ParseLogArgs( JSContext* cx, JS::CallArgs& args )
+std::optional<std::string> ParseLogArgs(JSContext* cx, JS::CallArgs& args)
 {
-    if ( !args.length() )
+    if (!args.length())
     {
         return std::nullopt;
     }
 
     std::string outputString;
-    JS::RootedObjectVector curObjects( cx );
+    JS::RootedObjectVector curObjects(cx);
     uint32_t logDepth = 0;
-    for ( size_t i = 0; i < args.length(); ++i )
+    for (size_t i = 0; i < args.length(); ++i)
     {
-        assert( !logDepth );
-        assert( !curObjects.length() );
-        outputString += ParseJsValue( cx, args[i], &curObjects, logDepth, false );
-        if ( i < args.length() - 1 )
+        assert(!logDepth);
+        assert(!curObjects.length());
+        outputString += ParseJsValue(cx, args[i], &curObjects, logDepth, false);
+        if (i < args.length() - 1)
         {
             outputString += " ";
         }
@@ -211,40 +211,40 @@ std::optional<std::string> ParseLogArgs( JSContext* cx, JS::CallArgs& args )
     return outputString;
 }
 
-bool LogImpl( JSContext* cx, unsigned argc, JS::Value* vp )
+bool LogImpl(JSContext* cx, unsigned argc, JS::Value* vp)
 {
-    JS::CallArgs args = JS::CallArgsFromVp( argc, vp );
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
 
-    auto output = ParseLogArgs( cx, args );
+    auto output = ParseLogArgs(cx, args);
     args.rval().setUndefined();
 
-    if ( !output )
+    if (!output)
     {
         return true;
     }
 
-    console::info( output->c_str() );
+    console::info(output->c_str());
     return true;
 }
 
-MJS_DEFINE_JS_FN( Log, LogImpl )
+MJS_DEFINE_JS_FN(Log, LogImpl)
 
 constexpr auto console_functions = std::to_array<JSFunctionSpec>(
     {
-        JS_FN( "log", Log, 0, kDefaultPropsFlags ),
+        JS_FN("log", Log, 0, kDefaultPropsFlags),
         JS_FS_END,
-    } );
+    });
 } // namespace
 
 namespace mozjs
 {
 
-void DefineConsole( JSContext* cx, JS::HandleObject global )
+void DefineConsole(JSContext* cx, JS::HandleObject global)
 {
-    JS::RootedObject consoleObj( cx, JS_NewPlainObject( cx ) );
-    if ( !consoleObj
-         || !JS_DefineFunctions( cx, consoleObj, console_functions.data() )
-         || !JS_DefineProperty( cx, global, "console", consoleObj, kDefaultPropsFlags ) )
+    JS::RootedObject consoleObj(cx, JS_NewPlainObject(cx));
+    if (!consoleObj
+         || !JS_DefineFunctions(cx, consoleObj, console_functions.data())
+         || !JS_DefineProperty(cx, global, "console", consoleObj, kDefaultPropsFlags))
     {
         throw JsException();
     }

@@ -29,20 +29,20 @@ class JsEngine final
 {
 public:
     ~JsEngine();
-    JsEngine( const JsEngine& ) = delete;
-    JsEngine& operator=( const JsEngine& ) = delete;
+    JsEngine(const JsEngine&) = delete;
+    JsEngine& operator=(const JsEngine&) = delete;
 
     static [[nodiscard]] JsEngine& GetInstance();
     void PrepareForExit();
 
 public: // methods accessed by JsContainer
-    [[nodiscard]] bool RegisterContainer( JsContainer& jsContainer );
-    void UnregisterContainer( JsContainer& jsContainer );
+    [[nodiscard]] bool RegisterContainer(JsContainer& jsContainer);
+    void UnregisterContainer(JsContainer& jsContainer);
 
     void MaybeRunJobs();
 
-    void OnJsActionStart( JsContainer& jsContainer );
-    void OnJsActionEnd( JsContainer& jsContainer );
+    void OnJsActionStart(JsContainer& jsContainer);
+    void OnJsActionEnd(JsContainer& jsContainer);
 
 public: // methods accessed by js objects
     [[nodiscard]] JsGc& GetGcEngine();
@@ -64,11 +64,11 @@ private:
     void StartHeartbeatThread();
     void StopHeartbeatThread();
 
-    static bool InterruptHandler( JSContext* cx );
+    static bool InterruptHandler(JSContext* cx);
 
-    static void RejectedPromiseHandler( JSContext* cx, JS::HandleObject promise,
+    static void RejectedPromiseHandler(JSContext* cx, JS::HandleObject promise,
                                         JS::PromiseRejectionHandlingState state,
-                                        void* data );
+                                        void* data);
 
     void ReportOomError();
 

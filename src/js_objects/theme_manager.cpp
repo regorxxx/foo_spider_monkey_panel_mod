@@ -37,22 +37,22 @@ JSClass jsClass = {
     &jsOps
 };
 
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( DrawThemeBackground, JsThemeManager::DrawThemeBackground, JsThemeManager::DrawThemeBackgroundWithOpt, 4 )
-MJS_DEFINE_JS_FN_FROM_NATIVE( IsThemePartDefined, JsThemeManager::IsThemePartDefined )
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT( SetPartAndStateID, JsThemeManager::SetPartAndStateID, JsThemeManager::SetPartAndStateIDWithOpt, 1 )
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(DrawThemeBackground, JsThemeManager::DrawThemeBackground, JsThemeManager::DrawThemeBackgroundWithOpt, 4)
+MJS_DEFINE_JS_FN_FROM_NATIVE(IsThemePartDefined, JsThemeManager::IsThemePartDefined)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(SetPartAndStateID, JsThemeManager::SetPartAndStateID, JsThemeManager::SetPartAndStateIDWithOpt, 1)
 
 constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
     {
-        JS_FN( "DrawThemeBackground", DrawThemeBackground, 5, kDefaultPropsFlags ),
-        JS_FN( "IsThemePartDefined", IsThemePartDefined, 1, kDefaultPropsFlags ),
-        JS_FN( "SetPartAndStateID", SetPartAndStateID, 1, kDefaultPropsFlags ),
+        JS_FN("DrawThemeBackground", DrawThemeBackground, 5, kDefaultPropsFlags),
+        JS_FN("IsThemePartDefined", IsThemePartDefined, 1, kDefaultPropsFlags),
+        JS_FN("SetPartAndStateID", SetPartAndStateID, 1, kDefaultPropsFlags),
         JS_FS_END,
-    } );
+    });
 
 constexpr auto jsProperties = std::to_array<JSPropertySpec>(
     {
         JS_PS_END,
-    } );
+    });
 
 } // namespace
 
@@ -64,108 +64,108 @@ const JSFunctionSpec* JsThemeManager::JsFunctions = jsFunctions.data();
 const JSPropertySpec* JsThemeManager::JsProperties = jsProperties.data();
 const JsPrototypeId JsThemeManager::PrototypeId = JsPrototypeId::ThemeManager;
 
-JsThemeManager::JsThemeManager( JSContext* cx, HTHEME hTheme )
-    : pJsCtx_( cx )
-    , hTheme_( hTheme )
+JsThemeManager::JsThemeManager(JSContext* cx, HTHEME hTheme)
+    : pJsCtx_(cx)
+    , hTheme_(hTheme)
 {
 }
 
 JsThemeManager::~JsThemeManager()
 {
-    if ( hTheme_ )
+    if (hTheme_)
     {
-        CloseThemeData( hTheme_ );
+        CloseThemeData(hTheme_);
     }
 }
 
-bool JsThemeManager::HasThemeData( HWND hwnd, const std::wstring& classId )
+bool JsThemeManager::HasThemeData(HWND hwnd, const std::wstring& classId)
 { // Since CreateNative return nullptr only on error, we need to validate args beforehand
-    HTHEME hTheme = OpenThemeData( hwnd, classId.c_str() );
+    HTHEME hTheme = OpenThemeData(hwnd, classId.c_str());
     bool bFound = !!hTheme;
-    if ( hTheme )
+    if (hTheme)
     {
-        CloseThemeData( hTheme );
+        CloseThemeData(hTheme);
     }
 
     return bFound;
 }
 
 std::unique_ptr<JsThemeManager>
-JsThemeManager::CreateNative( JSContext* cx, HWND hwnd, const std::wstring& classId )
+JsThemeManager::CreateNative(JSContext* cx, HWND hwnd, const std::wstring& classId)
 {
-    HTHEME hTheme = OpenThemeData( hwnd, classId.c_str() );
-    qwr::QwrException::ExpectTrue( hTheme, "Internal error: Failed to get theme data for the provided class list" );
+    HTHEME hTheme = OpenThemeData(hwnd, classId.c_str());
+    qwr::QwrException::ExpectTrue(hTheme, "Internal error: Failed to get theme data for the provided class list");
 
-    return std::unique_ptr<JsThemeManager>( new JsThemeManager( cx, hTheme ) );
+    return std::unique_ptr<JsThemeManager>(new JsThemeManager(cx, hTheme));
 }
 
-size_t JsThemeManager::GetInternalSize( HWND /* hwnd */, const std::wstring& /* classId */ )
+size_t JsThemeManager::GetInternalSize(HWND /* hwnd */, const std::wstring& /* classId */)
 {
     return 0;
 }
 
-void JsThemeManager::DrawThemeBackground( JsGdiGraphics* gr,
+void JsThemeManager::DrawThemeBackground(JsGdiGraphics* gr,
                                           int32_t x, int32_t y, uint32_t w, uint32_t h,
-                                          int32_t clip_x, int32_t clip_y, uint32_t clip_w, uint32_t clip_h )
+                                          int32_t clip_x, int32_t clip_y, uint32_t clip_w, uint32_t clip_h)
 {
-    qwr::QwrException::ExpectTrue( gr, "gr argument is null" );
+    qwr::QwrException::ExpectTrue(gr, "gr argument is null");
 
     Gdiplus::Graphics* graphics = gr->GetGraphicsObject();
-    assert( graphics );
+    assert(graphics);
 
     HDC dc = graphics->GetHDC();
-    qwr::final_action autoHdcReleaser( [graphics, dc]() { graphics->ReleaseHDC( dc ); } );
+    qwr::final_action autoHdcReleaser([graphics, dc]() { graphics->ReleaseHDC(dc); });
 
-    const RECT rc{ x, y, static_cast<LONG>( x + w ), static_cast<LONG>( y + h ) };
-    const RECT clip_rc{ clip_x, clip_y, static_cast<LONG>( clip_x + clip_y ), static_cast<LONG>( clip_w + clip_h ) };
-    LPCRECT pclip_rc = ( !clip_x && !clip_y && !clip_w && !clip_h ) ? nullptr : &clip_rc;
+    const RECT rc{ x, y, static_cast<LONG>(x + w), static_cast<LONG>(y + h) };
+    const RECT clip_rc{ clip_x, clip_y, static_cast<LONG>(clip_x + clip_y), static_cast<LONG>(clip_w + clip_h) };
+    LPCRECT pclip_rc = (!clip_x && !clip_y && !clip_w && !clip_h) ? nullptr : &clip_rc;
 
-    HRESULT hr = ::DrawThemeBackground( hTheme_, dc, partId_, stateId_, &rc, pclip_rc );
-    qwr::error::CheckHR( hr, u8"DrawThemeBackground" );
+    HRESULT hr = ::DrawThemeBackground(hTheme_, dc, partId_, stateId_, &rc, pclip_rc);
+    qwr::error::CheckHR(hr, u8"DrawThemeBackground");
 }
 
-void JsThemeManager::DrawThemeBackgroundWithOpt( size_t optArgCount, JsGdiGraphics* gr,
+void JsThemeManager::DrawThemeBackgroundWithOpt(size_t optArgCount, JsGdiGraphics* gr,
                                                  int32_t x, int32_t y, uint32_t w, uint32_t h,
-                                                 int32_t clip_x, int32_t clip_y, uint32_t clip_w, uint32_t clip_h )
+                                                 int32_t clip_x, int32_t clip_y, uint32_t clip_w, uint32_t clip_h)
 {
-    switch ( optArgCount )
+    switch (optArgCount)
     {
     case 0:
-        return DrawThemeBackground( gr, x, y, w, h, clip_x, clip_y, clip_w, clip_h );
+        return DrawThemeBackground(gr, x, y, w, h, clip_x, clip_y, clip_w, clip_h);
     case 1:
-        return DrawThemeBackground( gr, x, y, w, h, clip_x, clip_y, clip_w );
+        return DrawThemeBackground(gr, x, y, w, h, clip_x, clip_y, clip_w);
     case 2:
-        return DrawThemeBackground( gr, x, y, w, h, clip_x, clip_y );
+        return DrawThemeBackground(gr, x, y, w, h, clip_x, clip_y);
     case 3:
-        return DrawThemeBackground( gr, x, y, w, h, clip_x );
+        return DrawThemeBackground(gr, x, y, w, h, clip_x);
     case 4:
-        return DrawThemeBackground( gr, x, y, w, h );
+        return DrawThemeBackground(gr, x, y, w, h);
     default:
-        throw qwr::QwrException( "Internal error: invalid number of optional arguments specified: {}", optArgCount );
+        throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
     }
 }
 
-bool JsThemeManager::IsThemePartDefined( int32_t partid, int32_t stateId )
+bool JsThemeManager::IsThemePartDefined(int32_t partid, int32_t stateId)
 {
-    return ::IsThemePartDefined( hTheme_, partid, stateId );
+    return ::IsThemePartDefined(hTheme_, partid, stateId);
 }
 
-void JsThemeManager::SetPartAndStateID( int32_t partid, int32_t stateId )
+void JsThemeManager::SetPartAndStateID(int32_t partid, int32_t stateId)
 {
     partId_ = partid;
     stateId_ = stateId;
 }
 
-void JsThemeManager::SetPartAndStateIDWithOpt( size_t optArgCount, int32_t partid, int32_t stateId )
+void JsThemeManager::SetPartAndStateIDWithOpt(size_t optArgCount, int32_t partid, int32_t stateId)
 {
-    switch ( optArgCount )
+    switch (optArgCount)
     {
     case 0:
-        return SetPartAndStateID( partid, stateId );
+        return SetPartAndStateID(partid, stateId);
     case 1:
-        return SetPartAndStateID( partid );
+        return SetPartAndStateID(partid);
     default:
-        throw qwr::QwrException( "Internal error: invalid number of optional arguments specified: {}", optArgCount );
+        throw qwr::QwrException("Internal error: invalid number of optional arguments specified: {}", optArgCount);
     }
 }
 

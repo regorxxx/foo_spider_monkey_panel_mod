@@ -26,7 +26,7 @@ public:
         value_type,
         const value_type&>;
 
-    static_assert( std::is_base_of_v<pfc::list_base_const_t<value_type>, pfc_container_type>, "Must be derived from pfc::list_base_const_t" );
+    static_assert(std::is_base_of_v<pfc::list_base_const_t<value_type>, pfc_container_type>, "Must be derived from pfc::list_base_const_t");
 
     class const_iterator
     {
@@ -38,22 +38,22 @@ public:
         using reference = Stl::const_reference;
 
         const_iterator() = default;
-        const_iterator( difference_type idx, const pfc_container_type* pPfc )
-            : pPfc_( pPfc )
-            , curIdx_( idx )
+        const_iterator(difference_type idx, const pfc_container_type* pPfc)
+            : pPfc_(pPfc)
+            , curIdx_(idx)
         {
         }
 
-        const_iterator( const const_iterator& other )
+        const_iterator(const const_iterator& other)
         {
             pPfc_ = other.pPfc_;
             curIdx_ = other.curIdx_;
         }
         ~const_iterator() = default;
 
-        const_iterator& operator=( const const_iterator& other )
+        const_iterator& operator=(const const_iterator& other)
         {
-            if ( this != &other )
+            if (this != &other)
             {
                 pPfc_ = other.pPfc_;
                 curIdx_ = other.curIdx_;
@@ -62,90 +62,90 @@ public:
             return *this;
         }
 
-        bool operator==( const const_iterator& other ) const
+        bool operator==(const const_iterator& other) const
         {
-            return ( pPfc_ == other.pPfc_
-                     && curIdx_ == other.curIdx_ );
+            return (pPfc_ == other.pPfc_
+                     && curIdx_ == other.curIdx_);
         }
-        bool operator!=( const const_iterator& other ) const
+        bool operator!=(const const_iterator& other) const
         {
-            return ( !( *this == other ) );
+            return (!(*this == other));
         }
-        bool operator<( const const_iterator& other ) const
+        bool operator<(const const_iterator& other) const
         {
-            return ( curIdx_ == other.curIdx_ );
+            return (curIdx_ == other.curIdx_);
         }
-        bool operator>( const const_iterator& other ) const
+        bool operator>(const const_iterator& other) const
         {
-            return ( other < *this );
+            return (other < *this);
         }
-        bool operator<=( const const_iterator& other ) const
+        bool operator<=(const const_iterator& other) const
         {
-            return ( !( other < *this ) );
+            return (!(other < *this));
         }
-        bool operator>=( const const_iterator& other ) const
+        bool operator>=(const const_iterator& other) const
         {
-            return ( !( *this < other ) );
+            return (!(*this < other));
         }
 
         const_iterator& operator++()
         {
             ++curIdx_;
-            return ( *this );
+            return (*this);
         }
-        const_iterator operator++( int )
+        const_iterator operator++(int)
         {
             const_iterator tmp = *this;
             ++*this;
-            return ( tmp );
+            return (tmp);
         }
         const_iterator& operator--()
         {
             --curIdx_;
-            return ( *this );
+            return (*this);
         }
-        const_iterator operator--( int )
+        const_iterator operator--(int)
         {
             const_iterator tmp = *this;
             --*this;
-            return ( tmp );
+            return (tmp);
         }
-        const_iterator& operator+=( difference_type offset )
+        const_iterator& operator+=(difference_type offset)
         {
             curIdx_ += offset;
-            return ( *this );
+            return (*this);
         }
-        const_iterator operator+( difference_type offset ) const
+        const_iterator operator+(difference_type offset) const
         {
             const_iterator tmp = *this;
-            return ( tmp += offset );
+            return (tmp += offset);
         }
-        const_iterator& operator-=( difference_type offset )
+        const_iterator& operator-=(difference_type offset)
         {
-            return ( *this += -offset );
+            return (*this += -offset);
         }
-        const_iterator operator-( difference_type offset ) const
+        const_iterator operator-(difference_type offset) const
         {
             const_iterator tmp = *this;
-            return ( tmp -= offset );
+            return (tmp -= offset);
         }
-        difference_type operator-( const_iterator other ) const
+        difference_type operator-(const_iterator other) const
         {
-            return ( curIdx_ - other.curIdx_ );
+            return (curIdx_ - other.curIdx_);
         }
 
         reference operator*() const
         {
-            return ( *pPfc_ )[curIdx_];
+            return (*pPfc_)[curIdx_];
         }
         template <typename U = is_pfc_list_const, std::enable_if_t<!U::value, int> = 0>
         pointer operator->() const
         {
-            return &( **this );
+            return &(**this);
         }
-        reference operator[]( difference_type offset ) const
+        reference operator[](difference_type offset) const
         {
-            return ( *( *this + offset ) );
+            return (*(*this + offset));
         }
 
     protected:
@@ -164,20 +164,20 @@ public:
         using reference = Stl::reference;
 
         iterator() = default;
-        iterator( difference_type idx, pfc_container_type* pPfc )
-            : const_iterator( idx, pPfc )
+        iterator(difference_type idx, pfc_container_type* pPfc)
+            : const_iterator(idx, pPfc)
         {
         }
 
-        iterator( const iterator& other )
-            : const_iterator( other )
+        iterator(const iterator& other)
+            : const_iterator(other)
         {
         }
         ~iterator() = default;
 
-        iterator& operator=( const iterator& other )
+        iterator& operator=(const iterator& other)
         {
-            if ( this != &other )
+            if (this != &other)
             {
                 this->pPfc_ = other.pPfc_;
                 this->curIdx_ = other.curIdx_;
@@ -187,62 +187,62 @@ public:
         }
         iterator& operator++()
         {
-            ++( this->curIdx_ );
+            ++(this->curIdx_);
             return *this;
         }
-        iterator operator++( int )
+        iterator operator++(int)
         {
             iterator tmp = *this;
             ++*this;
-            return ( tmp );
+            return (tmp);
         }
         iterator& operator--()
         {
-            --( this->curIdx_ );
+            --(this->curIdx_);
             return *this;
         }
-        iterator operator--( int )
+        iterator operator--(int)
         {
             iterator tmp = *this;
             --*this;
-            return ( tmp );
+            return (tmp);
         }
-        iterator& operator+=( difference_type offset )
+        iterator& operator+=(difference_type offset)
         {
-            *static_cast<const_iterator*>( this ) += offset;
-            return ( *this );
+            *static_cast<const_iterator*>(this) += offset;
+            return (*this);
         }
-        iterator operator+( difference_type offset ) const
-        {
-            iterator tmp = *this;
-            return ( tmp += offset );
-        }
-        iterator& operator-=( difference_type offset )
-        {
-            return ( *this += -offset );
-        }
-        iterator operator-( difference_type offset ) const
+        iterator operator+(difference_type offset) const
         {
             iterator tmp = *this;
-            return ( tmp -= offset );
+            return (tmp += offset);
         }
-        difference_type operator-( iterator other ) const
+        iterator& operator-=(difference_type offset)
         {
-            return ( *static_cast<const const_iterator*>( this ) - other );
+            return (*this += -offset);
+        }
+        iterator operator-(difference_type offset) const
+        {
+            iterator tmp = *this;
+            return (tmp -= offset);
+        }
+        difference_type operator-(iterator other) const
+        {
+            return (*static_cast<const const_iterator*>(this) - other);
         }
 
         reference operator*() const
         {
-            return ( const_cast<reference>( const_iterator::operator*() ) );
+            return (const_cast<reference>(const_iterator::operator*()));
         }
         template <typename = typename std::enable_if_t<!is_pfc_list_const::value>>
         pointer operator->() const
         {
-            return ( const_cast<pointer>( const_iterator::operator->() ) );
+            return (const_cast<pointer>(const_iterator::operator->()));
         }
-        reference operator[]( difference_type offset ) const
+        reference operator[](difference_type offset) const
         {
-            return ( *( *this + offset ) );
+            return (*(*this + offset));
         }
     };
 
@@ -250,33 +250,33 @@ public:
     // typedef std::reverse_iterator<const_iterator> const_reverse_iterator; //optional
 
     template <typename U = T, std::enable_if_t<std::is_reference_v<U>, int> = 0>
-    Stl( T& base )
-        : pfc_( base ){};
+    Stl(T& base)
+        : pfc_(base){};
 
     template <typename... Args, typename U = T, std::enable_if_t<!std::is_reference_v<U>, int> = 0>
-    Stl( Args&&... args )
-        : pfc_( std::forward<Args>( args )... ){};
+    Stl(Args&&... args)
+        : pfc_(std::forward<Args>(args)...){};
 
-    Stl( const Stl& ) = delete;
+    Stl(const Stl&) = delete;
     ~Stl() = default;
 
-    Stl& operator=( const Stl& other ) = delete;
+    Stl& operator=(const Stl& other) = delete;
 
-    // bool operator==( const Stl& ) const;
-    // bool operator!=( const Stl& ) const;
-    // bool operator<( const Stl& ) const;  //optional
-    // bool operator>( const Stl& ) const;  //optional
-    // bool operator<=( const Stl& ) const; //optional
-    // bool operator>=( const Stl& ) const; //optional
+    // bool operator==(const Stl&) const;
+    // bool operator!=(const Stl&) const;
+    // bool operator<(const Stl&) const;  //optional
+    // bool operator>(const Stl&) const;  //optional
+    // bool operator<=(const Stl&) const; //optional
+    // bool operator>=(const Stl&) const; //optional
 
     template <typename U = T, std::enable_if_t<!std::is_const_v<std::remove_reference_t<U>>, int> = 0>
     iterator begin()
     {
-        return iterator( 0, &pfc_ );
+        return iterator(0, &pfc_);
     }
     const_iterator begin() const
     {
-        return const_iterator( 0, &pfc_ );
+        return const_iterator(0, &pfc_);
     }
 
     const_iterator cbegin() const
@@ -287,11 +287,11 @@ public:
     template <typename U = T, std::enable_if_t<!std::is_const_v<std::remove_reference_t<U>>, int> = 0>
     iterator end()
     {
-        return iterator( size(), &pfc_ );
+        return iterator(size(), &pfc_);
     }
     const_iterator end() const
     {
-        return const_iterator( size(), &pfc_ );
+        return const_iterator(size(), &pfc_);
     }
     const_iterator cend() const
     {
@@ -309,76 +309,76 @@ public:
 
     reference front()
     {
-        return this->operator[]( 0 );
+        return this->operator[](0);
     }
     const_reference front() const
     {
-        return this->operator[]( 0 );
+        return this->operator[](0);
     }
     reference back()
     {
-        return this->operator[]( this->size() - 1 );
+        return this->operator[](this->size() - 1);
     }
     const_reference back() const
     {
-        return this->operator[]( this->size() - 1 );
+        return this->operator[](this->size() - 1);
     }
 
     /*
     template <class... Args>
-    void emplace_front( Args&&... ); //optional
+    void emplace_front(Args&&...); //optional
     template <class... Args>
-    void emplace_back( Args&&... );                //optional
-    void push_front( const T& );                   //optional
-    void push_front( T&& );                        //optional
+    void emplace_back(Args&&...);                //optional
+    void push_front(const T&);                   //optional
+    void push_front(T&&);                        //optional
     */
-    void push_back( const value_type& item )
+    void push_back(const value_type& item)
     {
-        pfc_.add_item( item );
+        pfc_.add_item(item);
     }
 
     /*
-    void push_back( T&& );                         //optional
+    void push_back(T&&);                         //optional
     void pop_front();                              //optional
     void pop_back();                               //optional
     */
 
-    reference operator[]( size_type idx )
+    reference operator[](size_type idx)
     {
         return pfc_[idx];
     }
-    const_reference operator[]( size_type idx ) const
+    const_reference operator[](size_type idx) const
     {
         return pfc_[idx];
     }
-    reference at( size_type idx )
+    reference at(size_type idx)
     {
-        if ( idx >= this->size() )
+        if (idx >= this->size())
         {
             throw std::out_of_range();
         }
-        return this->operator[]( idx );
+        return this->operator[](idx);
     }
-    const_reference at( size_type idx ) const
+    const_reference at(size_type idx) const
     {
-        if ( idx >= this->size() )
+        if (idx >= this->size())
         {
             throw std::out_of_range();
         }
-        return this->operator[]( idx );
+        return this->operator[](idx);
     }
 
     /*
     template <class... Args>
-    iterator emplace( const_iterator, Args&&... );    //optional
-    iterator insert( const_iterator, const T& );      //optional
-    iterator insert( const_iterator, T&& );           //optional
-    iterator insert( const_iterator, size_type, T& ); //optional
+    iterator emplace(const_iterator, Args&&...);    //optional
+    iterator insert(const_iterator, const T&);      //optional
+    iterator insert(const_iterator, T&&);           //optional
+    iterator insert(const_iterator, size_type, T&); //optional
     template <class iter>
-    iterator insert( const_iterator, iter, iter );               //optional
-    iterator insert( const_iterator, std::initializer_list<T> ); //optional
-    iterator erase( const_iterator );                            //optional
-    iterator erase( const_iterator, const_iterator );            //optional
+    iterator insert(const_iterator, iter, iter);               //optional
+    iterator insert(const_iterator, std::initializer_list<T>); //optional
+    iterator erase(const_iterator);                            //optional
+    iterator erase(const_iterator, const_iterator);            //optional
     */
 
     void clear()
@@ -388,11 +388,11 @@ public:
 
     /*
     template <class iter>
-    void assign( iter, iter );               //optional
-    void assign( std::initializer_list<T> ); //optional
-    void assign( size_type, const T& );      //optional
+    void assign(iter, iter);               //optional
+    void assign(std::initializer_list<T>); //optional
+    void assign(size_type, const T&);      //optional
 
-    void swap( Stl& );
+    void swap(Stl&);
     */
 
     size_type size() const
@@ -431,15 +431,15 @@ template <typename T>
 using Stl_CRef = typename qwr::pfc_x::Stl<const T&>;
 
 template <typename T>
-Stl_Ref<T> Make_Stl_Ref( T& base )
+Stl_Ref<T> Make_Stl_Ref(T& base)
 {
-    return Stl_Ref<T>( base );
+    return Stl_Ref<T>(base);
 }
 
 template <typename T>
-Stl_CRef<T> Make_Stl_CRef( const T& base )
+Stl_CRef<T> Make_Stl_CRef(const T& base)
 {
-    return Stl_CRef<T>( base );
+    return Stl_CRef<T>(base);
 }
 
 } // namespace qwr::pfc_x

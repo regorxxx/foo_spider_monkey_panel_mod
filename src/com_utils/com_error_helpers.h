@@ -5,6 +5,6 @@
 namespace smp::com
 {
 
-void ReportActiveXError( HRESULT hresult, EXCEPINFO& exception, UINT& argerr );
+void ReportActiveXError(HRESULT hresult, EXCEPINFO& exception, UINT& argerr);
 
 } // namespace smp::com
