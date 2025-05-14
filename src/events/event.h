@@ -89,6 +89,7 @@ enum class EventId
     kInternalGetAlbumArtPromiseDone,
     kInternalLoadImageDone,
     kInternalLoadImagePromiseDone,
+    kInternalLocationsAdded,
     // ui
     kUiColoursChanged,
     kUiFontChanged,
@@ -178,6 +179,7 @@ const std::unordered_map<EventId, std::string> kCallbackIdToName = {
     // internal
     { EventId::kInternalGetAlbumArtDone, "get_album_art_done" },
     { EventId::kInternalLoadImageDone, "load_image_done" },
+    { EventId::kInternalLocationsAdded, "locations_added" },
     // ui
     { EventId::kUiColoursChanged, "colours_changed" },
     { EventId::kUiFontChanged, "font_changed" },

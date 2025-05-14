@@ -38,6 +38,7 @@ public:
     JSObject* AcquireUiSelectionHolder();
     void AddDirectory();
     void AddFiles();
+    uint32_t AddLocationsAsync(JS::HandleValue locations);
     bool CheckClipboardContents();
     void ClearPlaylist();
     bool CopyHandleListToClipboard(JsFbMetadbHandleList* handles);

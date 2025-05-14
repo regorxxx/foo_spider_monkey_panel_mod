@@ -3,6 +3,8 @@
 #include "fb_utils.h"
 
 #include <com_objects/drop_source_impl.h>
+#include <events/event_dispatcher.h>
+#include <events/event_js_callback.h>
 #include <fb2k/mainmenu_dynamic.h>
 #include <fb2k/selection_holder_helper.h>
 #include <fb2k/stats.h>
@@ -58,6 +60,7 @@ JSClass jsClass = {
 MJS_DEFINE_JS_FN_FROM_NATIVE(AcquireUiSelectionHolder, JsFbUtils::AcquireUiSelectionHolder)
 MJS_DEFINE_JS_FN_FROM_NATIVE(AddDirectory, JsFbUtils::AddDirectory)
 MJS_DEFINE_JS_FN_FROM_NATIVE(AddFiles, JsFbUtils::AddFiles)
+MJS_DEFINE_JS_FN_FROM_NATIVE(AddLocationsAsync, JsFbUtils::AddLocationsAsync);
 MJS_DEFINE_JS_FN_FROM_NATIVE(CheckClipboardContents, JsFbUtils::CheckClipboardContents)
 MJS_DEFINE_JS_FN_FROM_NATIVE(ClearPlaylist, JsFbUtils::ClearPlaylist)
 MJS_DEFINE_JS_FN_FROM_NATIVE(CopyHandleListToClipboard, JsFbUtils::CopyHandleListToClipboard)
@@ -114,6 +117,7 @@ constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
         JS_FN("AcquireUiSelectionHolder", AcquireUiSelectionHolder, 0, kDefaultPropsFlags),
         JS_FN("AddDirectory", AddDirectory, 0, kDefaultPropsFlags),
         JS_FN("AddFiles", AddFiles, 0, kDefaultPropsFlags),
+        JS_FN("AddLocationsAsync", AddLocationsAsync, 1, kDefaultPropsFlags),
         JS_FN("CheckClipboardContents", CheckClipboardContents, 0, kDefaultPropsFlags),
         JS_FN("ClearPlaylist", ClearPlaylist, 0, kDefaultPropsFlags),
         JS_FN("CopyHandleListToClipboard", CopyHandleListToClipboard, 1, kDefaultPropsFlags),
@@ -247,6 +251,38 @@ void JsFbUtils::AddDirectory()
 void JsFbUtils::AddFiles()
 {
     standard_commands::main_add_files();
+}
+
+uint32_t JsFbUtils::AddLocationsAsync(JS::HandleValue locations)
+{
+    static uint32_t g_task_id{};
+    static constexpr uint32_t g_flags = playlist_incoming_item_filter_v2::op_flag_no_filter | playlist_incoming_item_filter_v2::op_flag_delay_ui;
+
+    pfc::string_list_impl location_list;
+    convert::to_native::ProcessArray<std::string>(
+        pJsCtx_,
+        locations,
+        [&location_list](const auto& location)
+        {
+            location_list.add_item(location.c_str());
+        }
+    );
+
+    auto func = [wnd = GetPanelHwndForCurrentGlobal(pJsCtx_), task_id = ++g_task_id](metadb_handle_list_cref handles)
+    {
+        EventDispatcher::Get().PutEvent(
+            wnd,
+            GenerateEvent_JsCallback(
+                EventId::kInternalLocationsAdded,
+                task_id,
+                std::make_shared<metadb_handle_list>(handles)
+            )
+        );
+    };
+
+    auto ptr = process_locations_notify::create(func);
+    playlist_incoming_item_filter_v2::get()->process_locations_async(location_list, g_flags, nullptr, nullptr, nullptr, ptr);
+    return g_task_id;
 }
 
 bool JsFbUtils::CheckClipboardContents()
