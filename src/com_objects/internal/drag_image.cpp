@@ -18,6 +18,9 @@
 #define SelectBitmap(hdc, hbm) ((HBITMAP)SelectObject((hdc), (HGDIOBJ)(HBITMAP)(hbm)))
 #endif
 
+#define RECT_CX(rc) ((rc).right - (rc).left)
+#define RECT_CY(rc) ((rc).bottom - (rc).top)
+
 namespace uih
 {
 // Ripped from win32_helpers.cpp

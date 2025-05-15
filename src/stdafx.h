@@ -3,9 +3,6 @@
 #define WINVER _WIN32_WINNT_WIN7
 #define NOMINMAX
 
-#define RECT_CX(rc) ((rc).right - (rc).left)
-#define RECT_CY(rc) ((rc).bottom - (rc).top)
-
 #include <WinSock2.h>
 #include <Windows.h>
 #include <windowsx.h>
