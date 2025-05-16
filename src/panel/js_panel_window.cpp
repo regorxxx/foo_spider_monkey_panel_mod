@@ -68,6 +68,7 @@ js_panel_window::~js_panel_window()
 void js_panel_window::ui_colors_changed()
 {
     isDark_ = ui_config_manager::g_is_dark_mode();
+    wnd_.Invalidate();
     EventDispatcher::Get().PutEvent(wnd_, GenerateEvent_JsCallback(EventId::kUiColoursChanged));
 }
 
