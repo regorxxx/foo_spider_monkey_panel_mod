@@ -176,6 +176,7 @@ MJS_DEFINE_JS_FN_FROM_NATIVE(get_DlgCode, Window::get_DlgCode)
 MJS_DEFINE_JS_FN_FROM_NATIVE(get_Height, Window::get_Height)
 MJS_DEFINE_JS_FN_FROM_NATIVE(get_ID, Window::get_ID)
 MJS_DEFINE_JS_FN_FROM_NATIVE(get_InstanceType, Window::get_InstanceType)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_IsDark, Window::get_IsDark)
 MJS_DEFINE_JS_FN_FROM_NATIVE(get_IsTransparent, Window::get_IsTransparent)
 MJS_DEFINE_JS_FN_FROM_NATIVE(get_IsVisible, Window::get_IsVisible)
 MJS_DEFINE_JS_FN_FROM_NATIVE(get_JsMemoryStats, Window::get_JsMemoryStats)
@@ -202,6 +203,7 @@ constexpr auto jsProperties = std::to_array<JSPropertySpec>(
         JS_PSG("Height", get_Height, kDefaultPropsFlags),
         JS_PSG("ID", get_ID, kDefaultPropsFlags),
         JS_PSG("InstanceType", get_InstanceType, kDefaultPropsFlags),
+        JS_PSG("IsDark", get_IsDark, kDefaultPropsFlags),
         JS_PSG("IsTransparent", get_IsTransparent, kDefaultPropsFlags),
         JS_PSG("IsVisible", get_IsVisible, kDefaultPropsFlags),
         JS_PSG("JsMemoryStats", get_JsMemoryStats, kDefaultPropsFlags),
@@ -823,6 +825,11 @@ uint32_t Window::get_InstanceType()
     }
 
     return static_cast<uint32_t>(parentPanel_.GetPanelType());
+}
+
+bool Window::get_IsDark()
+{
+    return parentPanel_.IsDark();
 }
 
 bool Window::get_IsTransparent()

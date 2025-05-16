@@ -67,6 +67,7 @@ js_panel_window::~js_panel_window()
 
 void js_panel_window::ui_colors_changed()
 {
+    isDark_ = ui_config_manager::g_is_dark_mode();
     EventDispatcher::Get().PutEvent(wnd_, GenerateEvent_JsCallback(EventId::kUiColoursChanged));
 }
 
@@ -1205,6 +1206,11 @@ POINT& js_panel_window::MinSize()
     return minSize_;
 }
 
+bool js_panel_window::IsDark() const
+{
+    return isDark_;
+}
+
 int js_panel_window::GetHeight() const
 {
     return height_;
@@ -1447,6 +1453,7 @@ void js_panel_window::OnCreate(HWND hWnd)
 {
     wnd_ = hWnd;
     hDc_ = wnd_.GetDC();
+    isDark_ = ui_config_manager::g_is_dark_mode();
 
     CRect rc;
     wnd_.GetClientRect(&rc);
@@ -1521,7 +1528,18 @@ void js_panel_window::OnPaint(HDC dc, const CRect& updateRc)
         else
         {
             CRect rc{ 0, 0, static_cast<int>(width_), static_cast<int>(height_) };
-            memDc.FillRect(&rc, (HBRUSH)(COLOR_WINDOW + 1));
+            CBrush brush;
+            
+            if (isDark_)
+            {
+                brush.CreateSolidBrush(RGB(32, 32, 32));
+            }
+            else
+            {
+                brush.CreateSysColorBrush(COLOR_WINDOW);
+            }
+
+            memDc.FillRect(&rc, brush);
         }
 
         OnPaintJs(memDc, updateRc);

@@ -67,6 +67,7 @@ public: // accessors
     [[nodiscard]] HWND GetHWND() const;
     [[nodiscard]] POINT& MaxSize();
     [[nodiscard]] POINT& MinSize();
+    [[nodiscard]] bool IsDark() const;
     [[nodiscard]] int GetHeight() const;
     [[nodiscard]] int GetWidth() const;
     [[nodiscard]] const config::ParsedPanelSettings& GetSettings() const;
@@ -176,6 +177,7 @@ private:
     std::optional<DragActionParams> lastDragParams_;       // used externally as well
 
     bool isPanelIdOverridenByScript_ = false; // used only internally
+    bool isDark_ = false;
 
     size_t dlgCode_ = 0;                   // modified only from external
     POINT maxSize_ = { INT_MAX, INT_MAX }; // modified only from external

@@ -89,6 +89,7 @@ public: // props
     uint32_t get_Height();
     uint32_t get_ID() const;
     uint32_t get_InstanceType();
+    bool get_IsDark();
     bool get_IsTransparent();
     bool get_IsVisible();
     JSObject* get_JsMemoryStats();

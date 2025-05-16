@@ -180,6 +180,7 @@ window.DlgCode
 window.Height
 window.ID
 window.InstanceType
+window.IsDark
 window.IsTransparent
 window.IsVisible
 window.JsMemoryStats
