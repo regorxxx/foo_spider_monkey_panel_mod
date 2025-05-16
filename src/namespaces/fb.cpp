@@ -1,6 +1,6 @@
 #include <stdafx.h>
 
-#include "fb_utils.h"
+#include "fb.h"
 
 #include <com_objects/drop_source_impl.h>
 #include <events/event_dispatcher.h>
@@ -44,7 +44,7 @@ JSClassOps jsOps = {
     nullptr,
     nullptr,
     nullptr,
-    JsFbUtils::FinalizeJsObject,
+    Fb::FinalizeJsObject,
     nullptr,
     nullptr,
     nullptr,
@@ -57,60 +57,60 @@ JSClass jsClass = {
     &jsOps
 };
 
-MJS_DEFINE_JS_FN_FROM_NATIVE(AcquireUiSelectionHolder, JsFbUtils::AcquireUiSelectionHolder)
-MJS_DEFINE_JS_FN_FROM_NATIVE(AddDirectory, JsFbUtils::AddDirectory)
-MJS_DEFINE_JS_FN_FROM_NATIVE(AddFiles, JsFbUtils::AddFiles)
-MJS_DEFINE_JS_FN_FROM_NATIVE(AddLocationsAsync, JsFbUtils::AddLocationsAsync);
-MJS_DEFINE_JS_FN_FROM_NATIVE(CheckClipboardContents, JsFbUtils::CheckClipboardContents)
-MJS_DEFINE_JS_FN_FROM_NATIVE(ClearPlaylist, JsFbUtils::ClearPlaylist)
-MJS_DEFINE_JS_FN_FROM_NATIVE(CopyHandleListToClipboard, JsFbUtils::CopyHandleListToClipboard)
-MJS_DEFINE_JS_FN_FROM_NATIVE(CreateContextMenuManager, JsFbUtils::CreateContextMenuManager)
-MJS_DEFINE_JS_FN_FROM_NATIVE(CreateHandleList, JsFbUtils::CreateHandleList)
-MJS_DEFINE_JS_FN_FROM_NATIVE(CreateMainMenuManager, JsFbUtils::CreateMainMenuManager)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(CreateProfiler, JsFbUtils::CreateProfiler, JsFbUtils::CreateProfilerWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(DoDragDrop, JsFbUtils::DoDragDrop, JsFbUtils::DoDragDropWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE(Exit, JsFbUtils::Exit)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetAudioChunk, JsFbUtils::GetAudioChunk, JsFbUtils::GetAudioChunkWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetClipboardContents, JsFbUtils::GetClipboardContents, JsFbUtils::GetClipboardContentsWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetDSPPresets, JsFbUtils::GetDSPPresets)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetFocusItem, JsFbUtils::GetFocusItem, JsFbUtils::GetFocusItemWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetLibraryItems, JsFbUtils::GetLibraryItems)
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetLibraryRelativePath, JsFbUtils::GetLibraryRelativePath)
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetNowPlaying, JsFbUtils::GetNowPlaying)
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetOutputDevices, JsFbUtils::GetOutputDevices)
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetQueryItems, JsFbUtils::GetQueryItems)
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetSelection, JsFbUtils::GetSelection)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetSelections, JsFbUtils::GetSelections, JsFbUtils::GetSelectionsWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetSelectionType, JsFbUtils::GetSelectionType)
-MJS_DEFINE_JS_FN_FROM_NATIVE(IsLibraryEnabled, JsFbUtils::IsLibraryEnabled)
-MJS_DEFINE_JS_FN_FROM_NATIVE(IsMainMenuCommandChecked, JsFbUtils::IsMainMenuCommandChecked)
-MJS_DEFINE_JS_FN_FROM_NATIVE(IsMetadbInMediaLibrary, JsFbUtils::IsMetadbInMediaLibrary)
-MJS_DEFINE_JS_FN_FROM_NATIVE(LoadPlaylist, JsFbUtils::LoadPlaylist)
-MJS_DEFINE_JS_FN_FROM_NATIVE(Next, JsFbUtils::Next)
-MJS_DEFINE_JS_FN_FROM_NATIVE(Pause, JsFbUtils::Pause)
-MJS_DEFINE_JS_FN_FROM_NATIVE(Play, JsFbUtils::Play)
-MJS_DEFINE_JS_FN_FROM_NATIVE(PlayOrPause, JsFbUtils::PlayOrPause)
-MJS_DEFINE_JS_FN_FROM_NATIVE(Prev, JsFbUtils::Prev)
-MJS_DEFINE_JS_FN_FROM_NATIVE(Random, JsFbUtils::Random)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(RegisterMainMenuCommand, JsFbUtils::RegisterMainMenuCommand, JsFbUtils::RegisterMainMenuCommandWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE(Restart, JsFbUtils::Restart)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(RunContextCommand, JsFbUtils::RunContextCommand, JsFbUtils::RunContextCommandWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(RunContextCommandWithMetadb, JsFbUtils::RunContextCommandWithMetadb, JsFbUtils::RunContextCommandWithMetadbWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE(RunMainMenuCommand, JsFbUtils::RunMainMenuCommand)
-MJS_DEFINE_JS_FN_FROM_NATIVE(SavePlaylist, JsFbUtils::SavePlaylist)
-MJS_DEFINE_JS_FN_FROM_NATIVE(SetDSPPreset, JsFbUtils::SetDSPPreset)
-MJS_DEFINE_JS_FN_FROM_NATIVE(SetOutputDevice, JsFbUtils::SetOutputDevice)
-MJS_DEFINE_JS_FN_FROM_NATIVE(ShowConsole, JsFbUtils::ShowConsole)
-MJS_DEFINE_JS_FN_FROM_NATIVE(ShowLibrarySearchUI, JsFbUtils::ShowLibrarySearchUI)
-MJS_DEFINE_JS_FN_FROM_NATIVE(ShowPictureViewer, JsFbUtils::ShowPictureViewer)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(ShowPopupMessage, JsFbUtils::ShowPopupMessage, JsFbUtils::ShowPopupMessageWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE(ShowPreferences, JsFbUtils::ShowPreferences)
-MJS_DEFINE_JS_FN_FROM_NATIVE(Stop, JsFbUtils::Stop)
-MJS_DEFINE_JS_FN_FROM_NATIVE(TitleFormat, JsFbUtils::TitleFormat)
-MJS_DEFINE_JS_FN_FROM_NATIVE(UnregisterMainMenuCommand, JsFbUtils::UnregisterMainMenuCommand)
-MJS_DEFINE_JS_FN_FROM_NATIVE(VolumeDown, JsFbUtils::VolumeDown)
-MJS_DEFINE_JS_FN_FROM_NATIVE(VolumeMute, JsFbUtils::VolumeMute)
-MJS_DEFINE_JS_FN_FROM_NATIVE(VolumeUp, JsFbUtils::VolumeUp)
+MJS_DEFINE_JS_FN_FROM_NATIVE(AcquireUiSelectionHolder, Fb::AcquireUiSelectionHolder)
+MJS_DEFINE_JS_FN_FROM_NATIVE(AddDirectory, Fb::AddDirectory)
+MJS_DEFINE_JS_FN_FROM_NATIVE(AddFiles, Fb::AddFiles)
+MJS_DEFINE_JS_FN_FROM_NATIVE(AddLocationsAsync, Fb::AddLocationsAsync);
+MJS_DEFINE_JS_FN_FROM_NATIVE(CheckClipboardContents, Fb::CheckClipboardContents)
+MJS_DEFINE_JS_FN_FROM_NATIVE(ClearPlaylist, Fb::ClearPlaylist)
+MJS_DEFINE_JS_FN_FROM_NATIVE(CopyHandleListToClipboard, Fb::CopyHandleListToClipboard)
+MJS_DEFINE_JS_FN_FROM_NATIVE(CreateContextMenuManager, Fb::CreateContextMenuManager)
+MJS_DEFINE_JS_FN_FROM_NATIVE(CreateHandleList, Fb::CreateHandleList)
+MJS_DEFINE_JS_FN_FROM_NATIVE(CreateMainMenuManager, Fb::CreateMainMenuManager)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(CreateProfiler, Fb::CreateProfiler, Fb::CreateProfilerWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(DoDragDrop, Fb::DoDragDrop, Fb::DoDragDropWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE(Exit, Fb::Exit)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetAudioChunk, Fb::GetAudioChunk, Fb::GetAudioChunkWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetClipboardContents, Fb::GetClipboardContents, Fb::GetClipboardContentsWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetDSPPresets, Fb::GetDSPPresets)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetFocusItem, Fb::GetFocusItem, Fb::GetFocusItemWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetLibraryItems, Fb::GetLibraryItems)
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetLibraryRelativePath, Fb::GetLibraryRelativePath)
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetNowPlaying, Fb::GetNowPlaying)
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetOutputDevices, Fb::GetOutputDevices)
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetQueryItems, Fb::GetQueryItems)
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetSelection, Fb::GetSelection)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetSelections, Fb::GetSelections, Fb::GetSelectionsWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetSelectionType, Fb::GetSelectionType)
+MJS_DEFINE_JS_FN_FROM_NATIVE(IsLibraryEnabled, Fb::IsLibraryEnabled)
+MJS_DEFINE_JS_FN_FROM_NATIVE(IsMainMenuCommandChecked, Fb::IsMainMenuCommandChecked)
+MJS_DEFINE_JS_FN_FROM_NATIVE(IsMetadbInMediaLibrary, Fb::IsMetadbInMediaLibrary)
+MJS_DEFINE_JS_FN_FROM_NATIVE(LoadPlaylist, Fb::LoadPlaylist)
+MJS_DEFINE_JS_FN_FROM_NATIVE(Next, Fb::Next)
+MJS_DEFINE_JS_FN_FROM_NATIVE(Pause, Fb::Pause)
+MJS_DEFINE_JS_FN_FROM_NATIVE(Play, Fb::Play)
+MJS_DEFINE_JS_FN_FROM_NATIVE(PlayOrPause, Fb::PlayOrPause)
+MJS_DEFINE_JS_FN_FROM_NATIVE(Prev, Fb::Prev)
+MJS_DEFINE_JS_FN_FROM_NATIVE(Random, Fb::Random)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(RegisterMainMenuCommand, Fb::RegisterMainMenuCommand, Fb::RegisterMainMenuCommandWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE(Restart, Fb::Restart)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(RunContextCommand, Fb::RunContextCommand, Fb::RunContextCommandWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(RunContextCommandWithMetadb, Fb::RunContextCommandWithMetadb, Fb::RunContextCommandWithMetadbWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE(RunMainMenuCommand, Fb::RunMainMenuCommand)
+MJS_DEFINE_JS_FN_FROM_NATIVE(SavePlaylist, Fb::SavePlaylist)
+MJS_DEFINE_JS_FN_FROM_NATIVE(SetDSPPreset, Fb::SetDSPPreset)
+MJS_DEFINE_JS_FN_FROM_NATIVE(SetOutputDevice, Fb::SetOutputDevice)
+MJS_DEFINE_JS_FN_FROM_NATIVE(ShowConsole, Fb::ShowConsole)
+MJS_DEFINE_JS_FN_FROM_NATIVE(ShowLibrarySearchUI, Fb::ShowLibrarySearchUI)
+MJS_DEFINE_JS_FN_FROM_NATIVE(ShowPictureViewer, Fb::ShowPictureViewer)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(ShowPopupMessage, Fb::ShowPopupMessage, Fb::ShowPopupMessageWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE(ShowPreferences, Fb::ShowPreferences)
+MJS_DEFINE_JS_FN_FROM_NATIVE(Stop, Fb::Stop)
+MJS_DEFINE_JS_FN_FROM_NATIVE(TitleFormat, Fb::TitleFormat)
+MJS_DEFINE_JS_FN_FROM_NATIVE(UnregisterMainMenuCommand, Fb::UnregisterMainMenuCommand)
+MJS_DEFINE_JS_FN_FROM_NATIVE(VolumeDown, Fb::VolumeDown)
+MJS_DEFINE_JS_FN_FROM_NATIVE(VolumeMute, Fb::VolumeMute)
+MJS_DEFINE_JS_FN_FROM_NATIVE(VolumeUp, Fb::VolumeUp)
 
 constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
     {
@@ -171,27 +171,27 @@ constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
         JS_FS_END,
     });
 
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_AlwaysOnTop, JsFbUtils::get_AlwaysOnTop)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_ComponentPath, JsFbUtils::get_ComponentPath)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_CursorFollowPlayback, JsFbUtils::get_CursorFollowPlayback)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_FoobarPath, JsFbUtils::get_FoobarPath)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_IsPaused, JsFbUtils::get_IsPaused)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_IsPlaying, JsFbUtils::get_IsPlaying)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_PlaybackFollowCursor, JsFbUtils::get_PlaybackFollowCursor)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_PlaybackLength, JsFbUtils::get_PlaybackLength)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_PlaybackTime, JsFbUtils::get_PlaybackTime)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_ProfilePath, JsFbUtils::get_ProfilePath)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_ReplaygainMode, JsFbUtils::get_ReplaygainMode)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_StopAfterCurrent, JsFbUtils::get_StopAfterCurrent)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_Version, JsFbUtils::get_Version)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_Volume, JsFbUtils::get_Volume)
-MJS_DEFINE_JS_FN_FROM_NATIVE(put_AlwaysOnTop, JsFbUtils::put_AlwaysOnTop)
-MJS_DEFINE_JS_FN_FROM_NATIVE(put_CursorFollowPlayback, JsFbUtils::put_CursorFollowPlayback)
-MJS_DEFINE_JS_FN_FROM_NATIVE(put_PlaybackFollowCursor, JsFbUtils::put_PlaybackFollowCursor)
-MJS_DEFINE_JS_FN_FROM_NATIVE(put_PlaybackTime, JsFbUtils::put_PlaybackTime)
-MJS_DEFINE_JS_FN_FROM_NATIVE(put_ReplaygainMode, JsFbUtils::put_ReplaygainMode)
-MJS_DEFINE_JS_FN_FROM_NATIVE(put_StopAfterCurrent, JsFbUtils::put_StopAfterCurrent)
-MJS_DEFINE_JS_FN_FROM_NATIVE(put_Volume, JsFbUtils::put_Volume)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_AlwaysOnTop, Fb::get_AlwaysOnTop)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_ComponentPath, Fb::get_ComponentPath)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_CursorFollowPlayback, Fb::get_CursorFollowPlayback)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_FoobarPath, Fb::get_FoobarPath)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_IsPaused, Fb::get_IsPaused)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_IsPlaying, Fb::get_IsPlaying)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_PlaybackFollowCursor, Fb::get_PlaybackFollowCursor)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_PlaybackLength, Fb::get_PlaybackLength)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_PlaybackTime, Fb::get_PlaybackTime)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_ProfilePath, Fb::get_ProfilePath)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_ReplaygainMode, Fb::get_ReplaygainMode)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_StopAfterCurrent, Fb::get_StopAfterCurrent)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_Version, Fb::get_Version)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_Volume, Fb::get_Volume)
+MJS_DEFINE_JS_FN_FROM_NATIVE(put_AlwaysOnTop, Fb::put_AlwaysOnTop)
+MJS_DEFINE_JS_FN_FROM_NATIVE(put_CursorFollowPlayback, Fb::put_CursorFollowPlayback)
+MJS_DEFINE_JS_FN_FROM_NATIVE(put_PlaybackFollowCursor, Fb::put_PlaybackFollowCursor)
+MJS_DEFINE_JS_FN_FROM_NATIVE(put_PlaybackTime, Fb::put_PlaybackTime)
+MJS_DEFINE_JS_FN_FROM_NATIVE(put_ReplaygainMode, Fb::put_ReplaygainMode)
+MJS_DEFINE_JS_FN_FROM_NATIVE(put_StopAfterCurrent, Fb::put_StopAfterCurrent)
+MJS_DEFINE_JS_FN_FROM_NATIVE(put_Volume, Fb::put_Volume)
 
 constexpr auto jsProperties = std::to_array<JSPropertySpec>(
     {
@@ -217,43 +217,43 @@ constexpr auto jsProperties = std::to_array<JSPropertySpec>(
 namespace mozjs
 {
 
-const JSClass JsFbUtils::JsClass = jsClass;
-const JSFunctionSpec* JsFbUtils::JsFunctions = jsFunctions.data();
-const JSPropertySpec* JsFbUtils::JsProperties = jsProperties.data();
+const JSClass Fb::JsClass = jsClass;
+const JSFunctionSpec* Fb::JsFunctions = jsFunctions.data();
+const JSPropertySpec* Fb::JsProperties = jsProperties.data();
 
-JsFbUtils::JsFbUtils(JSContext* cx)
+Fb::Fb(JSContext* cx)
     : pJsCtx_(cx)
 {
     visualisation_manager::get()->create_stream(vis_, visualisation_manager::KStreamFlagNewFFT);
 }
 
-std::unique_ptr<JsFbUtils>
-JsFbUtils::CreateNative(JSContext* cx)
+std::unique_ptr<Fb>
+Fb::CreateNative(JSContext* cx)
 {
-    return std::unique_ptr<JsFbUtils>(new JsFbUtils(cx));
+    return std::unique_ptr<Fb>(new Fb(cx));
 }
 
-size_t JsFbUtils::GetInternalSize()
+size_t Fb::GetInternalSize()
 {
     return 0;
 }
 
-JSObject* JsFbUtils::AcquireUiSelectionHolder()
+JSObject* Fb::AcquireUiSelectionHolder()
 {
     return JsFbUiSelectionHolder::CreateJs(pJsCtx_, ui_selection_manager::get()->acquire());
 }
 
-void JsFbUtils::AddDirectory()
+void Fb::AddDirectory()
 {
     standard_commands::main_add_directory();
 }
 
-void JsFbUtils::AddFiles()
+void Fb::AddFiles()
 {
     standard_commands::main_add_files();
 }
 
-uint32_t JsFbUtils::AddLocationsAsync(JS::HandleValue locations)
+uint32_t Fb::AddLocationsAsync(JS::HandleValue locations)
 {
     static uint32_t g_task_id{};
     static constexpr uint32_t g_flags = playlist_incoming_item_filter_v2::op_flag_no_filter | playlist_incoming_item_filter_v2::op_flag_delay_ui;
@@ -285,7 +285,7 @@ uint32_t JsFbUtils::AddLocationsAsync(JS::HandleValue locations)
     return g_task_id;
 }
 
-bool JsFbUtils::CheckClipboardContents()
+bool Fb::CheckClipboardContents()
 {
     pfc::com_ptr_t<IDataObject> pDO;
     HRESULT hr = OleGetClipboard(pDO.receive_ptr());
@@ -300,12 +300,12 @@ bool JsFbUtils::CheckClipboardContents()
     return SUCCEEDED(hr);
 }
 
-void JsFbUtils::ClearPlaylist()
+void Fb::ClearPlaylist()
 {
     standard_commands::main_clear_playlist();
 }
 
-bool JsFbUtils::CopyHandleListToClipboard(JsFbMetadbHandleList* handles)
+bool Fb::CopyHandleListToClipboard(JsFbMetadbHandleList* handles)
 {
     qwr::QwrException::ExpectTrue(handles, "handles argument is null");
 
@@ -313,27 +313,27 @@ bool JsFbUtils::CopyHandleListToClipboard(JsFbMetadbHandleList* handles)
     return SUCCEEDED(OleSetClipboard(pDO.get_ptr()));
 }
 
-JSObject* JsFbUtils::CreateContextMenuManager()
+JSObject* Fb::CreateContextMenuManager()
 {
     return JsContextMenuManager::CreateJs(pJsCtx_);
 }
 
-JSObject* JsFbUtils::CreateHandleList()
+JSObject* Fb::CreateHandleList()
 {
     return JsFbMetadbHandleList::Constructor(pJsCtx_, JS::UndefinedHandleValue);
 }
 
-JSObject* JsFbUtils::CreateMainMenuManager()
+JSObject* Fb::CreateMainMenuManager()
 {
     return JsMainMenuManager::CreateJs(pJsCtx_);
 }
 
-JSObject* JsFbUtils::CreateProfiler(const std::string& name)
+JSObject* Fb::CreateProfiler(const std::string& name)
 {
     return JsFbProfiler::Constructor(pJsCtx_, name);
 }
 
-JSObject* JsFbUtils::CreateProfilerWithOpt(size_t optArgCount, const std::string& name)
+JSObject* Fb::CreateProfilerWithOpt(size_t optArgCount, const std::string& name)
 {
     switch (optArgCount)
     {
@@ -346,7 +346,7 @@ JSObject* JsFbUtils::CreateProfilerWithOpt(size_t optArgCount, const std::string
     }
 }
 
-uint32_t JsFbUtils::DoDragDrop(uint32_t hWnd, JsFbMetadbHandleList* handles, uint32_t okEffects, JS::HandleValue options)
+uint32_t Fb::DoDragDrop(uint32_t hWnd, JsFbMetadbHandleList* handles, uint32_t okEffects, JS::HandleValue options)
 {
     (void)hWnd;
     const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);
@@ -399,7 +399,7 @@ uint32_t JsFbUtils::DoDragDrop(uint32_t hWnd, JsFbMetadbHandleList* handles, uin
     return (DRAGDROP_S_CANCEL == hr ? DROPEFFECT_NONE : returnEffect);
 }
 
-uint32_t JsFbUtils::DoDragDropWithOpt(size_t optArgCount, uint32_t hWnd, JsFbMetadbHandleList* handles, uint32_t okEffects, JS::HandleValue options)
+uint32_t Fb::DoDragDropWithOpt(size_t optArgCount, uint32_t hWnd, JsFbMetadbHandleList* handles, uint32_t okEffects, JS::HandleValue options)
 {
     switch (optArgCount)
     {
@@ -412,12 +412,12 @@ uint32_t JsFbUtils::DoDragDropWithOpt(size_t optArgCount, uint32_t hWnd, JsFbMet
     }
 }
 
-void JsFbUtils::Exit()
+void Fb::Exit()
 {
     standard_commands::main_exit();
 }
 
-JSObject* JsFbUtils::GetAudioChunk(double requested_length, double offset)
+JSObject* Fb::GetAudioChunk(double requested_length, double offset)
 {
     audio_chunk_impl chunk;
     double time{};
@@ -430,7 +430,7 @@ JSObject* JsFbUtils::GetAudioChunk(double requested_length, double offset)
     return nullptr;
 }
 
-JSObject* JsFbUtils::GetAudioChunkWithOpt(size_t optArgCount, double requested_length, double offset)
+JSObject* Fb::GetAudioChunkWithOpt(size_t optArgCount, double requested_length, double offset)
 {
     switch (optArgCount)
     {
@@ -440,7 +440,7 @@ JSObject* JsFbUtils::GetAudioChunkWithOpt(size_t optArgCount, double requested_l
     }
 }
 
-JSObject* JsFbUtils::GetClipboardContents(uint32_t hWnd)
+JSObject* Fb::GetClipboardContents(uint32_t hWnd)
 {
     (void)hWnd;
     const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);
@@ -468,7 +468,7 @@ JSObject* JsFbUtils::GetClipboardContents(uint32_t hWnd)
     return JsFbMetadbHandleList::CreateJs(pJsCtx_, items);
 }
 
-JSObject* JsFbUtils::GetClipboardContentsWithOpt(size_t optArgCount, uint32_t hWnd)
+JSObject* Fb::GetClipboardContentsWithOpt(size_t optArgCount, uint32_t hWnd)
 {
     switch (optArgCount)
     {
@@ -481,7 +481,7 @@ JSObject* JsFbUtils::GetClipboardContentsWithOpt(size_t optArgCount, uint32_t hW
     }
 }
 
-std::string JsFbUtils::GetDSPPresets()
+std::string Fb::GetDSPPresets()
 {
     using json = nlohmann::json;
 
@@ -501,7 +501,7 @@ std::string JsFbUtils::GetDSPPresets()
     return j.dump(2);
 }
 
-JSObject* JsFbUtils::GetFocusItem(bool force)
+JSObject* Fb::GetFocusItem(bool force)
 {
     metadb_handle_ptr metadb;
     auto api = playlist_manager::get();
@@ -519,7 +519,7 @@ JSObject* JsFbUtils::GetFocusItem(bool force)
     return JsFbMetadbHandle::CreateJs(pJsCtx_, metadb);
 }
 
-JSObject* JsFbUtils::GetFocusItemWithOpt(size_t optArgCount, bool force)
+JSObject* Fb::GetFocusItemWithOpt(size_t optArgCount, bool force)
 {
     switch (optArgCount)
     {
@@ -532,7 +532,7 @@ JSObject* JsFbUtils::GetFocusItemWithOpt(size_t optArgCount, bool force)
     }
 }
 
-JSObject* JsFbUtils::GetLibraryItems()
+JSObject* Fb::GetLibraryItems()
 {
     metadb_handle_list items;
     library_manager::get()->get_all_items(items);
@@ -540,7 +540,7 @@ JSObject* JsFbUtils::GetLibraryItems()
     return JsFbMetadbHandleList::CreateJs(pJsCtx_, items);
 }
 
-pfc::string8_fast JsFbUtils::GetLibraryRelativePath(JsFbMetadbHandle* handle)
+pfc::string8_fast Fb::GetLibraryRelativePath(JsFbMetadbHandle* handle)
 {
     qwr::QwrException::ExpectTrue(handle, "handle argument is null");
 
@@ -549,7 +549,7 @@ pfc::string8_fast JsFbUtils::GetLibraryRelativePath(JsFbMetadbHandle* handle)
     return temp;
 }
 
-JSObject* JsFbUtils::GetNowPlaying()
+JSObject* Fb::GetNowPlaying()
 {
     metadb_handle_ptr metadb;
     if (!playback_control::get()->get_now_playing(metadb))
@@ -560,7 +560,7 @@ JSObject* JsFbUtils::GetNowPlaying()
     return JsFbMetadbHandle::CreateJs(pJsCtx_, metadb);
 }
 
-std::string JsFbUtils::GetOutputDevices()
+std::string Fb::GetOutputDevices()
 {
     using json = nlohmann::json;
 
@@ -584,7 +584,7 @@ std::string JsFbUtils::GetOutputDevices()
     return j.dump(2);
 }
 
-JSObject* JsFbUtils::GetQueryItems(JsFbMetadbHandleList* handles, const std::string& query)
+JSObject* Fb::GetQueryItems(JsFbMetadbHandleList* handles, const std::string& query)
 {
     qwr::QwrException::ExpectTrue(handles, "handles argument is null");
 
@@ -611,7 +611,7 @@ JSObject* JsFbUtils::GetQueryItems(JsFbMetadbHandleList* handles, const std::str
     return JsFbMetadbHandleList::CreateJs(pJsCtx_, dst_list);
 }
 
-JSObject* JsFbUtils::GetSelection()
+JSObject* Fb::GetSelection()
 {
     metadb_handle_list items;
     ui_selection_manager::get()->get_selection(items);
@@ -624,7 +624,7 @@ JSObject* JsFbUtils::GetSelection()
     return JsFbMetadbHandle::CreateJs(pJsCtx_, items[0]);
 }
 
-JSObject* JsFbUtils::GetSelections(uint32_t flags)
+JSObject* Fb::GetSelections(uint32_t flags)
 {
     metadb_handle_list items;
     ui_selection_manager_v2::get()->get_selection(items, flags);
@@ -632,7 +632,7 @@ JSObject* JsFbUtils::GetSelections(uint32_t flags)
     return JsFbMetadbHandleList::CreateJs(pJsCtx_, items);
 }
 
-JSObject* JsFbUtils::GetSelectionsWithOpt(size_t optArgCount, uint32_t flags)
+JSObject* Fb::GetSelectionsWithOpt(size_t optArgCount, uint32_t flags)
 {
     switch (optArgCount)
     {
@@ -645,7 +645,7 @@ JSObject* JsFbUtils::GetSelectionsWithOpt(size_t optArgCount, uint32_t flags)
     }
 }
 
-uint32_t JsFbUtils::GetSelectionType()
+uint32_t Fb::GetSelectionType()
 {
     const GUID type = ui_selection_manager_v2::get()->get_selection_type(0);
     const auto holderIdOpt = GetSelectionHolderTypeFromGuid(type);
@@ -653,61 +653,61 @@ uint32_t JsFbUtils::GetSelectionType()
     return holderIdOpt.value_or(0);
 }
 
-bool JsFbUtils::IsLibraryEnabled()
+bool Fb::IsLibraryEnabled()
 {
     return library_manager::get()->is_library_enabled();
 }
 
-bool JsFbUtils::IsMainMenuCommandChecked(const std::string& command)
+bool Fb::IsMainMenuCommandChecked(const std::string& command)
 {
     const auto status = utils::GetMainmenuCommandStatusByName(command);
     return (mainmenu_commands::flag_checked & status
              || mainmenu_commands::flag_radiochecked & status);
 }
 
-bool JsFbUtils::IsMetadbInMediaLibrary(JsFbMetadbHandle* handle)
+bool Fb::IsMetadbInMediaLibrary(JsFbMetadbHandle* handle)
 {
     qwr::QwrException::ExpectTrue(handle, "handle argument is null");
 
     return library_manager::get()->is_item_in_library(handle->GetHandle());
 }
 
-void JsFbUtils::LoadPlaylist()
+void Fb::LoadPlaylist()
 {
     standard_commands::main_load_playlist();
 }
 
-void JsFbUtils::Next()
+void Fb::Next()
 {
     standard_commands::main_next();
 }
 
-void JsFbUtils::Pause()
+void Fb::Pause()
 {
     standard_commands::main_pause();
 }
 
-void JsFbUtils::Play()
+void Fb::Play()
 {
     standard_commands::main_play();
 }
 
-void JsFbUtils::PlayOrPause()
+void Fb::PlayOrPause()
 {
     standard_commands::main_play_or_pause();
 }
 
-void JsFbUtils::Prev()
+void Fb::Prev()
 {
     standard_commands::main_previous();
 }
 
-void JsFbUtils::Random()
+void Fb::Random()
 {
     standard_commands::main_random();
 }
 
-void JsFbUtils::RegisterMainMenuCommand(uint32_t id, const std::string& name, const std::optional<std::string>& description)
+void Fb::RegisterMainMenuCommand(uint32_t id, const std::string& name, const std::optional<std::string>& description)
 {
     const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);
     qwr::QwrException::ExpectTrue(hPanel, "Method called before fb2k was initialized completely");
@@ -715,7 +715,7 @@ void JsFbUtils::RegisterMainMenuCommand(uint32_t id, const std::string& name, co
     DynamicMainMenuManager::Get().RegisterCommand(hPanel, id, name, description);
 }
 
-void JsFbUtils::RegisterMainMenuCommandWithOpt(size_t optArgCount, uint32_t id, const std::string& name, const std::optional<std::string>& description)
+void Fb::RegisterMainMenuCommandWithOpt(size_t optArgCount, uint32_t id, const std::string& name, const std::optional<std::string>& description)
 {
     switch (optArgCount)
     {
@@ -728,12 +728,12 @@ void JsFbUtils::RegisterMainMenuCommandWithOpt(size_t optArgCount, uint32_t id, 
     }
 }
 
-void JsFbUtils::Restart()
+void Fb::Restart()
 {
     standard_commands::main_restart();
 }
 
-bool JsFbUtils::RunContextCommand(const std::string& command, uint32_t flags)
+bool Fb::RunContextCommand(const std::string& command, uint32_t flags)
 {
     metadb_handle_list dummy_list;
     try
@@ -747,7 +747,7 @@ bool JsFbUtils::RunContextCommand(const std::string& command, uint32_t flags)
     }
 }
 
-bool JsFbUtils::RunContextCommandWithOpt(size_t optArgCount, const std::string& command, uint32_t flags)
+bool Fb::RunContextCommandWithOpt(size_t optArgCount, const std::string& command, uint32_t flags)
 {
     switch (optArgCount)
     {
@@ -760,7 +760,7 @@ bool JsFbUtils::RunContextCommandWithOpt(size_t optArgCount, const std::string& 
     }
 }
 
-bool JsFbUtils::RunContextCommandWithMetadb(const std::string& command, JS::HandleValue handle, uint32_t flags)
+bool Fb::RunContextCommandWithMetadb(const std::string& command, JS::HandleValue handle, uint32_t flags)
 {
     qwr::QwrException::ExpectTrue(handle.isObject(), "handle argument is invalid");
 
@@ -791,7 +791,7 @@ bool JsFbUtils::RunContextCommandWithMetadb(const std::string& command, JS::Hand
     }
 }
 
-bool JsFbUtils::RunContextCommandWithMetadbWithOpt(size_t optArgCount, const std::string& command, JS::HandleValue handle, uint32_t flags)
+bool Fb::RunContextCommandWithMetadbWithOpt(size_t optArgCount, const std::string& command, JS::HandleValue handle, uint32_t flags)
 {
     switch (optArgCount)
     {
@@ -804,7 +804,7 @@ bool JsFbUtils::RunContextCommandWithMetadbWithOpt(size_t optArgCount, const std
     }
 }
 
-bool JsFbUtils::RunMainMenuCommand(const std::string& command)
+bool Fb::RunMainMenuCommand(const std::string& command)
 {
     try
     {
@@ -817,12 +817,12 @@ bool JsFbUtils::RunMainMenuCommand(const std::string& command)
     }
 }
 
-void JsFbUtils::SavePlaylist()
+void Fb::SavePlaylist()
 {
     standard_commands::main_save_playlist();
 }
 
-void JsFbUtils::SetDSPPreset(uint32_t idx)
+void Fb::SetDSPPreset(uint32_t idx)
 {
     auto api = dsp_config_manager_v2::get();
     t_size count = api->get_preset_count();
@@ -832,7 +832,7 @@ void JsFbUtils::SetDSPPreset(uint32_t idx)
     api->select_preset(idx);
 }
 
-void JsFbUtils::SetOutputDevice(const std::wstring& output, const std::wstring& device)
+void Fb::SetOutputDevice(const std::wstring& output, const std::wstring& device)
 {
     GUID output_id;
     GUID device_id;
@@ -843,18 +843,18 @@ void JsFbUtils::SetOutputDevice(const std::wstring& output, const std::wstring& 
     }
 }
 
-void JsFbUtils::ShowConsole()
+void Fb::ShowConsole()
 {
     constexpr GUID guid_main_show_console = { 0x5b652d25, 0xce44, 0x4737, { 0x99, 0xbb, 0xa3, 0xcf, 0x2a, 0xeb, 0x35, 0xcc } };
     standard_commands::run_main(guid_main_show_console);
 }
 
-void JsFbUtils::ShowLibrarySearchUI(const std::string& query)
+void Fb::ShowLibrarySearchUI(const std::string& query)
 {
     library_search_ui::get()->show(query.c_str());
 }
 
-void JsFbUtils::ShowPictureViewer(const std::wstring& image_path)
+void Fb::ShowPictureViewer(const std::wstring& image_path)
 {
     pfc::com_ptr_t<IStream> stream;
     if FAILED(SHCreateStreamOnFileEx(image_path.data(), STGM_READ | STGM_SHARE_DENY_WRITE, GENERIC_READ, FALSE, nullptr, stream.receive_ptr()))
@@ -875,14 +875,14 @@ void JsFbUtils::ShowPictureViewer(const std::wstring& image_path)
     }
 }
 
-void JsFbUtils::ShowPopupMessage(const std::string& msg, const std::string& title)
+void Fb::ShowPopupMessage(const std::string& msg, const std::string& title)
 {
     fb2k::inMainThread([msg, title] {
         popup_message::g_show(msg.c_str(), title.c_str());
     });
 }
 
-void JsFbUtils::ShowPopupMessageWithOpt(size_t optArgCount, const std::string& msg, const std::string& title)
+void Fb::ShowPopupMessageWithOpt(size_t optArgCount, const std::string& msg, const std::string& title)
 {
     switch (optArgCount)
     {
@@ -895,22 +895,22 @@ void JsFbUtils::ShowPopupMessageWithOpt(size_t optArgCount, const std::string& m
     }
 }
 
-void JsFbUtils::ShowPreferences()
+void Fb::ShowPreferences()
 {
     standard_commands::main_preferences();
 }
 
-void JsFbUtils::Stop()
+void Fb::Stop()
 {
     standard_commands::main_stop();
 }
 
-JSObject* JsFbUtils::TitleFormat(const std::string& expression)
+JSObject* Fb::TitleFormat(const std::string& expression)
 {
     return JsFbTitleFormat::Constructor(pJsCtx_, expression);
 }
 
-void JsFbUtils::UnregisterMainMenuCommand(uint32_t id)
+void Fb::UnregisterMainMenuCommand(uint32_t id)
 {
     const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);
     qwr::QwrException::ExpectTrue(hPanel, "Method called before fb2k was initialized completely");
@@ -918,114 +918,114 @@ void JsFbUtils::UnregisterMainMenuCommand(uint32_t id)
     DynamicMainMenuManager::Get().UnregisterCommand(hPanel, id);
 }
 
-void JsFbUtils::VolumeDown()
+void Fb::VolumeDown()
 {
     standard_commands::main_volume_down();
 }
 
-void JsFbUtils::VolumeMute()
+void Fb::VolumeMute()
 {
     standard_commands::main_volume_mute();
 }
 
-void JsFbUtils::VolumeUp()
+void Fb::VolumeUp()
 {
     standard_commands::main_volume_up();
 }
 
-bool JsFbUtils::get_AlwaysOnTop()
+bool Fb::get_AlwaysOnTop()
 {
     return config_object::g_get_data_bool_simple(standard_config_objects::bool_ui_always_on_top, false);
 }
 
-std::string JsFbUtils::get_ComponentPath()
+std::string Fb::get_ComponentPath()
 {
     return (qwr::path::Component() / "").u8string();
 }
 
-bool JsFbUtils::get_CursorFollowPlayback()
+bool Fb::get_CursorFollowPlayback()
 {
     return config_object::g_get_data_bool_simple(standard_config_objects::bool_cursor_follows_playback, false);
 }
 
-std::string JsFbUtils::get_FoobarPath()
+std::string Fb::get_FoobarPath()
 {
     return (qwr::path::Foobar2000() / "").u8string();
 }
 
-bool JsFbUtils::get_IsPaused()
+bool Fb::get_IsPaused()
 {
     return playback_control::get()->is_paused();
 }
 
-bool JsFbUtils::get_IsPlaying()
+bool Fb::get_IsPlaying()
 {
     return playback_control::get()->is_playing();
 }
 
-bool JsFbUtils::get_PlaybackFollowCursor()
+bool Fb::get_PlaybackFollowCursor()
 {
     return config_object::g_get_data_bool_simple(standard_config_objects::bool_playback_follows_cursor, false);
 }
 
-double JsFbUtils::get_PlaybackLength()
+double Fb::get_PlaybackLength()
 {
     return playback_control::get()->playback_get_length();
 }
 
-double JsFbUtils::get_PlaybackTime()
+double Fb::get_PlaybackTime()
 {
     return playback_control::get()->playback_get_position();
 }
 
-std::string JsFbUtils::get_ProfilePath()
+std::string Fb::get_ProfilePath()
 {
     return (qwr::path::Profile() / "").u8string();
 }
 
-uint32_t JsFbUtils::get_ReplaygainMode()
+uint32_t Fb::get_ReplaygainMode()
 {
     t_replaygain_config rg;
     replaygain_manager::get()->get_core_settings(rg);
     return rg.m_source_mode;
 }
 
-bool JsFbUtils::get_StopAfterCurrent()
+bool Fb::get_StopAfterCurrent()
 {
     return playback_control::get()->get_stop_after_current();
 }
 
-std::string JsFbUtils::get_Version()
+std::string Fb::get_Version()
 {
     return core_version_info_v2::get()->get_version_as_text();
 }
 
-float JsFbUtils::get_Volume()
+float Fb::get_Volume()
 {
     return playback_control::get()->get_volume();
 }
 
-void JsFbUtils::put_AlwaysOnTop(bool p)
+void Fb::put_AlwaysOnTop(bool p)
 {
     config_object::g_set_data_bool(standard_config_objects::bool_ui_always_on_top, p);
 }
 
-void JsFbUtils::put_CursorFollowPlayback(bool p)
+void Fb::put_CursorFollowPlayback(bool p)
 {
     config_object::g_set_data_bool(standard_config_objects::bool_cursor_follows_playback, p);
 }
 
-void JsFbUtils::put_PlaybackFollowCursor(bool p)
+void Fb::put_PlaybackFollowCursor(bool p)
 {
     config_object::g_set_data_bool(standard_config_objects::bool_playback_follows_cursor, p);
 }
 
-void JsFbUtils::put_PlaybackTime(double time)
+void Fb::put_PlaybackTime(double time)
 {
     playback_control::get()->playback_seek(time);
 }
 
-void JsFbUtils::put_ReplaygainMode(uint32_t p)
+void Fb::put_ReplaygainMode(uint32_t p)
 {
     // Take care when changing this array:
     // guid indexes are part of SMP API
@@ -1042,17 +1042,17 @@ void JsFbUtils::put_ReplaygainMode(uint32_t p)
     playback_control_v3::get()->restart();
 }
 
-void JsFbUtils::put_StopAfterCurrent(bool p)
+void Fb::put_StopAfterCurrent(bool p)
 {
     playback_control::get()->set_stop_after_current(p);
 }
 
-void JsFbUtils::put_Volume(float value)
+void Fb::put_Volume(float value)
 {
     playback_control::get()->set_volume(value);
 }
 
-JsFbUtils::DoDragDropOptions JsFbUtils::ParseDoDragDropOptions(JS::HandleValue options)
+Fb::DoDragDropOptions Fb::ParseDoDragDropOptions(JS::HandleValue options)
 {
     DoDragDropOptions parsedoptions;
     if (!options.isNullOrUndefined())

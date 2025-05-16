@@ -16,8 +16,8 @@ class JsFbMetadbHandle;
 class JsFbMetadbHandleList;
 class JsGdiBitmap;
 
-class JsFbUtils
-    : public JsObjectBase<JsFbUtils>
+class Fb
+    : public JsObjectBase<Fb>
 {
 public:
     static constexpr bool HasProto = false;
@@ -29,9 +29,9 @@ public:
     static const JSPropertySpec* JsProperties;
 
 public:
-    ~JsFbUtils() override = default;
+    ~Fb() override = default;
 
-    static std::unique_ptr<JsFbUtils> CreateNative(JSContext* cx);
+    static std::unique_ptr<Fb> CreateNative(JSContext* cx);
     static size_t GetInternalSize();
 
 public:
@@ -125,7 +125,7 @@ public:
     void put_Volume(float value);
 
 private:
-    JsFbUtils(JSContext* cx);
+    Fb(JSContext* cx);
 
     struct DoDragDropOptions
     {

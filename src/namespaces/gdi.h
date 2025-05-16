@@ -12,8 +12,8 @@ struct JSClass;
 namespace mozjs
 {
 
-class JsGdiUtils
-    : public JsObjectBase<JsGdiUtils>
+class Gdi
+    : public JsObjectBase<Gdi>
 {
 public:
     static constexpr bool HasProto = false;
@@ -25,9 +25,9 @@ public:
     static const JSPropertySpec* JsProperties;
 
 public:
-    ~JsGdiUtils() override = default;
+    ~Gdi() override = default;
 
-    static std::unique_ptr<JsGdiUtils> CreateNative(JSContext* cx);
+    static std::unique_ptr<Gdi> CreateNative(JSContext* cx);
     static size_t GetInternalSize();
 
 public:
@@ -39,7 +39,7 @@ public:
     JSObject* LoadImageAsyncV2(uint32_t hWnd, const std::wstring& path);
 
 private:
-    JsGdiUtils(JSContext* cx);
+    Gdi(JSContext* cx);
 
 private:
     JSContext* pJsCtx_ = nullptr;

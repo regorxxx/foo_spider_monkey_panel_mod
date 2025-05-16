@@ -44,7 +44,7 @@ JSClassOps jsOps = {
     nullptr,
     nullptr,
     nullptr,
-    JsUtils::FinalizeJsObject,
+    Utils::FinalizeJsObject,
     nullptr,
     nullptr,
     nullptr,
@@ -57,39 +57,39 @@ JSClass jsClass = {
     &jsOps
 };
 
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(CheckComponent, JsUtils::CheckComponent, JsUtils::CheckComponentWithOpt, 1);
-MJS_DEFINE_JS_FN_FROM_NATIVE(CheckFont, JsUtils::CheckFont);
-MJS_DEFINE_JS_FN_FROM_NATIVE(ColourPicker, JsUtils::ColourPicker);
-MJS_DEFINE_JS_FN_FROM_NATIVE(DetectCharset, JsUtils::DetectCharset);
-MJS_DEFINE_JS_FN_FROM_NATIVE(EditTextFile, JsUtils::EditTextFile);
-MJS_DEFINE_JS_FN_FROM_NATIVE(FileExists, JsUtils::FileExists);
-MJS_DEFINE_JS_FN_FROM_NATIVE(FileTest, JsUtils::FileTest);
-MJS_DEFINE_JS_FN_FROM_NATIVE(FormatDuration, JsUtils::FormatDuration);
-MJS_DEFINE_JS_FN_FROM_NATIVE(FormatFileSize, JsUtils::FormatFileSize);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetAlbumArtAsync, JsUtils::GetAlbumArtAsync, JsUtils::GetAlbumArtAsyncWithOpt, 4);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetAlbumArtAsyncV2, JsUtils::GetAlbumArtAsyncV2, JsUtils::GetAlbumArtAsyncV2WithOpt, 4);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetAlbumArtEmbedded, JsUtils::GetAlbumArtEmbedded, JsUtils::GetAlbumArtEmbeddedWithOpt, 1);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetAlbumArtV2, JsUtils::GetAlbumArtV2, JsUtils::GetAlbumArtV2WithOpt, 2);
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetClipboardText, JsUtils::GetClipboardText);
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetFileSize, JsUtils::GetFileSize);
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetPackageInfo, JsUtils::GetPackageInfo);
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetPackagePath, JsUtils::GetPackagePath);
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetSysColour, JsUtils::GetSysColour);
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetSystemMetrics, JsUtils::GetSystemMetrics);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(Glob, JsUtils::Glob, JsUtils::GlobWithOpt, 2);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(InputBox, JsUtils::InputBox, JsUtils::InputBoxWithOpt, 2);
-MJS_DEFINE_JS_FN_FROM_NATIVE(IsDirectory, JsUtils::IsDirectory);
-MJS_DEFINE_JS_FN_FROM_NATIVE(IsFile, JsUtils::IsFile);
-MJS_DEFINE_JS_FN_FROM_NATIVE(IsKeyPressed, JsUtils::IsKeyPressed);
-MJS_DEFINE_JS_FN_FROM_NATIVE(MapString, JsUtils::MapString);
-MJS_DEFINE_JS_FN_FROM_NATIVE(PathWildcardMatch, JsUtils::PathWildcardMatch);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(ReadINI, JsUtils::ReadINI, JsUtils::ReadINIWithOpt, 1);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(ReadTextFile, JsUtils::ReadTextFile, JsUtils::ReadTextFileWithOpt, 1);
-MJS_DEFINE_JS_FN_FROM_NATIVE(SetClipboardText, JsUtils::SetClipboardText);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(ShowHtmlDialog, JsUtils::ShowHtmlDialog, JsUtils::ShowHtmlDialogWithOpt, 1);
-MJS_DEFINE_JS_FN_FROM_NATIVE(SplitFilePath, JsUtils::SplitFilePath);
-MJS_DEFINE_JS_FN_FROM_NATIVE(WriteINI, JsUtils::WriteINI);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(WriteTextFile, JsUtils::WriteTextFile, JsUtils::WriteTextFileWithOpt, 1);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(CheckComponent, Utils::CheckComponent, Utils::CheckComponentWithOpt, 1);
+MJS_DEFINE_JS_FN_FROM_NATIVE(CheckFont, Utils::CheckFont);
+MJS_DEFINE_JS_FN_FROM_NATIVE(ColourPicker, Utils::ColourPicker);
+MJS_DEFINE_JS_FN_FROM_NATIVE(DetectCharset, Utils::DetectCharset);
+MJS_DEFINE_JS_FN_FROM_NATIVE(EditTextFile, Utils::EditTextFile);
+MJS_DEFINE_JS_FN_FROM_NATIVE(FileExists, Utils::FileExists);
+MJS_DEFINE_JS_FN_FROM_NATIVE(FileTest, Utils::FileTest);
+MJS_DEFINE_JS_FN_FROM_NATIVE(FormatDuration, Utils::FormatDuration);
+MJS_DEFINE_JS_FN_FROM_NATIVE(FormatFileSize, Utils::FormatFileSize);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetAlbumArtAsync, Utils::GetAlbumArtAsync, Utils::GetAlbumArtAsyncWithOpt, 4);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetAlbumArtAsyncV2, Utils::GetAlbumArtAsyncV2, Utils::GetAlbumArtAsyncV2WithOpt, 4);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetAlbumArtEmbedded, Utils::GetAlbumArtEmbedded, Utils::GetAlbumArtEmbeddedWithOpt, 1);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetAlbumArtV2, Utils::GetAlbumArtV2, Utils::GetAlbumArtV2WithOpt, 2);
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetClipboardText, Utils::GetClipboardText);
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetFileSize, Utils::GetFileSize);
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetPackageInfo, Utils::GetPackageInfo);
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetPackagePath, Utils::GetPackagePath);
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetSysColour, Utils::GetSysColour);
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetSystemMetrics, Utils::GetSystemMetrics);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(Glob, Utils::Glob, Utils::GlobWithOpt, 2);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(InputBox, Utils::InputBox, Utils::InputBoxWithOpt, 2);
+MJS_DEFINE_JS_FN_FROM_NATIVE(IsDirectory, Utils::IsDirectory);
+MJS_DEFINE_JS_FN_FROM_NATIVE(IsFile, Utils::IsFile);
+MJS_DEFINE_JS_FN_FROM_NATIVE(IsKeyPressed, Utils::IsKeyPressed);
+MJS_DEFINE_JS_FN_FROM_NATIVE(MapString, Utils::MapString);
+MJS_DEFINE_JS_FN_FROM_NATIVE(PathWildcardMatch, Utils::PathWildcardMatch);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(ReadINI, Utils::ReadINI, Utils::ReadINIWithOpt, 1);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(ReadTextFile, Utils::ReadTextFile, Utils::ReadTextFileWithOpt, 1);
+MJS_DEFINE_JS_FN_FROM_NATIVE(SetClipboardText, Utils::SetClipboardText);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(ShowHtmlDialog, Utils::ShowHtmlDialog, Utils::ShowHtmlDialogWithOpt, 1);
+MJS_DEFINE_JS_FN_FROM_NATIVE(SplitFilePath, Utils::SplitFilePath);
+MJS_DEFINE_JS_FN_FROM_NATIVE(WriteINI, Utils::WriteINI);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(WriteTextFile, Utils::WriteTextFile, Utils::WriteTextFileWithOpt, 1);
 
 constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
     {
@@ -129,7 +129,7 @@ constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
         JS_FS_END,
     });
 
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_Version, JsUtils::get_Version)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_Version, Utils::get_Version)
 
 constexpr auto jsProperties = std::to_array<JSPropertySpec>(
     {
@@ -142,27 +142,27 @@ constexpr auto jsProperties = std::to_array<JSPropertySpec>(
 namespace mozjs
 {
 
-const JSClass JsUtils::JsClass = jsClass;
-const JSFunctionSpec* JsUtils::JsFunctions = jsFunctions.data();
-const JSPropertySpec* JsUtils::JsProperties = jsProperties.data();
+const JSClass Utils::JsClass = jsClass;
+const JSFunctionSpec* Utils::JsFunctions = jsFunctions.data();
+const JSPropertySpec* Utils::JsProperties = jsProperties.data();
 
-JsUtils::JsUtils(JSContext* cx)
+Utils::Utils(JSContext* cx)
     : pJsCtx_(cx)
 {
 }
 
-std::unique_ptr<JsUtils>
-JsUtils::CreateNative(JSContext* cx)
+std::unique_ptr<Utils>
+Utils::CreateNative(JSContext* cx)
 {
-    return std::unique_ptr<JsUtils>(new JsUtils(cx));
+    return std::unique_ptr<Utils>(new Utils(cx));
 }
 
-size_t JsUtils::GetInternalSize()
+size_t Utils::GetInternalSize()
 {
     return 0;
 }
 
-bool JsUtils::CheckComponent(const std::string& name, bool is_dll) const
+bool Utils::CheckComponent(const std::string& name, bool is_dll) const
 {
     pfc::string8_fast temp;
     for (service_enum_t<componentversion> e; !e.finished(); ++e)
@@ -186,7 +186,7 @@ bool JsUtils::CheckComponent(const std::string& name, bool is_dll) const
     return false;
 }
 
-bool JsUtils::CheckComponentWithOpt(size_t optArgCount, const std::string& name, bool is_dll) const
+bool Utils::CheckComponentWithOpt(size_t optArgCount, const std::string& name, bool is_dll) const
 {
     switch (optArgCount)
     {
@@ -199,7 +199,7 @@ bool JsUtils::CheckComponentWithOpt(size_t optArgCount, const std::string& name,
     }
 }
 
-bool JsUtils::CheckFont(const std::wstring& name) const
+bool Utils::CheckFont(const std::wstring& name) const
 {
     Gdiplus::InstalledFontCollection font_collection;
     const int count = font_collection.GetFamilyCount();
@@ -226,7 +226,7 @@ bool JsUtils::CheckFont(const std::wstring& name) const
     return (it != font_families.cend());
 }
 
-uint32_t JsUtils::ColourPicker(uint32_t, uint32_t default_colour)
+uint32_t Utils::ColourPicker(uint32_t, uint32_t default_colour)
 {
     static std::array<COLORREF, 16> colours{};
     const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);
@@ -237,14 +237,14 @@ uint32_t JsUtils::ColourPicker(uint32_t, uint32_t default_colour)
     return smp::colour::ColorrefToArgb(colour);
 }
 
-uint32_t JsUtils::DetectCharset(const std::wstring& path) const
+uint32_t Utils::DetectCharset(const std::wstring& path) const
 {
     const auto cleanedPath = fs::path(path).lexically_normal();
 
     return static_cast<uint32_t>(qwr::file::DetectFileCharset(cleanedPath));
 }
 
-void JsUtils::EditTextFile(const std::wstring& path)
+void Utils::EditTextFile(const std::wstring& path)
 {
     const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);
     qwr::QwrException::ExpectTrue(hPanel, "Method called before fb2k was initialized completely");
@@ -260,13 +260,13 @@ void JsUtils::EditTextFile(const std::wstring& path)
     smp::EditTextFile(hPanel, fs::path{ path }, false, false);
 }
 
-bool JsUtils::FileExists(const std::wstring& path) const
+bool Utils::FileExists(const std::wstring& path) const
 {
     std::error_code ec;
     return fs::exists(path, ec);
 }
 
-JS::Value JsUtils::FileTest(const std::wstring& path, const std::wstring& mode)
+JS::Value Utils::FileTest(const std::wstring& path, const std::wstring& mode)
 {
     if (L"e" == mode) // exists
     {
@@ -302,17 +302,17 @@ JS::Value JsUtils::FileTest(const std::wstring& path, const std::wstring& mode)
     }
 }
 
-std::string JsUtils::FormatDuration(double p) const
+std::string Utils::FormatDuration(double p) const
 {
     return std::string(pfc::format_time_ex(p, 0));
 }
 
-std::string JsUtils::FormatFileSize(uint64_t p) const
+std::string Utils::FormatFileSize(uint64_t p) const
 {
     return std::string(pfc::format_file_size_short(p));
 }
 
-void JsUtils::GetAlbumArtAsync(uint32_t hWnd, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
+void Utils::GetAlbumArtAsync(uint32_t hWnd, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
 {
     (void)hWnd;
     const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);
@@ -323,7 +323,7 @@ void JsUtils::GetAlbumArtAsync(uint32_t hWnd, JsFbMetadbHandle* handle, uint32_t
     smp::art::GetAlbumArtAsync(hPanel, handle->GetHandle(), smp::art::LoadingOptions{ art_id, need_stub, only_embed, no_load });
 }
 
-void JsUtils::GetAlbumArtAsyncWithOpt(size_t optArgCount, uint32_t hWnd, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
+void Utils::GetAlbumArtAsyncWithOpt(size_t optArgCount, uint32_t hWnd, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
 {
     switch (optArgCount)
     {
@@ -342,7 +342,7 @@ void JsUtils::GetAlbumArtAsyncWithOpt(size_t optArgCount, uint32_t hWnd, JsFbMet
     }
 }
 
-JSObject* JsUtils::GetAlbumArtAsyncV2(uint32_t hWnd, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
+JSObject* Utils::GetAlbumArtAsyncV2(uint32_t hWnd, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
 {
     (void)hWnd;
     const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);
@@ -352,7 +352,7 @@ JSObject* JsUtils::GetAlbumArtAsyncV2(uint32_t hWnd, JsFbMetadbHandle* handle, u
     return mozjs::art::GetAlbumArtPromise(pJsCtx_, hPanel, handle->GetHandle(), smp::art::LoadingOptions{ art_id, need_stub, only_embed, no_load });
 }
 
-JSObject* JsUtils::GetAlbumArtAsyncV2WithOpt(size_t optArgCount, uint32_t hWnd, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
+JSObject* Utils::GetAlbumArtAsyncV2WithOpt(size_t optArgCount, uint32_t hWnd, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
 {
     switch (optArgCount)
     {
@@ -371,7 +371,7 @@ JSObject* JsUtils::GetAlbumArtAsyncV2WithOpt(size_t optArgCount, uint32_t hWnd, 
     }
 }
 
-JSObject* JsUtils::GetAlbumArtEmbedded(const std::string& rawpath, uint32_t art_id)
+JSObject* Utils::GetAlbumArtEmbedded(const std::string& rawpath, uint32_t art_id)
 {
     std::unique_ptr<Gdiplus::Bitmap> artImage(smp::art::GetBitmapFromEmbeddedData(rawpath, art_id));
     if (!artImage)
@@ -382,7 +382,7 @@ JSObject* JsUtils::GetAlbumArtEmbedded(const std::string& rawpath, uint32_t art_
     return JsGdiBitmap::CreateJs(pJsCtx_, std::move(artImage));
 }
 
-JSObject* JsUtils::GetAlbumArtEmbeddedWithOpt(size_t optArgCount, const std::string& rawpath, uint32_t art_id)
+JSObject* Utils::GetAlbumArtEmbeddedWithOpt(size_t optArgCount, const std::string& rawpath, uint32_t art_id)
 {
     switch (optArgCount)
     {
@@ -395,7 +395,7 @@ JSObject* JsUtils::GetAlbumArtEmbeddedWithOpt(size_t optArgCount, const std::str
     }
 }
 
-JSObject* JsUtils::GetAlbumArtV2(JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub)
+JSObject* Utils::GetAlbumArtV2(JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub)
 {
     qwr::QwrException::ExpectTrue(handle, "handle argument is null");
 
@@ -408,7 +408,7 @@ JSObject* JsUtils::GetAlbumArtV2(JsFbMetadbHandle* handle, uint32_t art_id, bool
     return JsGdiBitmap::CreateJs(pJsCtx_, std::move(artImage));
 }
 
-JSObject* JsUtils::GetAlbumArtV2WithOpt(size_t optArgCount, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub)
+JSObject* Utils::GetAlbumArtV2WithOpt(size_t optArgCount, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub)
 {
     switch (optArgCount)
     {
@@ -423,14 +423,14 @@ JSObject* JsUtils::GetAlbumArtV2WithOpt(size_t optArgCount, JsFbMetadbHandle* ha
     }
 }
 
-std::string JsUtils::GetClipboardText() const
+std::string Utils::GetClipboardText() const
 {
     pfc::string8 text;
     uGetClipboardString(text);
     return std::string(text);
 }
 
-uint64_t JsUtils::GetFileSize(const std::wstring& path) const
+uint64_t Utils::GetFileSize(const std::wstring& path) const
 {
     if (fs::is_regular_file(path))
     {
@@ -440,7 +440,7 @@ uint64_t JsUtils::GetFileSize(const std::wstring& path) const
     return {};
 }
 
-JSObject* JsUtils::GetPackageInfo(const std::string& packageId) const
+JSObject* Utils::GetPackageInfo(const std::string& packageId) const
 {
     const auto packagePathOpt = config::FindPackage(packageId);
     if (!packagePathOpt)
@@ -463,7 +463,7 @@ JSObject* JsUtils::GetPackageInfo(const std::string& packageId) const
     return jsObject;
 }
 
-std::string JsUtils::GetPackagePath(const std::string& packageId) const
+std::string Utils::GetPackagePath(const std::string& packageId) const
 {
     const auto packagePathOpt = config::FindPackage(packageId);
     qwr::QwrException::ExpectTrue(packagePathOpt.has_value(), "Unknown package: {}", packageId);
@@ -471,7 +471,7 @@ std::string JsUtils::GetPackagePath(const std::string& packageId) const
     return packagePathOpt->u8string();
 }
 
-uint32_t JsUtils::GetSysColour(uint32_t index) const
+uint32_t Utils::GetSysColour(uint32_t index) const
 {
     const auto hBrush = ::GetSysColorBrush(index); ///< no need to call DeleteObject here
     qwr::QwrException::ExpectTrue(hBrush, "Invalid color index: {}", index);
@@ -479,12 +479,12 @@ uint32_t JsUtils::GetSysColour(uint32_t index) const
     return smp::colour::ColorrefToArgb(::GetSysColor(index));
 }
 
-uint32_t JsUtils::GetSystemMetrics(uint32_t index) const
+uint32_t Utils::GetSystemMetrics(uint32_t index) const
 {
     return ::GetSystemMetrics(index);
 }
 
-JS::Value JsUtils::Glob(const std::string& pattern, uint32_t exc_mask, uint32_t inc_mask)
+JS::Value Utils::Glob(const std::string& pattern, uint32_t exc_mask, uint32_t inc_mask)
 {
     std::vector<std::string> files;
     {
@@ -518,7 +518,7 @@ JS::Value JsUtils::Glob(const std::string& pattern, uint32_t exc_mask, uint32_t 
     return jsValue;
 }
 
-JS::Value JsUtils::GlobWithOpt(size_t optArgCount, const std::string& pattern, uint32_t exc_mask, uint32_t inc_mask)
+JS::Value Utils::GlobWithOpt(size_t optArgCount, const std::string& pattern, uint32_t exc_mask, uint32_t inc_mask)
 {
     switch (optArgCount)
     {
@@ -533,7 +533,7 @@ JS::Value JsUtils::GlobWithOpt(size_t optArgCount, const std::string& pattern, u
     }
 }
 
-std::string JsUtils::InputBox(uint32_t hWnd, const std::string& prompt, const std::string& caption, const std::string& def, bool error_on_cancel)
+std::string Utils::InputBox(uint32_t hWnd, const std::string& prompt, const std::string& caption, const std::string& def, bool error_on_cancel)
 {
     (void)hWnd;
     const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);
@@ -559,7 +559,7 @@ std::string JsUtils::InputBox(uint32_t hWnd, const std::string& prompt, const st
     return def;
 }
 
-std::string JsUtils::InputBoxWithOpt(size_t optArgCount, uint32_t hWnd, const std::string& prompt, const std::string& caption, const std::string& def, bool error_on_cancel)
+std::string Utils::InputBoxWithOpt(size_t optArgCount, uint32_t hWnd, const std::string& prompt, const std::string& caption, const std::string& def, bool error_on_cancel)
 {
     switch (optArgCount)
     {
@@ -574,24 +574,24 @@ std::string JsUtils::InputBoxWithOpt(size_t optArgCount, uint32_t hWnd, const st
     }
 }
 
-bool JsUtils::IsDirectory(const std::wstring& path) const
+bool Utils::IsDirectory(const std::wstring& path) const
 {
     std::error_code ec;
     return fs::is_directory(path, ec);
 }
 
-bool JsUtils::IsFile(const std::wstring& path) const
+bool Utils::IsFile(const std::wstring& path) const
 {
     std::error_code ec;
     return fs::is_regular_file(path, ec);
 }
 
-bool JsUtils::IsKeyPressed(uint32_t vkey) const
+bool Utils::IsKeyPressed(uint32_t vkey) const
 {
     return ::IsKeyPressed(vkey);
 }
 
-std::wstring JsUtils::MapString(const std::wstring& str, uint32_t lcid, uint32_t flags)
+std::wstring Utils::MapString(const std::wstring& str, uint32_t lcid, uint32_t flags)
 {
     // WinAPI is weird: 0 - error (with LastError), > 0 - characters required
     int iRet = LCIDToLocaleName(lcid, nullptr, 0, LOCALE_ALLOW_NEUTRAL_NAMES);
@@ -630,12 +630,12 @@ std::wstring JsUtils::MapString(const std::wstring& str, uint32_t lcid, uint32_t
     return dst;
 }
 
-bool JsUtils::PathWildcardMatch(const std::wstring& pattern, const std::wstring& str)
+bool Utils::PathWildcardMatch(const std::wstring& pattern, const std::wstring& str)
 {
     return PathMatchSpec(str.c_str(), pattern.c_str());
 }
 
-std::wstring JsUtils::ReadINI(const std::wstring& filename, const std::wstring& section, const std::wstring& key, const std::wstring& defaultval)
+std::wstring Utils::ReadINI(const std::wstring& filename, const std::wstring& section, const std::wstring& key, const std::wstring& defaultval)
 {
     // WinAPI is weird: 0 - error (with LastError), > 0 - characters required
     std::wstring dst(MAX_PATH, '\0');
@@ -655,7 +655,7 @@ std::wstring JsUtils::ReadINI(const std::wstring& filename, const std::wstring& 
     return dst;
 }
 
-std::wstring JsUtils::ReadINIWithOpt(size_t optArgCount, const std::wstring& filename, const std::wstring& section, const std::wstring& key, const std::wstring& defaultval)
+std::wstring Utils::ReadINIWithOpt(size_t optArgCount, const std::wstring& filename, const std::wstring& section, const std::wstring& key, const std::wstring& defaultval)
 {
     switch (optArgCount)
     {
@@ -668,12 +668,12 @@ std::wstring JsUtils::ReadINIWithOpt(size_t optArgCount, const std::wstring& fil
     }
 }
 
-std::wstring JsUtils::ReadTextFile(const std::wstring& filePath, uint32_t codepage)
+std::wstring Utils::ReadTextFile(const std::wstring& filePath, uint32_t codepage)
 {
     return qwr::file::ReadFileW(filePath, codepage);
 }
 
-std::wstring JsUtils::ReadTextFileWithOpt(size_t optArgCount, const std::wstring& filePath, uint32_t codepage)
+std::wstring Utils::ReadTextFileWithOpt(size_t optArgCount, const std::wstring& filePath, uint32_t codepage)
 {
     switch (optArgCount)
     {
@@ -686,12 +686,12 @@ std::wstring JsUtils::ReadTextFileWithOpt(size_t optArgCount, const std::wstring
     }
 }
 
-void JsUtils::SetClipboardText(const std::string& text)
+void Utils::SetClipboardText(const std::string& text)
 {
     uSetClipboardString(text.c_str());
 }
 
-JS::Value JsUtils::ShowHtmlDialog(uint32_t hWnd, const std::wstring& htmlCode, JS::HandleValue options)
+JS::Value Utils::ShowHtmlDialog(uint32_t hWnd, const std::wstring& htmlCode, JS::HandleValue options)
 {
     (void)hWnd;
     const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);
@@ -720,7 +720,7 @@ JS::Value JsUtils::ShowHtmlDialog(uint32_t hWnd, const std::wstring& htmlCode, J
     return JS::UndefinedValue();
 }
 
-JS::Value JsUtils::ShowHtmlDialogWithOpt(size_t optArgCount, uint32_t hWnd, const std::wstring& htmlCode, JS::HandleValue options)
+JS::Value Utils::ShowHtmlDialogWithOpt(size_t optArgCount, uint32_t hWnd, const std::wstring& htmlCode, JS::HandleValue options)
 {
     switch (optArgCount)
     {
@@ -733,7 +733,7 @@ JS::Value JsUtils::ShowHtmlDialogWithOpt(size_t optArgCount, uint32_t hWnd, cons
     }
 }
 
-JS::Value JsUtils::SplitFilePath(const std::wstring& path)
+JS::Value Utils::SplitFilePath(const std::wstring& path)
 {
     const auto cleanedPath = fs::path(path).lexically_normal();
 
@@ -755,12 +755,12 @@ JS::Value JsUtils::SplitFilePath(const std::wstring& path)
     return jsValue;
 }
 
-bool JsUtils::WriteINI(const std::wstring& filename, const std::wstring& section, const std::wstring& key, const std::wstring& val)
+bool Utils::WriteINI(const std::wstring& filename, const std::wstring& section, const std::wstring& key, const std::wstring& val)
 {
     return WritePrivateProfileString(section.c_str(), key.c_str(), val.c_str(), filename.c_str());
 }
 
-bool JsUtils::WriteTextFile(const std::wstring& filename, const std::string& content, bool write_bom)
+bool Utils::WriteTextFile(const std::wstring& filename, const std::string& content, bool write_bom)
 {
     qwr::QwrException::ExpectTrue(!filename.empty(), "Invalid filename");
 
@@ -775,7 +775,7 @@ bool JsUtils::WriteTextFile(const std::wstring& filename, const std::string& con
     }
 }
 
-bool JsUtils::WriteTextFileWithOpt(size_t optArgCount, const std::wstring& filename, const std::string& content, bool write_bom)
+bool Utils::WriteTextFileWithOpt(size_t optArgCount, const std::wstring& filename, const std::string& content, bool write_bom)
 {
     switch (optArgCount)
     {
@@ -788,7 +788,7 @@ bool JsUtils::WriteTextFileWithOpt(size_t optArgCount, const std::wstring& filen
     }
 }
 
-std::string JsUtils::get_Version() const
+std::string Utils::get_Version() const
 {
     return SMP_VERSION;
 }

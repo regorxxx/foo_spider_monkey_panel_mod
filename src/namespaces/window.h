@@ -19,8 +19,8 @@ namespace mozjs
 class FbProperties;
 class JsFbTooltip;
 
-class JsWindow
-    : public JsObjectBase<JsWindow>
+class Window
+    : public JsObjectBase<Window>
 {
 public:
     static constexpr bool HasProto = false;
@@ -33,9 +33,9 @@ public:
 
 public:
     // @remark No need to cleanup JS here, since it must be performed manually beforehand anyway
-    ~JsWindow() override;
+    ~Window() override;
 
-    static std::unique_ptr<JsWindow> CreateNative(JSContext* cx, smp::panel::js_panel_window& parentPanel);
+    static std::unique_ptr<Window> CreateNative(JSContext* cx, smp::panel::js_panel_window& parentPanel);
     static size_t GetInternalSize(const smp::panel::js_panel_window& parentPanel);
 
 public:
@@ -113,7 +113,7 @@ public: // props
     void put_MinWidth(uint32_t width);
 
 private:
-    JsWindow(JSContext* cx, smp::panel::js_panel_window& parentPanel, std::unique_ptr<FbProperties> fbProperties);
+    Window(JSContext* cx, smp::panel::js_panel_window& parentPanel, std::unique_ptr<FbProperties> fbProperties);
 
     struct DefineScriptOptions
     {

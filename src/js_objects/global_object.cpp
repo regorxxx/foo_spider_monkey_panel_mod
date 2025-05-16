@@ -9,24 +9,24 @@
 #include <js_engine/js_realm_inner.h>
 #include <js_engine/js_to_native_invoker.h>
 #include <js_objects/active_x_object.h>
-#include <js_objects/console.h>
 #include <js_objects/enumerator.h>
 #include <js_objects/fb_metadb_handle_list.h>
-#include <js_objects/fb_playlist_manager.h>
 #include <js_objects/fb_profiler.h>
 #include <js_objects/fb_title_format.h>
-#include <js_objects/fb_utils.h>
 #include <js_objects/gdi_bitmap.h>
 #include <js_objects/gdi_font.h>
-#include <js_objects/gdi_utils.h>
 #include <js_objects/hacks.h>
 #include <js_objects/internal/global_heap_manager.h>
-#include <js_objects/utils.h>
-#include <js_objects/window.h>
 #include <js_utils/current_script_path_hack.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 #include <js_utils/js_property_helper.h>
+#include <namespaces/console.h>
+#include <namespaces/fb.h>
+#include <namespaces/gdi.h>
+#include <namespaces/plman.h>
+#include <namespaces/utils.h>
+#include <namespaces/window.h>
 #include <panel/js_panel_window.h>
 #include <utils/logging.h>
 
@@ -196,10 +196,10 @@ namespace mozjs
 
 const JSClass& JsGlobalObject::JsClass = jsClass;
 
-JsGlobalObject::JsGlobalObject(JSContext* cx, JsContainer& parentContainer, JsWindow* pJsWindow)
+JsGlobalObject::JsGlobalObject(JSContext* cx, JsContainer& parentContainer, Window* pWindow)
     : pJsCtx_(cx)
     , parentContainer_(parentContainer)
-    , pJsWindow_(pJsWindow)
+    , pWindow_(pWindow)
 {
 }
 
@@ -230,11 +230,11 @@ JSObject* JsGlobalObject::CreateNative(JSContext* cx, JsContainer& parentContain
         }
 
         DefineConsole(cx, jsObj);
-        CreateAndInstallObject<JsGdiUtils>(cx, jsObj, "gdi");
-        CreateAndInstallObject<JsFbPlaylistManager>(cx, jsObj, "plman");
-        CreateAndInstallObject<JsUtils>(cx, jsObj, "utils");
-        CreateAndInstallObject<JsFbUtils>(cx, jsObj, "fb");
-        CreateAndInstallObject<JsWindow>(cx, jsObj, "window", parentContainer.GetParentPanel());
+        CreateAndInstallObject<Gdi>(cx, jsObj, "gdi");
+        CreateAndInstallObject<Plman>(cx, jsObj, "plman");
+        CreateAndInstallObject<Utils>(cx, jsObj, "utils");
+        CreateAndInstallObject<Fb>(cx, jsObj, "fb");
+        CreateAndInstallObject<Window>(cx, jsObj, "window", parentContainer.GetParentPanel());
         //#ifdef _DEBUG
         //CreateAndInstallObject<JsHacks>(cx, jsObj, "hacks");
         //#endif
@@ -260,10 +260,10 @@ JSObject* JsGlobalObject::CreateNative(JSContext* cx, JsContainer& parentContain
         CreateAndInstallPrototype<JsFbProfiler>(cx, JsPrototypeId::FbProfiler);
         CreateAndInstallPrototype<JsFbTitleFormat>(cx, JsPrototypeId::FbTitleFormat);
 
-        auto pJsWindow = GetNativeObjectProperty<JsWindow>(cx, jsObj, "window");
-        assert(pJsWindow);
+        auto pWindow = GetNativeObjectProperty<Window>(cx, jsObj, "window");
+        assert(pWindow);
 
-        auto pNative = std::unique_ptr<JsGlobalObject>(new JsGlobalObject(cx, parentContainer, pJsWindow));
+        auto pNative = std::unique_ptr<JsGlobalObject>(new JsGlobalObject(cx, parentContainer, pWindow));
         pNative->heapManager_ = GlobalHeapManager::Create(cx);
         assert(pNative->heapManager_);
 
@@ -291,8 +291,8 @@ void JsGlobalObject::PrepareForGc(JSContext* cx, JS::HandleObject self)
     auto nativeGlobal = static_cast<JsGlobalObject*>(JS_GetInstancePrivate(cx, self, &JsGlobalObject::JsClass, nullptr));
     assert(nativeGlobal);
 
-    CleanupObjectProperty<JsWindow>(cx, self, "window");
-    CleanupObjectProperty<JsFbPlaylistManager>(cx, self, "plman");
+    CleanupObjectProperty<Window>(cx, self, "window");
+    CleanupObjectProperty<Plman>(cx, self, "plman");
 
     if (nativeGlobal->heapManager_)
     {
@@ -303,20 +303,20 @@ void JsGlobalObject::PrepareForGc(JSContext* cx, JS::HandleObject self)
 
 HWND JsGlobalObject::GetPanelHwnd() const
 {
-    assert(pJsWindow_);
-    return pJsWindow_->GetHwnd();
+    assert(pWindow_);
+    return pWindow_->GetHwnd();
 }
 
 void JsGlobalObject::ClearInterval(uint32_t intervalId)
 {
-    assert(pJsWindow_);
-    pJsWindow_->ClearInterval(intervalId);
+    assert(pWindow_);
+    pWindow_->ClearInterval(intervalId);
 }
 
 void JsGlobalObject::ClearTimeout(uint32_t timeoutId)
 {
-    assert(pJsWindow_);
-    pJsWindow_->ClearInterval(timeoutId);
+    assert(pWindow_);
+    pWindow_->ClearInterval(timeoutId);
 }
 
 void JsGlobalObject::IncludeScript(const std::string& path, JS::HandleValue options)
@@ -376,22 +376,22 @@ void JsGlobalObject::IncludeScriptWithOpt(size_t optArgCount, const std::string&
 
 uint32_t JsGlobalObject::SetInterval(JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs)
 {
-    return pJsWindow_->SetInterval(func, delay, funcArgs);
+    return pWindow_->SetInterval(func, delay, funcArgs);
 }
 
 uint32_t JsGlobalObject::SetIntervalWithOpt(size_t optArgCount, JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs)
 {
-    return pJsWindow_->SetIntervalWithOpt(optArgCount, func, delay, funcArgs);
+    return pWindow_->SetIntervalWithOpt(optArgCount, func, delay, funcArgs);
 }
 
 uint32_t JsGlobalObject::SetTimeout(JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs)
 {
-    return pJsWindow_->SetTimeout(func, delay, funcArgs);
+    return pWindow_->SetTimeout(func, delay, funcArgs);
 }
 
 uint32_t JsGlobalObject::SetTimeoutWithOpt(size_t optArgCount, JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs)
 {
-    return pJsWindow_->SetTimeoutWithOpt(optArgCount, func, delay, funcArgs);
+    return pWindow_->SetTimeoutWithOpt(optArgCount, func, delay, funcArgs);
 }
 
 JsGlobalObject::IncludeOptions JsGlobalObject::ParseIncludeOptions(JS::HandleValue options)

@@ -105,11 +105,11 @@ JSClassOps jsOps = {
     nullptr,
     nullptr,
     nullptr,
-    JsWindow::FinalizeJsObject,
+    Window::FinalizeJsObject,
     nullptr,
     nullptr,
     nullptr,
-    JsWindow::Trace
+    Window::Trace
 };
 
 JSClass jsClass = {
@@ -118,30 +118,30 @@ JSClass jsClass = {
     &jsOps
 };
 
-MJS_DEFINE_JS_FN_FROM_NATIVE(ClearInterval, JsWindow::ClearInterval)
-MJS_DEFINE_JS_FN_FROM_NATIVE(ClearTimeout, JsWindow::ClearTimeout)
-MJS_DEFINE_JS_FN_FROM_NATIVE(CreatePopupMenu, JsWindow::CreatePopupMenu)
-MJS_DEFINE_JS_FN_FROM_NATIVE(CreateThemeManager, JsWindow::CreateThemeManager)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(CreateTooltip, JsWindow::CreateTooltip, JsWindow::CreateTooltipWithOpt, 3)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(DefinePanel, JsWindow::DefinePanel, JsWindow::DefinePanelWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(DefineScript, JsWindow::DefineScript, JsWindow::DefineScriptWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE(EditScript, JsWindow::EditScript)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetColourCUI, JsWindow::GetColourCUI, JsWindow::GetColourCUIWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetColourDUI, JsWindow::GetColourDUI)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetFontCUI, JsWindow::GetFontCUI, JsWindow::GetFontCUIWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetFontDUI, JsWindow::GetFontDUI)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetProperty, JsWindow::GetProperty, JsWindow::GetPropertyWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE(NotifyOthers, JsWindow::NotifyOthers)
-MJS_DEFINE_JS_FN_FROM_NATIVE(Reload, JsWindow::Reload)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(Repaint, JsWindow::Repaint, JsWindow::RepaintWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(RepaintRect, JsWindow::RepaintRect, JsWindow::RepaintRectWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE(SetCursor, JsWindow::SetCursor)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(SetInterval, JsWindow::SetInterval, JsWindow::SetIntervalWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(SetProperty, JsWindow::SetProperty, JsWindow::SetPropertyWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(SetTimeout, JsWindow::SetTimeout, JsWindow::SetTimeoutWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE(ShowConfigure, JsWindow::ShowConfigure)
-MJS_DEFINE_JS_FN_FROM_NATIVE(ShowConfigureV2, JsWindow::ShowConfigureV2)
-MJS_DEFINE_JS_FN_FROM_NATIVE(ShowProperties, JsWindow::ShowProperties)
+MJS_DEFINE_JS_FN_FROM_NATIVE(ClearInterval, Window::ClearInterval)
+MJS_DEFINE_JS_FN_FROM_NATIVE(ClearTimeout, Window::ClearTimeout)
+MJS_DEFINE_JS_FN_FROM_NATIVE(CreatePopupMenu, Window::CreatePopupMenu)
+MJS_DEFINE_JS_FN_FROM_NATIVE(CreateThemeManager, Window::CreateThemeManager)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(CreateTooltip, Window::CreateTooltip, Window::CreateTooltipWithOpt, 3)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(DefinePanel, Window::DefinePanel, Window::DefinePanelWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(DefineScript, Window::DefineScript, Window::DefineScriptWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE(EditScript, Window::EditScript)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetColourCUI, Window::GetColourCUI, Window::GetColourCUIWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetColourDUI, Window::GetColourDUI)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetFontCUI, Window::GetFontCUI, Window::GetFontCUIWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetFontDUI, Window::GetFontDUI)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(GetProperty, Window::GetProperty, Window::GetPropertyWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE(NotifyOthers, Window::NotifyOthers)
+MJS_DEFINE_JS_FN_FROM_NATIVE(Reload, Window::Reload)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(Repaint, Window::Repaint, Window::RepaintWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(RepaintRect, Window::RepaintRect, Window::RepaintRectWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE(SetCursor, Window::SetCursor)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(SetInterval, Window::SetInterval, Window::SetIntervalWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(SetProperty, Window::SetProperty, Window::SetPropertyWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(SetTimeout, Window::SetTimeout, Window::SetTimeoutWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE(ShowConfigure, Window::ShowConfigure)
+MJS_DEFINE_JS_FN_FROM_NATIVE(ShowConfigureV2, Window::ShowConfigureV2)
+MJS_DEFINE_JS_FN_FROM_NATIVE(ShowProperties, Window::ShowProperties)
 
 constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
     {
@@ -172,29 +172,29 @@ constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
         JS_FS_END,
     });
 
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_DlgCode, JsWindow::get_DlgCode)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_Height, JsWindow::get_Height)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_ID, JsWindow::get_ID)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_InstanceType, JsWindow::get_InstanceType)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_IsTransparent, JsWindow::get_IsTransparent)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_IsVisible, JsWindow::get_IsVisible)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_JsMemoryStats, JsWindow::get_JsMemoryStats)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_MaxHeight, JsWindow::get_MaxHeight)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_MaxWidth, JsWindow::get_MaxWidth)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_MemoryLimit, JsWindow::get_MemoryLimit)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_MinHeight, JsWindow::get_MinHeight)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_MinWidth, JsWindow::get_MinWidth)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_Name, JsWindow::get_Name)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_PanelMemoryUsage, JsWindow::get_PanelMemoryUsage)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_ScriptInfo, JsWindow::get_ScriptInfo)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_Tooltip, JsWindow::get_Tooltip)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_TotalMemoryUsage, JsWindow::get_TotalMemoryUsage)
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_Width, JsWindow::get_Width)
-MJS_DEFINE_JS_FN_FROM_NATIVE(put_DlgCode, JsWindow::put_DlgCode)
-MJS_DEFINE_JS_FN_FROM_NATIVE(put_MaxHeight, JsWindow::put_MaxHeight)
-MJS_DEFINE_JS_FN_FROM_NATIVE(put_MaxWidth, JsWindow::put_MaxWidth)
-MJS_DEFINE_JS_FN_FROM_NATIVE(put_MinHeight, JsWindow::put_MinHeight)
-MJS_DEFINE_JS_FN_FROM_NATIVE(put_MinWidth, JsWindow::put_MinWidth)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_DlgCode, Window::get_DlgCode)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_Height, Window::get_Height)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_ID, Window::get_ID)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_InstanceType, Window::get_InstanceType)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_IsTransparent, Window::get_IsTransparent)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_IsVisible, Window::get_IsVisible)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_JsMemoryStats, Window::get_JsMemoryStats)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_MaxHeight, Window::get_MaxHeight)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_MaxWidth, Window::get_MaxWidth)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_MemoryLimit, Window::get_MemoryLimit)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_MinHeight, Window::get_MinHeight)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_MinWidth, Window::get_MinWidth)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_Name, Window::get_Name)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_PanelMemoryUsage, Window::get_PanelMemoryUsage)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_ScriptInfo, Window::get_ScriptInfo)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_Tooltip, Window::get_Tooltip)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_TotalMemoryUsage, Window::get_TotalMemoryUsage)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_Width, Window::get_Width)
+MJS_DEFINE_JS_FN_FROM_NATIVE(put_DlgCode, Window::put_DlgCode)
+MJS_DEFINE_JS_FN_FROM_NATIVE(put_MaxHeight, Window::put_MaxHeight)
+MJS_DEFINE_JS_FN_FROM_NATIVE(put_MaxWidth, Window::put_MaxWidth)
+MJS_DEFINE_JS_FN_FROM_NATIVE(put_MinHeight, Window::put_MinHeight)
+MJS_DEFINE_JS_FN_FROM_NATIVE(put_MinWidth, Window::put_MinWidth)
 
 constexpr auto jsProperties = std::to_array<JSPropertySpec>(
     {
@@ -224,23 +224,23 @@ constexpr auto jsProperties = std::to_array<JSPropertySpec>(
 namespace mozjs
 {
 
-const JSClass JsWindow::JsClass = jsClass;
-const JSFunctionSpec* JsWindow::JsFunctions = jsFunctions.data();
-const JSPropertySpec* JsWindow::JsProperties = jsProperties.data();
+const JSClass Window::JsClass = jsClass;
+const JSFunctionSpec* Window::JsFunctions = jsFunctions.data();
+const JSPropertySpec* Window::JsProperties = jsProperties.data();
 
-JsWindow::~JsWindow()
+Window::~Window()
 {
 }
 
-JsWindow::JsWindow(JSContext* cx, smp::panel::js_panel_window& parentPanel, std::unique_ptr<FbProperties> fbProperties)
+Window::Window(JSContext* cx, smp::panel::js_panel_window& parentPanel, std::unique_ptr<FbProperties> fbProperties)
     : pJsCtx_(cx)
     , parentPanel_(parentPanel)
     , fbProperties_(std::move(fbProperties))
 {
 }
 
-std::unique_ptr<JsWindow>
-JsWindow::CreateNative(JSContext* cx, smp::panel::js_panel_window& parentPanel)
+std::unique_ptr<Window>
+Window::CreateNative(JSContext* cx, smp::panel::js_panel_window& parentPanel)
 {
     std::unique_ptr<FbProperties> fbProperties = FbProperties::Create(cx, parentPanel);
     if (!fbProperties)
@@ -248,24 +248,24 @@ JsWindow::CreateNative(JSContext* cx, smp::panel::js_panel_window& parentPanel)
         return nullptr;
     }
 
-    return std::unique_ptr<JsWindow>(new JsWindow(cx, parentPanel, std::move(fbProperties)));
+    return std::unique_ptr<Window>(new Window(cx, parentPanel, std::move(fbProperties)));
 }
 
-size_t JsWindow::GetInternalSize(const smp::panel::js_panel_window&)
+size_t Window::GetInternalSize(const smp::panel::js_panel_window&)
 {
     return sizeof(FbProperties);
 }
 
-void JsWindow::Trace(JSTracer* trc, JSObject* obj)
+void Window::Trace(JSTracer* trc, JSObject* obj)
 {
-    auto x = static_cast<JsWindow*>(JS_GetPrivate(obj));
+    auto x = static_cast<Window*>(JS_GetPrivate(obj));
     if (x && x->fbProperties_)
     {
         x->fbProperties_->Trace(trc);
     }
 }
 
-void JsWindow::PrepareForGc()
+void Window::PrepareForGc()
 {
     if (fbProperties_)
     {
@@ -283,7 +283,7 @@ void JsWindow::PrepareForGc()
     isFinalized_ = true;
 }
 
-HWND JsWindow::GetHwnd() const
+HWND Window::GetHwnd() const
 {
     if (isFinalized_)
     {
@@ -293,7 +293,7 @@ HWND JsWindow::GetHwnd() const
     return parentPanel_.GetHWND();
 }
 
-void JsWindow::ClearInterval(uint32_t intervalId) const
+void Window::ClearInterval(uint32_t intervalId) const
 {
     if (isFinalized_)
     {
@@ -303,7 +303,7 @@ void JsWindow::ClearInterval(uint32_t intervalId) const
     parentPanel_.GetTimeoutManager().ClearTimeout(intervalId);
 }
 
-void JsWindow::ClearTimeout(uint32_t timeoutId) const
+void Window::ClearTimeout(uint32_t timeoutId) const
 {
     if (isFinalized_)
     {
@@ -313,7 +313,7 @@ void JsWindow::ClearTimeout(uint32_t timeoutId) const
     parentPanel_.GetTimeoutManager().ClearTimeout(timeoutId);
 }
 
-JSObject* JsWindow::CreatePopupMenu()
+JSObject* Window::CreatePopupMenu()
 {
     if (isFinalized_)
     {
@@ -323,7 +323,7 @@ JSObject* JsWindow::CreatePopupMenu()
     return JsMenuObject::CreateJs(pJsCtx_, parentPanel_.GetHWND());
 }
 
-JSObject* JsWindow::CreateThemeManager(const std::wstring& classid)
+JSObject* Window::CreateThemeManager(const std::wstring& classid)
 {
     if (isFinalized_)
     {
@@ -338,7 +338,7 @@ JSObject* JsWindow::CreateThemeManager(const std::wstring& classid)
     return JsThemeManager::CreateJs(pJsCtx_, parentPanel_.GetHWND(), classid);
 }
 
-JSObject* JsWindow::CreateTooltip(const std::wstring& name, uint32_t pxSize, uint32_t style)
+JSObject* Window::CreateTooltip(const std::wstring& name, uint32_t pxSize, uint32_t style)
 {
     if (isFinalized_)
     {
@@ -357,7 +357,7 @@ JSObject* JsWindow::CreateTooltip(const std::wstring& name, uint32_t pxSize, uin
     return jsTooltip_;
 }
 
-JSObject* JsWindow::CreateTooltipWithOpt(size_t optArgCount, const std::wstring& name, uint32_t pxSize, uint32_t style)
+JSObject* Window::CreateTooltipWithOpt(size_t optArgCount, const std::wstring& name, uint32_t pxSize, uint32_t style)
 {
     switch (optArgCount)
     {
@@ -374,7 +374,7 @@ JSObject* JsWindow::CreateTooltipWithOpt(size_t optArgCount, const std::wstring&
     }
 }
 
-void JsWindow::DefinePanel(const std::string& name, JS::HandleValue options)
+void Window::DefinePanel(const std::string& name, JS::HandleValue options)
 {
     qwr::QwrException::ExpectTrue(
         parentPanel_.GetSettings().GetSourceType() != config::ScriptSourceType::Package,
@@ -391,7 +391,7 @@ void JsWindow::DefinePanel(const std::string& name, JS::HandleValue options)
     isScriptDefined_ = true;
 }
 
-void JsWindow::DefinePanelWithOpt(size_t optArgCount, const std::string& name, JS::HandleValue options)
+void Window::DefinePanelWithOpt(size_t optArgCount, const std::string& name, JS::HandleValue options)
 {
     switch (optArgCount)
     {
@@ -404,7 +404,7 @@ void JsWindow::DefinePanelWithOpt(size_t optArgCount, const std::string& name, J
     }
 }
 
-void JsWindow::DefineScript(const std::string& name, JS::HandleValue options)
+void Window::DefineScript(const std::string& name, JS::HandleValue options)
 {
     if (isFinalized_)
     {
@@ -425,7 +425,7 @@ void JsWindow::DefineScript(const std::string& name, JS::HandleValue options)
     isScriptDefined_ = true;
 }
 
-void JsWindow::DefineScriptWithOpt(size_t optArgCount, const std::string& name, JS::HandleValue options)
+void Window::DefineScriptWithOpt(size_t optArgCount, const std::string& name, JS::HandleValue options)
 {
     switch (optArgCount)
     {
@@ -438,7 +438,7 @@ void JsWindow::DefineScriptWithOpt(size_t optArgCount, const std::string& name, 
     }
 }
 
-void JsWindow::EditScript()
+void Window::EditScript()
 {
     if (isFinalized_)
     {
@@ -448,7 +448,7 @@ void JsWindow::EditScript()
     EventDispatcher::Get().PutEvent(parentPanel_.GetHWND(), std::make_unique<Event_Basic>(EventId::kScriptEdit), EventPriority::kControl);
 }
 
-uint32_t JsWindow::GetColourCUI(uint32_t type, const std::wstring& guidstr)
+uint32_t Window::GetColourCUI(uint32_t type, const std::wstring& guidstr)
 {
     if (isFinalized_)
     {
@@ -471,7 +471,7 @@ uint32_t JsWindow::GetColourCUI(uint32_t type, const std::wstring& guidstr)
     return parentPanel_.GetColour(type, guid);
 }
 
-uint32_t JsWindow::GetColourCUIWithOpt(size_t optArgCount, uint32_t type, const std::wstring& guidstr)
+uint32_t Window::GetColourCUIWithOpt(size_t optArgCount, uint32_t type, const std::wstring& guidstr)
 {
     switch (optArgCount)
     {
@@ -484,7 +484,7 @@ uint32_t JsWindow::GetColourCUIWithOpt(size_t optArgCount, uint32_t type, const 
     }
 }
 
-uint32_t JsWindow::GetColourDUI(uint32_t type)
+uint32_t Window::GetColourDUI(uint32_t type)
 {
     if (isFinalized_)
     {
@@ -496,7 +496,7 @@ uint32_t JsWindow::GetColourDUI(uint32_t type)
     return parentPanel_.GetColour(type, pfc::guid_null);
 }
 
-JSObject* JsWindow::GetFontCUI(uint32_t type, const std::wstring& guidstr)
+JSObject* Window::GetFontCUI(uint32_t type, const std::wstring& guidstr)
 {
     if (isFinalized_)
     {
@@ -531,7 +531,7 @@ JSObject* JsWindow::GetFontCUI(uint32_t type, const std::wstring& guidstr)
     return JsGdiFont::CreateJs(pJsCtx_, std::move(pGdiFont), hFont.release(), true);
 }
 
-JSObject* JsWindow::GetFontCUIWithOpt(size_t optArgCount, uint32_t type, const std::wstring& guidstr)
+JSObject* Window::GetFontCUIWithOpt(size_t optArgCount, uint32_t type, const std::wstring& guidstr)
 {
     switch (optArgCount)
     {
@@ -544,7 +544,7 @@ JSObject* JsWindow::GetFontCUIWithOpt(size_t optArgCount, uint32_t type, const s
     }
 }
 
-JSObject* JsWindow::GetFontDUI(uint32_t type)
+JSObject* Window::GetFontDUI(uint32_t type)
 {
     if (isFinalized_)
     {
@@ -568,7 +568,7 @@ JSObject* JsWindow::GetFontDUI(uint32_t type)
     return JsGdiFont::CreateJs(pJsCtx_, std::move(pGdiFont), hFont, false);
 }
 
-JS::Value JsWindow::GetProperty(const std::wstring& name, JS::HandleValue defaultval)
+JS::Value Window::GetProperty(const std::wstring& name, JS::HandleValue defaultval)
 {
     if (isFinalized_)
     {
@@ -578,7 +578,7 @@ JS::Value JsWindow::GetProperty(const std::wstring& name, JS::HandleValue defaul
     return fbProperties_->GetProperty(name, defaultval);
 }
 
-JS::Value JsWindow::GetPropertyWithOpt(size_t optArgCount, const std::wstring& name, JS::HandleValue defaultval)
+JS::Value Window::GetPropertyWithOpt(size_t optArgCount, const std::wstring& name, JS::HandleValue defaultval)
 {
     switch (optArgCount)
     {
@@ -591,7 +591,7 @@ JS::Value JsWindow::GetPropertyWithOpt(size_t optArgCount, const std::wstring& n
     }
 }
 
-void JsWindow::NotifyOthers(const std::wstring& name, JS::HandleValue info)
+void Window::NotifyOthers(const std::wstring& name, JS::HandleValue info)
 {
     if (isFinalized_)
     {
@@ -602,7 +602,7 @@ void JsWindow::NotifyOthers(const std::wstring& name, JS::HandleValue info)
                                          std::make_unique<Event_NotifyOthers>(pJsCtx_, name, info));
 }
 
-void JsWindow::Reload()
+void Window::Reload()
 {
     if (isFinalized_)
     {
@@ -612,7 +612,7 @@ void JsWindow::Reload()
     EventDispatcher::Get().PutEvent(parentPanel_.GetHWND(), std::make_unique<Event_Basic>(EventId::kScriptReload), EventPriority::kControl);
 }
 
-void JsWindow::Repaint(bool force)
+void Window::Repaint(bool force)
 {
     if (isFinalized_)
     {
@@ -622,7 +622,7 @@ void JsWindow::Repaint(bool force)
     parentPanel_.Repaint(force);
 }
 
-void JsWindow::RepaintWithOpt(size_t optArgCount, bool force)
+void Window::RepaintWithOpt(size_t optArgCount, bool force)
 {
     switch (optArgCount)
     {
@@ -635,7 +635,7 @@ void JsWindow::RepaintWithOpt(size_t optArgCount, bool force)
     }
 }
 
-void JsWindow::RepaintRect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, bool force)
+void Window::RepaintRect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, bool force)
 {
     if (isFinalized_)
     {
@@ -645,7 +645,7 @@ void JsWindow::RepaintRect(uint32_t x, uint32_t y, uint32_t w, uint32_t h, bool 
     parentPanel_.RepaintRect(CRect{ static_cast<int>(x), static_cast<int>(y), static_cast<int>(x + w), static_cast<int>(y + h) }, force);
 }
 
-void JsWindow::RepaintRectWithOpt(size_t optArgCount, uint32_t x, uint32_t y, uint32_t w, uint32_t h, bool force)
+void Window::RepaintRectWithOpt(size_t optArgCount, uint32_t x, uint32_t y, uint32_t w, uint32_t h, bool force)
 {
     switch (optArgCount)
     {
@@ -658,7 +658,7 @@ void JsWindow::RepaintRectWithOpt(size_t optArgCount, uint32_t x, uint32_t y, ui
     }
 }
 
-void JsWindow::SetCursor(uint32_t id)
+void Window::SetCursor(uint32_t id)
 {
     if (isFinalized_)
     {
@@ -668,7 +668,7 @@ void JsWindow::SetCursor(uint32_t id)
     ::SetCursor(LoadCursor(nullptr, MAKEINTRESOURCE(id)));
 }
 
-uint32_t JsWindow::SetInterval(JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs)
+uint32_t Window::SetInterval(JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs)
 {
     if (isFinalized_)
     {
@@ -690,7 +690,7 @@ uint32_t JsWindow::SetInterval(JS::HandleValue func, uint32_t delay, JS::HandleV
     return parentPanel_.GetTimeoutManager().SetInterval(delay, std::make_unique<TimeoutJsTask>(pJsCtx_, jsFuncValue, jsArrayValue));
 }
 
-uint32_t JsWindow::SetIntervalWithOpt(size_t optArgCount, JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs)
+uint32_t Window::SetIntervalWithOpt(size_t optArgCount, JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs)
 {
     switch (optArgCount)
     {
@@ -703,7 +703,7 @@ uint32_t JsWindow::SetIntervalWithOpt(size_t optArgCount, JS::HandleValue func, 
     }
 }
 
-void JsWindow::SetProperty(const std::wstring& name, JS::HandleValue val)
+void Window::SetProperty(const std::wstring& name, JS::HandleValue val)
 {
     if (isFinalized_)
     {
@@ -713,7 +713,7 @@ void JsWindow::SetProperty(const std::wstring& name, JS::HandleValue val)
     fbProperties_->SetProperty(name, val);
 }
 
-void JsWindow::SetPropertyWithOpt(size_t optArgCount, const std::wstring& name, JS::HandleValue val)
+void Window::SetPropertyWithOpt(size_t optArgCount, const std::wstring& name, JS::HandleValue val)
 {
     switch (optArgCount)
     {
@@ -726,7 +726,7 @@ void JsWindow::SetPropertyWithOpt(size_t optArgCount, const std::wstring& name, 
     }
 }
 
-uint32_t JsWindow::SetTimeout(JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs)
+uint32_t Window::SetTimeout(JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs)
 {
     if (isFinalized_)
     {
@@ -746,7 +746,7 @@ uint32_t JsWindow::SetTimeout(JS::HandleValue func, uint32_t delay, JS::HandleVa
     return parentPanel_.GetTimeoutManager().SetTimeout(delay, std::make_unique<TimeoutJsTask>(pJsCtx_, jsFuncValue, jsArrayValue));
 }
 
-uint32_t JsWindow::SetTimeoutWithOpt(size_t optArgCount, JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs)
+uint32_t Window::SetTimeoutWithOpt(size_t optArgCount, JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs)
 {
     switch (optArgCount)
     {
@@ -759,7 +759,7 @@ uint32_t JsWindow::SetTimeoutWithOpt(size_t optArgCount, JS::HandleValue func, u
     }
 }
 
-void JsWindow::ShowConfigure()
+void Window::ShowConfigure()
 {
     if (isFinalized_)
     {
@@ -769,7 +769,7 @@ void JsWindow::ShowConfigure()
     EventDispatcher::Get().PutEvent(parentPanel_.GetHWND(), std::make_unique<Event_Basic>(EventId::kScriptShowConfigureLegacy), EventPriority::kControl);
 }
 
-void JsWindow::ShowConfigureV2()
+void Window::ShowConfigureV2()
 {
     if (isFinalized_)
     {
@@ -779,7 +779,7 @@ void JsWindow::ShowConfigureV2()
     EventDispatcher::Get().PutEvent(parentPanel_.GetHWND(), std::make_unique<Event_Basic>(EventId::kScriptShowConfigure), EventPriority::kControl);
 }
 
-void JsWindow::ShowProperties()
+void Window::ShowProperties()
 {
     if (isFinalized_)
     {
@@ -789,7 +789,7 @@ void JsWindow::ShowProperties()
     EventDispatcher::Get().PutEvent(parentPanel_.GetHWND(), std::make_unique<Event_Basic>(EventId::kScriptShowProperties), EventPriority::kControl);
 }
 
-uint32_t JsWindow::get_DlgCode()
+uint32_t Window::get_DlgCode()
 {
     if (isFinalized_)
     {
@@ -799,7 +799,7 @@ uint32_t JsWindow::get_DlgCode()
     return parentPanel_.DlgCode();
 }
 
-uint32_t JsWindow::get_Height()
+uint32_t Window::get_Height()
 {
     if (isFinalized_)
     {
@@ -809,13 +809,13 @@ uint32_t JsWindow::get_Height()
     return parentPanel_.GetHeight();
 }
 
-uint32_t JsWindow::get_ID() const
+uint32_t Window::get_ID() const
 {
     // Such cast works properly only on x86
     return reinterpret_cast<uint32_t>(GetHwnd());
 }
 
-uint32_t JsWindow::get_InstanceType()
+uint32_t Window::get_InstanceType()
 {
     if (isFinalized_)
     {
@@ -825,7 +825,7 @@ uint32_t JsWindow::get_InstanceType()
     return static_cast<uint32_t>(parentPanel_.GetPanelType());
 }
 
-bool JsWindow::get_IsTransparent()
+bool Window::get_IsTransparent()
 {
     if (isFinalized_)
     {
@@ -835,7 +835,7 @@ bool JsWindow::get_IsTransparent()
     return parentPanel_.GetSettings().isPseudoTransparent;
 }
 
-bool JsWindow::get_IsVisible()
+bool Window::get_IsVisible()
 {
     if (isFinalized_)
     {
@@ -845,7 +845,7 @@ bool JsWindow::get_IsVisible()
     return IsWindowVisible(parentPanel_.GetHWND());
 }
 
-JSObject* JsWindow::get_JsMemoryStats()
+JSObject* Window::get_JsMemoryStats()
 {
     if (isFinalized_)
     {
@@ -862,7 +862,7 @@ JSObject* JsWindow::get_JsMemoryStats()
     return jsObject;
 }
 
-uint32_t JsWindow::get_MaxHeight()
+uint32_t Window::get_MaxHeight()
 {
     if (isFinalized_)
     {
@@ -872,7 +872,7 @@ uint32_t JsWindow::get_MaxHeight()
     return parentPanel_.MaxSize().y;
 }
 
-uint32_t JsWindow::get_MaxWidth()
+uint32_t Window::get_MaxWidth()
 {
     if (isFinalized_)
     {
@@ -882,7 +882,7 @@ uint32_t JsWindow::get_MaxWidth()
     return parentPanel_.MaxSize().x;
 }
 
-uint32_t JsWindow::get_MemoryLimit() const
+uint32_t Window::get_MemoryLimit() const
 {
     if (isFinalized_)
     {
@@ -892,7 +892,7 @@ uint32_t JsWindow::get_MemoryLimit() const
     return JsGc::GetMaxHeap();
 }
 
-uint32_t JsWindow::get_MinHeight()
+uint32_t Window::get_MinHeight()
 {
     if (isFinalized_)
     {
@@ -902,7 +902,7 @@ uint32_t JsWindow::get_MinHeight()
     return parentPanel_.MinSize().y;
 }
 
-uint32_t JsWindow::get_MinWidth()
+uint32_t Window::get_MinWidth()
 {
     if (isFinalized_)
     {
@@ -912,7 +912,7 @@ uint32_t JsWindow::get_MinWidth()
     return parentPanel_.MinSize().x;
 }
 
-std::string JsWindow::get_Name()
+std::string Window::get_Name()
 {
     if (isFinalized_)
     {
@@ -922,7 +922,7 @@ std::string JsWindow::get_Name()
     return parentPanel_.GetPanelId();
 }
 
-uint64_t JsWindow::get_PanelMemoryUsage()
+uint64_t Window::get_PanelMemoryUsage()
 {
     if (isFinalized_)
     {
@@ -933,7 +933,7 @@ uint64_t JsWindow::get_PanelMemoryUsage()
     return JsGc::GetTotalHeapUsageForGlobal(pJsCtx_, jsGlobal);
 }
 
-JSObject* JsWindow::get_ScriptInfo()
+JSObject* Window::get_ScriptInfo()
 {
     if (isFinalized_)
     {
@@ -961,7 +961,7 @@ JSObject* JsWindow::get_ScriptInfo()
     return jsObject;
 }
 
-uint64_t JsWindow::get_TotalMemoryUsage() const
+uint64_t Window::get_TotalMemoryUsage() const
 {
     if (isFinalized_)
     {
@@ -971,12 +971,12 @@ uint64_t JsWindow::get_TotalMemoryUsage() const
     return JsEngine::GetInstance().GetGcEngine().GetTotalHeapUsage();
 }
 
-JSObject* JsWindow::get_Tooltip()
+JSObject* Window::get_Tooltip()
 {
     return CreateTooltip();
 }
 
-uint32_t JsWindow::get_Width()
+uint32_t Window::get_Width()
 {
     if (isFinalized_)
     {
@@ -986,7 +986,7 @@ uint32_t JsWindow::get_Width()
     return parentPanel_.GetWidth();
 }
 
-void JsWindow::put_DlgCode(uint32_t code)
+void Window::put_DlgCode(uint32_t code)
 {
     if (isFinalized_)
     {
@@ -996,7 +996,7 @@ void JsWindow::put_DlgCode(uint32_t code)
     parentPanel_.DlgCode() = code;
 }
 
-void JsWindow::put_MaxHeight(uint32_t height)
+void Window::put_MaxHeight(uint32_t height)
 {
     if (isFinalized_)
     {
@@ -1007,7 +1007,7 @@ void JsWindow::put_MaxHeight(uint32_t height)
     PostMessage(parentPanel_.GetHWND(), static_cast<UINT>(MiscMessage::size_limit_changed), uie::size_limit_maximum_height, 0);
 }
 
-void JsWindow::put_MaxWidth(uint32_t width)
+void Window::put_MaxWidth(uint32_t width)
 {
     if (isFinalized_)
     {
@@ -1018,7 +1018,7 @@ void JsWindow::put_MaxWidth(uint32_t width)
     PostMessage(parentPanel_.GetHWND(), static_cast<UINT>(MiscMessage::size_limit_changed), uie::size_limit_maximum_width, 0);
 }
 
-void JsWindow::put_MinHeight(uint32_t height)
+void Window::put_MinHeight(uint32_t height)
 {
     if (isFinalized_)
     {
@@ -1029,7 +1029,7 @@ void JsWindow::put_MinHeight(uint32_t height)
     PostMessage(parentPanel_.GetHWND(), static_cast<UINT>(MiscMessage::size_limit_changed), uie::size_limit_minimum_height, 0);
 }
 
-void JsWindow::put_MinWidth(uint32_t width)
+void Window::put_MinWidth(uint32_t width)
 {
     if (isFinalized_)
     {
@@ -1040,7 +1040,7 @@ void JsWindow::put_MinWidth(uint32_t width)
     PostMessage(parentPanel_.GetHWND(), static_cast<UINT>(MiscMessage::size_limit_changed), uie::size_limit_minimum_width, 0);
 }
 
-JsWindow::DefineScriptOptions JsWindow::ParseDefineScriptOptions(JS::HandleValue options)
+Window::DefineScriptOptions Window::ParseDefineScriptOptions(JS::HandleValue options)
 {
     DefineScriptOptions parsedOptions;
     if (!options.isNullOrUndefined())

@@ -12,7 +12,7 @@ namespace mozjs
 {
 
 class JsContainer;
-class JsWindow;
+class Window;
 class GlobalHeapManager;
 
 class JsGlobalObject
@@ -52,7 +52,7 @@ public: // methods
     uint32_t SetTimeoutWithOpt(size_t optArgCount, JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs);
 
 private:
-    JsGlobalObject(JSContext* cx, JsContainer& parentContainer, JsWindow* pJsWindow);
+    JsGlobalObject(JSContext* cx, JsContainer& parentContainer, Window* pWindow);
 
     struct IncludeOptions
     {
@@ -89,7 +89,7 @@ private:
     JSContext* pJsCtx_ = nullptr;
     JsContainer& parentContainer_;
 
-    JsWindow* pJsWindow_ = nullptr;
+    Window* pWindow_ = nullptr;
 
     std::unordered_set<std::string> includedFiles_;
 

@@ -1,6 +1,6 @@
 #include <stdafx.h>
 
-#include "gdi_utils.h"
+#include "gdi.h"
 
 #include <js_engine/js_to_native_invoker.h>
 #include <js_objects/gdi_bitmap.h>
@@ -29,7 +29,7 @@ JSClassOps jsOps = {
     nullptr,
     nullptr,
     nullptr,
-    JsGdiUtils::FinalizeJsObject,
+    Gdi::FinalizeJsObject,
     nullptr,
     nullptr,
     nullptr,
@@ -42,11 +42,11 @@ JSClass jsClass = {
     &jsOps
 };
 
-MJS_DEFINE_JS_FN_FROM_NATIVE(CreateImage, JsGdiUtils::CreateImage)
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(Font, JsGdiUtils::Font, JsGdiUtils::FontWithOpt, 1)
-MJS_DEFINE_JS_FN_FROM_NATIVE(Image, JsGdiUtils::Image)
-MJS_DEFINE_JS_FN_FROM_NATIVE(LoadImageAsync, JsGdiUtils::LoadImageAsync)
-MJS_DEFINE_JS_FN_FROM_NATIVE(LoadImageAsyncV2, JsGdiUtils::LoadImageAsyncV2)
+MJS_DEFINE_JS_FN_FROM_NATIVE(CreateImage, Gdi::CreateImage)
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(Font, Gdi::Font, Gdi::FontWithOpt, 1)
+MJS_DEFINE_JS_FN_FROM_NATIVE(Image, Gdi::Image)
+MJS_DEFINE_JS_FN_FROM_NATIVE(LoadImageAsync, Gdi::LoadImageAsync)
+MJS_DEFINE_JS_FN_FROM_NATIVE(LoadImageAsyncV2, Gdi::LoadImageAsyncV2)
 
 constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
     {
@@ -68,27 +68,27 @@ constexpr auto jsProperties = std::to_array<JSPropertySpec>(
 namespace mozjs
 {
 
-const JSClass JsGdiUtils::JsClass = jsClass;
-const JSFunctionSpec* JsGdiUtils::JsFunctions = jsFunctions.data();
-const JSPropertySpec* JsGdiUtils::JsProperties = jsProperties.data();
+const JSClass Gdi::JsClass = jsClass;
+const JSFunctionSpec* Gdi::JsFunctions = jsFunctions.data();
+const JSPropertySpec* Gdi::JsProperties = jsProperties.data();
 
-JsGdiUtils::JsGdiUtils(JSContext* cx)
+Gdi::Gdi(JSContext* cx)
     : pJsCtx_(cx)
 {
 }
 
-std::unique_ptr<JsGdiUtils>
-JsGdiUtils::CreateNative(JSContext* cx)
+std::unique_ptr<Gdi>
+Gdi::CreateNative(JSContext* cx)
 {
-    return std::unique_ptr<JsGdiUtils>(new JsGdiUtils(cx));
+    return std::unique_ptr<Gdi>(new Gdi(cx));
 }
 
-size_t JsGdiUtils::GetInternalSize()
+size_t Gdi::GetInternalSize()
 {
     return 0;
 }
 
-JSObject* JsGdiUtils::CreateImage(uint32_t w, uint32_t h)
+JSObject* Gdi::CreateImage(uint32_t w, uint32_t h)
 {
     std::unique_ptr<Gdiplus::Bitmap> img(new Gdiplus::Bitmap(w, h, PixelFormat32bppPARGB));
     qwr::error::CheckGdiPlusObject(img);
@@ -96,12 +96,12 @@ JSObject* JsGdiUtils::CreateImage(uint32_t w, uint32_t h)
     return JsGdiBitmap::CreateJs(pJsCtx_, std::move(img));
 }
 
-JSObject* JsGdiUtils::Font(const std::wstring& fontName, uint32_t pxSize, uint32_t style)
+JSObject* Gdi::Font(const std::wstring& fontName, uint32_t pxSize, uint32_t style)
 {
     return JsGdiFont::Constructor(pJsCtx_, fontName, pxSize, style);
 }
 
-JSObject* JsGdiUtils::FontWithOpt(size_t optArgCount, const std::wstring& fontName, uint32_t pxSize, uint32_t style)
+JSObject* Gdi::FontWithOpt(size_t optArgCount, const std::wstring& fontName, uint32_t pxSize, uint32_t style)
 {
     switch (optArgCount)
     {
@@ -114,7 +114,7 @@ JSObject* JsGdiUtils::FontWithOpt(size_t optArgCount, const std::wstring& fontNa
     }
 }
 
-JSObject* JsGdiUtils::Image(const std::wstring& path)
+JSObject* Gdi::Image(const std::wstring& path)
 {
     std::unique_ptr<Gdiplus::Bitmap> img = smp::image::LoadImage(path);
     if (!img)
@@ -125,7 +125,7 @@ JSObject* JsGdiUtils::Image(const std::wstring& path)
     return JsGdiBitmap::CreateJs(pJsCtx_, std::move(img));
 }
 
-std::uint32_t JsGdiUtils::LoadImageAsync(uint32_t hWnd, const std::wstring& path)
+std::uint32_t Gdi::LoadImageAsync(uint32_t hWnd, const std::wstring& path)
 {
     (void)hWnd;
     const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);
@@ -134,7 +134,7 @@ std::uint32_t JsGdiUtils::LoadImageAsync(uint32_t hWnd, const std::wstring& path
     return smp::image::LoadImageAsync(hPanel, path);
 }
 
-JSObject* JsGdiUtils::LoadImageAsyncV2(uint32_t hWnd, const std::wstring& path)
+JSObject* Gdi::LoadImageAsyncV2(uint32_t hWnd, const std::wstring& path)
 {
     (void)hWnd;
     const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);

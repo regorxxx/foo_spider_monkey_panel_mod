@@ -1,6 +1,6 @@
 #include <stdafx.h>
 
-#include "fb_playlist_manager.h"
+#include "plman.h"
 
 #include <fb2k/playlist_lock.h>
 #include <js_engine/js_to_native_invoker.h>
@@ -32,7 +32,7 @@ JSClassOps jsOps = {
     nullptr,
     nullptr,
     nullptr,
-    JsFbPlaylistManager::FinalizeJsObject,
+    Plman::FinalizeJsObject,
     nullptr,
     nullptr,
     nullptr,
@@ -45,60 +45,60 @@ JSClass jsClass = {
     &jsOps
 };
 
-MJS_DEFINE_JS_FN_FROM_NATIVE(AddItemToPlaybackQueue, JsFbPlaylistManager::AddItemToPlaybackQueue);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(AddLocations, JsFbPlaylistManager::AddLocations, JsFbPlaylistManager::AddLocationsWithOpt, 1);
-MJS_DEFINE_JS_FN_FROM_NATIVE(AddPlaylistItemToPlaybackQueue, JsFbPlaylistManager::AddPlaylistItemToPlaybackQueue);
-MJS_DEFINE_JS_FN_FROM_NATIVE(ClearPlaylist, JsFbPlaylistManager::ClearPlaylist);
-MJS_DEFINE_JS_FN_FROM_NATIVE(ClearPlaylistSelection, JsFbPlaylistManager::ClearPlaylistSelection);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(CreateAutoPlaylist, JsFbPlaylistManager::CreateAutoPlaylist, JsFbPlaylistManager::CreateAutoPlaylistWithOpt, 2);
-MJS_DEFINE_JS_FN_FROM_NATIVE(CreatePlaylist, JsFbPlaylistManager::CreatePlaylist);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(DuplicatePlaylist, JsFbPlaylistManager::DuplicatePlaylist, JsFbPlaylistManager::DuplicatePlaylistWithOpt, 1);
-MJS_DEFINE_JS_FN_FROM_NATIVE(EnsurePlaylistItemVisible, JsFbPlaylistManager::EnsurePlaylistItemVisible);
-MJS_DEFINE_JS_FN_FROM_NATIVE(ExecutePlaylistDefaultAction, JsFbPlaylistManager::ExecutePlaylistDefaultAction);
-MJS_DEFINE_JS_FN_FROM_NATIVE(FindByGUID, JsFbPlaylistManager::FindByGUID);
-MJS_DEFINE_JS_FN_FROM_NATIVE(FindOrCreatePlaylist, JsFbPlaylistManager::FindOrCreatePlaylist);
-MJS_DEFINE_JS_FN_FROM_NATIVE(FindPlaybackQueueItemIndex, JsFbPlaylistManager::FindPlaybackQueueItemIndex);
-MJS_DEFINE_JS_FN_FROM_NATIVE(FindPlaylist, JsFbPlaylistManager::FindPlaylist);
-MJS_DEFINE_JS_FN_FROM_NATIVE(FlushPlaybackQueue, JsFbPlaylistManager::FlushPlaybackQueue);
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetGUID, JsFbPlaylistManager::GetGUID);
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlaybackQueueContents, JsFbPlaylistManager::GetPlaybackQueueContents);
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlaybackQueueHandles, JsFbPlaylistManager::GetPlaybackQueueHandles);
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlayingItemLocation, JsFbPlaylistManager::GetPlayingItemLocation);
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlaylistFocusItemIndex, JsFbPlaylistManager::GetPlaylistFocusItemIndex);
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlaylistItems, JsFbPlaylistManager::GetPlaylistItems);
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlaylistLockedActions, JsFbPlaylistManager::GetPlaylistLockedActions);
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlaylistLockName, JsFbPlaylistManager::GetPlaylistLockName);
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlaylistName, JsFbPlaylistManager::GetPlaylistName);
-MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlaylistSelectedItems, JsFbPlaylistManager::GetPlaylistSelectedItems);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(InsertPlaylistItems, JsFbPlaylistManager::InsertPlaylistItems, JsFbPlaylistManager::InsertPlaylistItemsWithOpt, 1);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(InsertPlaylistItemsFilter, JsFbPlaylistManager::InsertPlaylistItemsFilter, JsFbPlaylistManager::InsertPlaylistItemsFilterWithOpt, 1);
-MJS_DEFINE_JS_FN_FROM_NATIVE(IsAutoPlaylist, JsFbPlaylistManager::IsAutoPlaylist);
-MJS_DEFINE_JS_FN_FROM_NATIVE(IsPlaylistItemSelected, JsFbPlaylistManager::IsPlaylistItemSelected);
-MJS_DEFINE_JS_FN_FROM_NATIVE(IsPlaylistLocked, JsFbPlaylistManager::IsPlaylistLocked);
-MJS_DEFINE_JS_FN_FROM_NATIVE(IsRedoAvailable, JsFbPlaylistManager::IsRedoAvailable);
-MJS_DEFINE_JS_FN_FROM_NATIVE(IsUndoAvailable, JsFbPlaylistManager::IsUndoAvailable);
-MJS_DEFINE_JS_FN_FROM_NATIVE(MovePlaylist, JsFbPlaylistManager::MovePlaylist);
-MJS_DEFINE_JS_FN_FROM_NATIVE(MovePlaylistSelection, JsFbPlaylistManager::MovePlaylistSelection);
-MJS_DEFINE_JS_FN_FROM_NATIVE(PlaylistItemCount, JsFbPlaylistManager::PlaylistItemCount);
-MJS_DEFINE_JS_FN_FROM_NATIVE(Redo, JsFbPlaylistManager::Redo);
-MJS_DEFINE_JS_FN_FROM_NATIVE(RemoveItemFromPlaybackQueue, JsFbPlaylistManager::RemoveItemFromPlaybackQueue);
-MJS_DEFINE_JS_FN_FROM_NATIVE(RemoveItemsFromPlaybackQueue, JsFbPlaylistManager::RemoveItemsFromPlaybackQueue);
-MJS_DEFINE_JS_FN_FROM_NATIVE(RemovePlaylist, JsFbPlaylistManager::RemovePlaylist);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(RemovePlaylistSelection, JsFbPlaylistManager::RemovePlaylistSelection, JsFbPlaylistManager::RemovePlaylistSelectionWithOpt, 1);
-MJS_DEFINE_JS_FN_FROM_NATIVE(RemovePlaylistSwitch, JsFbPlaylistManager::RemovePlaylistSwitch);
-MJS_DEFINE_JS_FN_FROM_NATIVE(RenamePlaylist, JsFbPlaylistManager::RenamePlaylist);
-MJS_DEFINE_JS_FN_FROM_NATIVE(SetActivePlaylistContext, JsFbPlaylistManager::SetActivePlaylistContext);
-MJS_DEFINE_JS_FN_FROM_NATIVE(SetPlaylistFocusItem, JsFbPlaylistManager::SetPlaylistFocusItem);
-MJS_DEFINE_JS_FN_FROM_NATIVE(SetPlaylistFocusItemByHandle, JsFbPlaylistManager::SetPlaylistFocusItemByHandle);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(SetPlaylistLockedActions, JsFbPlaylistManager::SetPlaylistLockedActions, JsFbPlaylistManager::SetPlaylistLockedActionsWithOpt, 1);
-MJS_DEFINE_JS_FN_FROM_NATIVE(SetPlaylistSelection, JsFbPlaylistManager::SetPlaylistSelection);
-MJS_DEFINE_JS_FN_FROM_NATIVE(SetPlaylistSelectionSingle, JsFbPlaylistManager::SetPlaylistSelectionSingle);
-MJS_DEFINE_JS_FN_FROM_NATIVE(ShowAutoPlaylistUI, JsFbPlaylistManager::ShowAutoPlaylistUI);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(SortByFormat, JsFbPlaylistManager::SortByFormat, JsFbPlaylistManager::SortByFormatWithOpt, 1);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(SortByFormatV2, JsFbPlaylistManager::SortByFormatV2, JsFbPlaylistManager::SortByFormatV2WithOpt, 1);
-MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(SortPlaylistsByName, JsFbPlaylistManager::SortPlaylistsByName, JsFbPlaylistManager::SortPlaylistsByNameWithOpt, 1);
-MJS_DEFINE_JS_FN_FROM_NATIVE(Undo, JsFbPlaylistManager::Undo);
-MJS_DEFINE_JS_FN_FROM_NATIVE(UndoBackup, JsFbPlaylistManager::UndoBackup);
+MJS_DEFINE_JS_FN_FROM_NATIVE(AddItemToPlaybackQueue, Plman::AddItemToPlaybackQueue);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(AddLocations, Plman::AddLocations, Plman::AddLocationsWithOpt, 1);
+MJS_DEFINE_JS_FN_FROM_NATIVE(AddPlaylistItemToPlaybackQueue, Plman::AddPlaylistItemToPlaybackQueue);
+MJS_DEFINE_JS_FN_FROM_NATIVE(ClearPlaylist, Plman::ClearPlaylist);
+MJS_DEFINE_JS_FN_FROM_NATIVE(ClearPlaylistSelection, Plman::ClearPlaylistSelection);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(CreateAutoPlaylist, Plman::CreateAutoPlaylist, Plman::CreateAutoPlaylistWithOpt, 2);
+MJS_DEFINE_JS_FN_FROM_NATIVE(CreatePlaylist, Plman::CreatePlaylist);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(DuplicatePlaylist, Plman::DuplicatePlaylist, Plman::DuplicatePlaylistWithOpt, 1);
+MJS_DEFINE_JS_FN_FROM_NATIVE(EnsurePlaylistItemVisible, Plman::EnsurePlaylistItemVisible);
+MJS_DEFINE_JS_FN_FROM_NATIVE(ExecutePlaylistDefaultAction, Plman::ExecutePlaylistDefaultAction);
+MJS_DEFINE_JS_FN_FROM_NATIVE(FindByGUID, Plman::FindByGUID);
+MJS_DEFINE_JS_FN_FROM_NATIVE(FindOrCreatePlaylist, Plman::FindOrCreatePlaylist);
+MJS_DEFINE_JS_FN_FROM_NATIVE(FindPlaybackQueueItemIndex, Plman::FindPlaybackQueueItemIndex);
+MJS_DEFINE_JS_FN_FROM_NATIVE(FindPlaylist, Plman::FindPlaylist);
+MJS_DEFINE_JS_FN_FROM_NATIVE(FlushPlaybackQueue, Plman::FlushPlaybackQueue);
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetGUID, Plman::GetGUID);
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlaybackQueueContents, Plman::GetPlaybackQueueContents);
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlaybackQueueHandles, Plman::GetPlaybackQueueHandles);
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlayingItemLocation, Plman::GetPlayingItemLocation);
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlaylistFocusItemIndex, Plman::GetPlaylistFocusItemIndex);
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlaylistItems, Plman::GetPlaylistItems);
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlaylistLockedActions, Plman::GetPlaylistLockedActions);
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlaylistLockName, Plman::GetPlaylistLockName);
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlaylistName, Plman::GetPlaylistName);
+MJS_DEFINE_JS_FN_FROM_NATIVE(GetPlaylistSelectedItems, Plman::GetPlaylistSelectedItems);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(InsertPlaylistItems, Plman::InsertPlaylistItems, Plman::InsertPlaylistItemsWithOpt, 1);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(InsertPlaylistItemsFilter, Plman::InsertPlaylistItemsFilter, Plman::InsertPlaylistItemsFilterWithOpt, 1);
+MJS_DEFINE_JS_FN_FROM_NATIVE(IsAutoPlaylist, Plman::IsAutoPlaylist);
+MJS_DEFINE_JS_FN_FROM_NATIVE(IsPlaylistItemSelected, Plman::IsPlaylistItemSelected);
+MJS_DEFINE_JS_FN_FROM_NATIVE(IsPlaylistLocked, Plman::IsPlaylistLocked);
+MJS_DEFINE_JS_FN_FROM_NATIVE(IsRedoAvailable, Plman::IsRedoAvailable);
+MJS_DEFINE_JS_FN_FROM_NATIVE(IsUndoAvailable, Plman::IsUndoAvailable);
+MJS_DEFINE_JS_FN_FROM_NATIVE(MovePlaylist, Plman::MovePlaylist);
+MJS_DEFINE_JS_FN_FROM_NATIVE(MovePlaylistSelection, Plman::MovePlaylistSelection);
+MJS_DEFINE_JS_FN_FROM_NATIVE(PlaylistItemCount, Plman::PlaylistItemCount);
+MJS_DEFINE_JS_FN_FROM_NATIVE(Redo, Plman::Redo);
+MJS_DEFINE_JS_FN_FROM_NATIVE(RemoveItemFromPlaybackQueue, Plman::RemoveItemFromPlaybackQueue);
+MJS_DEFINE_JS_FN_FROM_NATIVE(RemoveItemsFromPlaybackQueue, Plman::RemoveItemsFromPlaybackQueue);
+MJS_DEFINE_JS_FN_FROM_NATIVE(RemovePlaylist, Plman::RemovePlaylist);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(RemovePlaylistSelection, Plman::RemovePlaylistSelection, Plman::RemovePlaylistSelectionWithOpt, 1);
+MJS_DEFINE_JS_FN_FROM_NATIVE(RemovePlaylistSwitch, Plman::RemovePlaylistSwitch);
+MJS_DEFINE_JS_FN_FROM_NATIVE(RenamePlaylist, Plman::RenamePlaylist);
+MJS_DEFINE_JS_FN_FROM_NATIVE(SetActivePlaylistContext, Plman::SetActivePlaylistContext);
+MJS_DEFINE_JS_FN_FROM_NATIVE(SetPlaylistFocusItem, Plman::SetPlaylistFocusItem);
+MJS_DEFINE_JS_FN_FROM_NATIVE(SetPlaylistFocusItemByHandle, Plman::SetPlaylistFocusItemByHandle);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(SetPlaylistLockedActions, Plman::SetPlaylistLockedActions, Plman::SetPlaylistLockedActionsWithOpt, 1);
+MJS_DEFINE_JS_FN_FROM_NATIVE(SetPlaylistSelection, Plman::SetPlaylistSelection);
+MJS_DEFINE_JS_FN_FROM_NATIVE(SetPlaylistSelectionSingle, Plman::SetPlaylistSelectionSingle);
+MJS_DEFINE_JS_FN_FROM_NATIVE(ShowAutoPlaylistUI, Plman::ShowAutoPlaylistUI);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(SortByFormat, Plman::SortByFormat, Plman::SortByFormatWithOpt, 1);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(SortByFormatV2, Plman::SortByFormatV2, Plman::SortByFormatV2WithOpt, 1);
+MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(SortPlaylistsByName, Plman::SortPlaylistsByName, Plman::SortPlaylistsByNameWithOpt, 1);
+MJS_DEFINE_JS_FN_FROM_NATIVE(Undo, Plman::Undo);
+MJS_DEFINE_JS_FN_FROM_NATIVE(UndoBackup, Plman::UndoBackup);
 
 constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
     {
@@ -159,14 +159,14 @@ constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
         JS_FS_END,
     });
 
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_ActivePlaylist, JsFbPlaylistManager::get_ActivePlaylist);
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_PlaybackOrder, JsFbPlaylistManager::get_PlaybackOrder);
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_PlayingPlaylist, JsFbPlaylistManager::get_PlayingPlaylist);
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_PlaylistCount, JsFbPlaylistManager::get_PlaylistCount);
-MJS_DEFINE_JS_FN_FROM_NATIVE(get_PlaylistRecycler, JsFbPlaylistManager::get_PlaylistRecycler);
-MJS_DEFINE_JS_FN_FROM_NATIVE(put_ActivePlaylist, JsFbPlaylistManager::put_ActivePlaylist);
-MJS_DEFINE_JS_FN_FROM_NATIVE(put_PlaybackOrder, JsFbPlaylistManager::put_PlaybackOrder);
-MJS_DEFINE_JS_FN_FROM_NATIVE(put_PlayingPlaylist, JsFbPlaylistManager::put_PlayingPlaylist);
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_ActivePlaylist, Plman::get_ActivePlaylist);
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_PlaybackOrder, Plman::get_PlaybackOrder);
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_PlayingPlaylist, Plman::get_PlayingPlaylist);
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_PlaylistCount, Plman::get_PlaylistCount);
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_PlaylistRecycler, Plman::get_PlaylistRecycler);
+MJS_DEFINE_JS_FN_FROM_NATIVE(put_ActivePlaylist, Plman::put_ActivePlaylist);
+MJS_DEFINE_JS_FN_FROM_NATIVE(put_PlaybackOrder, Plman::put_PlaybackOrder);
+MJS_DEFINE_JS_FN_FROM_NATIVE(put_PlayingPlaylist, Plman::put_PlayingPlaylist);
 
 constexpr auto jsProperties = std::to_array<JSPropertySpec>(
     {
@@ -183,44 +183,44 @@ constexpr auto jsProperties = std::to_array<JSPropertySpec>(
 namespace mozjs
 {
 
-const JSClass JsFbPlaylistManager::JsClass = jsClass;
-const JSFunctionSpec* JsFbPlaylistManager::JsFunctions = jsFunctions.data();
-const JSPropertySpec* JsFbPlaylistManager::JsProperties = jsProperties.data();
+const JSClass Plman::JsClass = jsClass;
+const JSFunctionSpec* Plman::JsFunctions = jsFunctions.data();
+const JSPropertySpec* Plman::JsProperties = jsProperties.data();
 
-JsFbPlaylistManager::JsFbPlaylistManager(JSContext* cx)
+Plman::Plman(JSContext* cx)
     : pJsCtx_(cx)
 {
 }
 
-JsFbPlaylistManager::~JsFbPlaylistManager()
+Plman::~Plman()
 {
     PrepareForGc();
 }
 
-std::unique_ptr<JsFbPlaylistManager>
-JsFbPlaylistManager::CreateNative(JSContext* cx)
+std::unique_ptr<Plman>
+Plman::CreateNative(JSContext* cx)
 {
-    return std::unique_ptr<JsFbPlaylistManager>(new JsFbPlaylistManager(cx));
+    return std::unique_ptr<Plman>(new Plman(cx));
 }
 
-size_t JsFbPlaylistManager::GetInternalSize()
+size_t Plman::GetInternalSize()
 {
     return 0;
 }
 
-void JsFbPlaylistManager::PrepareForGc()
+void Plman::PrepareForGc()
 {
     jsPlaylistRecycler_.reset();
 }
 
-void JsFbPlaylistManager::AddItemToPlaybackQueue(JsFbMetadbHandle* handle)
+void Plman::AddItemToPlaybackQueue(JsFbMetadbHandle* handle)
 {
     qwr::QwrException::ExpectTrue(handle, "handle argument is null");
 
     playlist_manager::get()->queue_add_item(handle->GetHandle());
 }
 
-void JsFbPlaylistManager::AddLocations(uint32_t playlistIndex, JS::HandleValue locations, bool select)
+void Plman::AddLocations(uint32_t playlistIndex, JS::HandleValue locations, bool select)
 {
     auto api = playlist_manager_v5::get();
     qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "playlistIndex is invalid");
@@ -243,7 +243,7 @@ void JsFbPlaylistManager::AddLocations(uint32_t playlistIndex, JS::HandleValue l
         fb2k::service_new<smp::utils::OnProcessLocationsNotify_InsertHandles>(g, base, select));
 }
 
-void JsFbPlaylistManager::AddLocationsWithOpt(size_t optArgCount, uint32_t playlistIndex, JS::HandleValue locations, bool select)
+void Plman::AddLocationsWithOpt(size_t optArgCount, uint32_t playlistIndex, JS::HandleValue locations, bool select)
 {
     switch (optArgCount)
     {
@@ -256,22 +256,22 @@ void JsFbPlaylistManager::AddLocationsWithOpt(size_t optArgCount, uint32_t playl
     }
 }
 
-void JsFbPlaylistManager::AddPlaylistItemToPlaybackQueue(uint32_t playlistIndex, uint32_t playlistItemIndex)
+void Plman::AddPlaylistItemToPlaybackQueue(uint32_t playlistIndex, uint32_t playlistItemIndex)
 {
     playlist_manager::get()->queue_add_item_playlist(playlistIndex, playlistItemIndex);
 }
 
-void JsFbPlaylistManager::ClearPlaylist(uint32_t playlistIndex)
+void Plman::ClearPlaylist(uint32_t playlistIndex)
 {
     playlist_manager::get()->playlist_clear(playlistIndex);
 }
 
-void JsFbPlaylistManager::ClearPlaylistSelection(uint32_t playlistIndex)
+void Plman::ClearPlaylistSelection(uint32_t playlistIndex)
 {
     playlist_manager::get()->playlist_clear_selection(playlistIndex);
 }
 
-uint32_t JsFbPlaylistManager::CreateAutoPlaylist(uint32_t playlistIndex, const std::string& name, const std::string& query, const std::string& sort, uint32_t flags)
+uint32_t Plman::CreateAutoPlaylist(uint32_t playlistIndex, const std::string& name, const std::string& query, const std::string& sort, uint32_t flags)
 {
     const uint32_t upos = CreatePlaylist(playlistIndex, name);
     assert(pfc_infinite != upos);
@@ -288,7 +288,7 @@ uint32_t JsFbPlaylistManager::CreateAutoPlaylist(uint32_t playlistIndex, const s
     }
 }
 
-uint32_t JsFbPlaylistManager::CreateAutoPlaylistWithOpt(size_t optArgCount, uint32_t playlistIndex, const std::string& name, const std::string& query, const std::string& sort, uint32_t flags)
+uint32_t Plman::CreateAutoPlaylistWithOpt(size_t optArgCount, uint32_t playlistIndex, const std::string& name, const std::string& query, const std::string& sort, uint32_t flags)
 {
     switch (optArgCount)
     {
@@ -303,7 +303,7 @@ uint32_t JsFbPlaylistManager::CreateAutoPlaylistWithOpt(size_t optArgCount, uint
     }
 }
 
-uint32_t JsFbPlaylistManager::CreatePlaylist(uint32_t playlistIndex, const std::string& name)
+uint32_t Plman::CreatePlaylist(uint32_t playlistIndex, const std::string& name)
 {
     auto api = playlist_manager::get();
 
@@ -320,7 +320,7 @@ uint32_t JsFbPlaylistManager::CreatePlaylist(uint32_t playlistIndex, const std::
     return upos;
 }
 
-uint32_t JsFbPlaylistManager::DuplicatePlaylist(uint32_t from, const std::string& name)
+uint32_t Plman::DuplicatePlaylist(uint32_t from, const std::string& name)
 {
     auto api = playlist_manager_v4::get();
 
@@ -343,7 +343,7 @@ uint32_t JsFbPlaylistManager::DuplicatePlaylist(uint32_t from, const std::string
     return upos;
 }
 
-uint32_t JsFbPlaylistManager::DuplicatePlaylistWithOpt(size_t optArgCount, uint32_t from, const std::string& name)
+uint32_t Plman::DuplicatePlaylistWithOpt(size_t optArgCount, uint32_t from, const std::string& name)
 {
     switch (optArgCount)
     {
@@ -356,23 +356,23 @@ uint32_t JsFbPlaylistManager::DuplicatePlaylistWithOpt(size_t optArgCount, uint3
     }
 }
 
-void JsFbPlaylistManager::EnsurePlaylistItemVisible(uint32_t playlistIndex, uint32_t playlistItemIndex)
+void Plman::EnsurePlaylistItemVisible(uint32_t playlistIndex, uint32_t playlistItemIndex)
 {
     playlist_manager::get()->playlist_ensure_visible(playlistIndex, playlistItemIndex);
 }
 
-bool JsFbPlaylistManager::ExecutePlaylistDefaultAction(uint32_t playlistIndex, uint32_t playlistItemIndex)
+bool Plman::ExecutePlaylistDefaultAction(uint32_t playlistIndex, uint32_t playlistItemIndex)
 {
     return playlist_manager::get()->playlist_execute_default_action(playlistIndex, playlistItemIndex);
 }
 
-int32_t JsFbPlaylistManager::FindByGUID(const std::string& str)
+int32_t Plman::FindByGUID(const std::string& str)
 {
     const auto guid = pfc::GUID_from_text(str.c_str());
     return static_cast<int32_t>(playlist_manager_v5::get()->find_playlist_by_guid(guid));
 }
 
-uint32_t JsFbPlaylistManager::FindOrCreatePlaylist(const std::string& name, bool unlocked)
+uint32_t Plman::FindOrCreatePlaylist(const std::string& name, bool unlocked)
 {
     auto api = playlist_manager::get();
 
@@ -390,7 +390,7 @@ uint32_t JsFbPlaylistManager::FindOrCreatePlaylist(const std::string& name, bool
     return upos;
 }
 
-int32_t JsFbPlaylistManager::FindPlaybackQueueItemIndex(JsFbMetadbHandle* handle, uint32_t playlistIndex, uint32_t playlistItemIndex)
+int32_t Plman::FindPlaybackQueueItemIndex(JsFbMetadbHandle* handle, uint32_t playlistIndex, uint32_t playlistItemIndex)
 {
     qwr::QwrException::ExpectTrue(handle, "handle argument is null");
 
@@ -403,18 +403,18 @@ int32_t JsFbPlaylistManager::FindPlaybackQueueItemIndex(JsFbMetadbHandle* handle
     return (pfc_infinite == upos ? -1 : static_cast<int32_t>(upos));
 }
 
-int32_t JsFbPlaylistManager::FindPlaylist(const std::string& name)
+int32_t Plman::FindPlaylist(const std::string& name)
 {
     const uint32_t upos = playlist_manager::get()->find_playlist(name.c_str(), name.length());
     return (pfc_infinite == upos ? -1 : static_cast<int32_t>(upos));
 }
 
-void JsFbPlaylistManager::FlushPlaybackQueue()
+void Plman::FlushPlaybackQueue()
 {
     playlist_manager::get()->queue_flush();
 }
 
-std::string JsFbPlaylistManager::GetGUID(uint32_t playlistIndex)
+std::string Plman::GetGUID(uint32_t playlistIndex)
 {
     const auto api = playlist_manager_v5::get();
 
@@ -424,7 +424,7 @@ std::string JsFbPlaylistManager::GetGUID(uint32_t playlistIndex)
     return pfc::print_guid(guid).get_ptr();
 }
 
-JS::Value JsFbPlaylistManager::GetPlaybackQueueContents()
+JS::Value Plman::GetPlaybackQueueContents()
 {
     pfc::list_t<t_playback_queue_item> contents;
     playlist_manager::get()->queue_get_contents(contents);
@@ -434,7 +434,7 @@ JS::Value JsFbPlaylistManager::GetPlaybackQueueContents()
     return jsValue;
 }
 
-JSObject* JsFbPlaylistManager::GetPlaybackQueueHandles()
+JSObject* Plman::GetPlaybackQueueHandles()
 {
     pfc::list_t<t_playback_queue_item> contents;
     playlist_manager::get()->queue_get_contents(contents);
@@ -448,7 +448,7 @@ JSObject* JsFbPlaylistManager::GetPlaybackQueueHandles()
     return JsFbMetadbHandleList::CreateJs(pJsCtx_, items);
 }
 
-JSObject* JsFbPlaylistManager::GetPlayingItemLocation()
+JSObject* Plman::GetPlayingItemLocation()
 {
     auto playlistIndex = t_size(pfc_infinite);
     auto playlistItemIndex = t_size(pfc_infinite);
@@ -457,13 +457,13 @@ JSObject* JsFbPlaylistManager::GetPlayingItemLocation()
     return JsFbPlayingItemLocation::CreateJs(pJsCtx_, isValid, playlistIndex, playlistItemIndex);
 }
 
-int32_t JsFbPlaylistManager::GetPlaylistFocusItemIndex(uint32_t playlistIndex)
+int32_t Plman::GetPlaylistFocusItemIndex(uint32_t playlistIndex)
 {
     const uint32_t upos = playlist_manager::get()->playlist_get_focus_item(playlistIndex);
     return (pfc_infinite == upos ? -1 : static_cast<int32_t>(upos));
 }
 
-JSObject* JsFbPlaylistManager::GetPlaylistItems(uint32_t playlistIndex)
+JSObject* Plman::GetPlaylistItems(uint32_t playlistIndex)
 {
     metadb_handle_list items;
     playlist_manager::get()->playlist_get_all_items(playlistIndex, items);
@@ -472,7 +472,7 @@ JSObject* JsFbPlaylistManager::GetPlaylistItems(uint32_t playlistIndex)
 }
 
 std::optional<pfc::string8_fast>
-JsFbPlaylistManager::GetPlaylistLockName(uint32_t playlistIndex)
+Plman::GetPlaylistLockName(uint32_t playlistIndex)
 {
     const auto api = playlist_manager::get();
 
@@ -492,7 +492,7 @@ JsFbPlaylistManager::GetPlaylistLockName(uint32_t playlistIndex)
     return lockName;
 }
 
-JS::Value JsFbPlaylistManager::GetPlaylistLockedActions(uint32_t playlistIndex)
+JS::Value Plman::GetPlaylistLockedActions(uint32_t playlistIndex)
 {
     const auto api = playlist_manager::get();
 
@@ -520,14 +520,14 @@ JS::Value JsFbPlaylistManager::GetPlaylistLockedActions(uint32_t playlistIndex)
     return jsValue;
 }
 
-pfc::string8_fast JsFbPlaylistManager::GetPlaylistName(uint32_t playlistIndex)
+pfc::string8_fast Plman::GetPlaylistName(uint32_t playlistIndex)
 {
     pfc::string8_fast name;
     playlist_manager::get()->playlist_get_name(playlistIndex, name);
     return name;
 }
 
-JSObject* JsFbPlaylistManager::GetPlaylistSelectedItems(uint32_t playlistIndex)
+JSObject* Plman::GetPlaylistSelectedItems(uint32_t playlistIndex)
 {
     metadb_handle_list items;
     playlist_manager::get()->playlist_get_selected_items(playlistIndex, items);
@@ -535,7 +535,7 @@ JSObject* JsFbPlaylistManager::GetPlaylistSelectedItems(uint32_t playlistIndex)
     return JsFbMetadbHandleList::CreateJs(pJsCtx_, items);
 }
 
-void JsFbPlaylistManager::InsertPlaylistItems(uint32_t playlistIndex, uint32_t base, JsFbMetadbHandleList* handles, bool select)
+void Plman::InsertPlaylistItems(uint32_t playlistIndex, uint32_t base, JsFbMetadbHandleList* handles, bool select)
 {
     qwr::QwrException::ExpectTrue(handles, "handles argument is null");
 
@@ -543,7 +543,7 @@ void JsFbPlaylistManager::InsertPlaylistItems(uint32_t playlistIndex, uint32_t b
     playlist_manager::get()->playlist_insert_items(playlistIndex, base, handles->GetHandleList(), selection);
 }
 
-void JsFbPlaylistManager::InsertPlaylistItemsWithOpt(size_t optArgCount, uint32_t playlistIndex, uint32_t base, JsFbMetadbHandleList* handles, bool select)
+void Plman::InsertPlaylistItemsWithOpt(size_t optArgCount, uint32_t playlistIndex, uint32_t base, JsFbMetadbHandleList* handles, bool select)
 {
     switch (optArgCount)
     {
@@ -556,14 +556,14 @@ void JsFbPlaylistManager::InsertPlaylistItemsWithOpt(size_t optArgCount, uint32_
     }
 }
 
-void JsFbPlaylistManager::InsertPlaylistItemsFilter(uint32_t playlistIndex, uint32_t base, JsFbMetadbHandleList* handles, bool select)
+void Plman::InsertPlaylistItemsFilter(uint32_t playlistIndex, uint32_t base, JsFbMetadbHandleList* handles, bool select)
 {
     qwr::QwrException::ExpectTrue(handles, "handles argument is null");
 
     playlist_manager::get()->playlist_insert_items_filter(playlistIndex, base, handles->GetHandleList(), select);
 }
 
-void JsFbPlaylistManager::InsertPlaylistItemsFilterWithOpt(size_t optArgCount, uint32_t playlistIndex, uint32_t base, JsFbMetadbHandleList* handles, bool select)
+void Plman::InsertPlaylistItemsFilterWithOpt(size_t optArgCount, uint32_t playlistIndex, uint32_t base, JsFbMetadbHandleList* handles, bool select)
 {
     switch (optArgCount)
     {
@@ -576,19 +576,19 @@ void JsFbPlaylistManager::InsertPlaylistItemsFilterWithOpt(size_t optArgCount, u
     }
 }
 
-bool JsFbPlaylistManager::IsAutoPlaylist(uint32_t playlistIndex)
+bool Plman::IsAutoPlaylist(uint32_t playlistIndex)
 {
     qwr::QwrException::ExpectTrue(playlistIndex < playlist_manager::get()->get_playlist_count(), "Index is out of bounds");
 
     return autoplaylist_manager::get()->is_client_present(playlistIndex);
 }
 
-bool JsFbPlaylistManager::IsPlaylistItemSelected(uint32_t playlistIndex, uint32_t playlistItemIndex)
+bool Plman::IsPlaylistItemSelected(uint32_t playlistIndex, uint32_t playlistItemIndex)
 {
     return playlist_manager::get()->playlist_is_item_selected(playlistIndex, playlistItemIndex);
 }
 
-bool JsFbPlaylistManager::IsPlaylistLocked(uint32_t playlistIndex)
+bool Plman::IsPlaylistLocked(uint32_t playlistIndex)
 {
     auto api = playlist_manager::get();
     qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
@@ -596,7 +596,7 @@ bool JsFbPlaylistManager::IsPlaylistLocked(uint32_t playlistIndex)
     return api->playlist_lock_is_present(playlistIndex);
 }
 
-bool JsFbPlaylistManager::IsRedoAvailable(uint32_t playlistIndex)
+bool Plman::IsRedoAvailable(uint32_t playlistIndex)
 {
     auto api = playlist_manager::get();
     qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
@@ -604,7 +604,7 @@ bool JsFbPlaylistManager::IsRedoAvailable(uint32_t playlistIndex)
     return api->playlist_is_redo_available(playlistIndex);
 }
 
-bool JsFbPlaylistManager::IsUndoAvailable(uint32_t playlistIndex)
+bool Plman::IsUndoAvailable(uint32_t playlistIndex)
 {
     auto api = playlist_manager::get();
     qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
@@ -612,7 +612,7 @@ bool JsFbPlaylistManager::IsUndoAvailable(uint32_t playlistIndex)
     return api->playlist_is_undo_available(playlistIndex);
 }
 
-bool JsFbPlaylistManager::MovePlaylist(uint32_t from, uint32_t to)
+bool Plman::MovePlaylist(uint32_t from, uint32_t to)
 {
     auto api = playlist_manager::get();
     const auto count = api->get_playlist_count();
@@ -627,29 +627,29 @@ bool JsFbPlaylistManager::MovePlaylist(uint32_t from, uint32_t to)
     return false;
 }
 
-bool JsFbPlaylistManager::MovePlaylistSelection(uint32_t playlistIndex, int32_t delta)
+bool Plman::MovePlaylistSelection(uint32_t playlistIndex, int32_t delta)
 {
     return playlist_manager::get()->playlist_move_selection(playlistIndex, delta);
 }
 
-uint32_t JsFbPlaylistManager::PlaylistItemCount(uint32_t playlistIndex)
+uint32_t Plman::PlaylistItemCount(uint32_t playlistIndex)
 {
     return playlist_manager::get()->playlist_get_item_count(playlistIndex);
 }
 
-void JsFbPlaylistManager::Redo(uint32_t playlistIndex)
+void Plman::Redo(uint32_t playlistIndex)
 {
     qwr::QwrException::ExpectTrue(IsRedoAvailable(playlistIndex), "Redo is not available");
 
     (void)playlist_manager::get()->playlist_redo_restore(playlistIndex);
 }
 
-void JsFbPlaylistManager::RemoveItemFromPlaybackQueue(uint32_t index)
+void Plman::RemoveItemFromPlaybackQueue(uint32_t index)
 {
     playlist_manager::get()->queue_remove_mask(pfc::bit_array_one(index));
 }
 
-void JsFbPlaylistManager::RemoveItemsFromPlaybackQueue(JS::HandleValue affectedItems)
+void Plman::RemoveItemsFromPlaybackQueue(JS::HandleValue affectedItems)
 {
     auto api = playlist_manager::get();
     pfc::bit_array_bittable affected(api->queue_get_count());
@@ -659,17 +659,17 @@ void JsFbPlaylistManager::RemoveItemsFromPlaybackQueue(JS::HandleValue affectedI
     api->queue_remove_mask(affected);
 }
 
-bool JsFbPlaylistManager::RemovePlaylist(uint32_t playlistIndex)
+bool Plman::RemovePlaylist(uint32_t playlistIndex)
 {
     return playlist_manager::get()->remove_playlist(playlistIndex);
 }
 
-void JsFbPlaylistManager::RemovePlaylistSelection(uint32_t playlistIndex, bool crop)
+void Plman::RemovePlaylistSelection(uint32_t playlistIndex, bool crop)
 {
     playlist_manager::get()->playlist_remove_selection(playlistIndex, crop);
 }
 
-void JsFbPlaylistManager::RemovePlaylistSelectionWithOpt(size_t optArgCount, uint32_t playlistIndex, bool crop)
+void Plman::RemovePlaylistSelectionWithOpt(size_t optArgCount, uint32_t playlistIndex, bool crop)
 {
     switch (optArgCount)
     {
@@ -682,34 +682,34 @@ void JsFbPlaylistManager::RemovePlaylistSelectionWithOpt(size_t optArgCount, uin
     }
 }
 
-bool JsFbPlaylistManager::RemovePlaylistSwitch(uint32_t playlistIndex)
+bool Plman::RemovePlaylistSwitch(uint32_t playlistIndex)
 {
     return playlist_manager::get()->remove_playlist_switch(playlistIndex);
 }
 
-bool JsFbPlaylistManager::RenamePlaylist(uint32_t playlistIndex, const std::string& name)
+bool Plman::RenamePlaylist(uint32_t playlistIndex, const std::string& name)
 {
     return playlist_manager::get()->playlist_rename(playlistIndex, name.c_str(), name.length());
 }
 
-void JsFbPlaylistManager::SetActivePlaylistContext()
+void Plman::SetActivePlaylistContext()
 {
     ui_edit_context_manager::get()->set_context_active_playlist();
 }
 
-void JsFbPlaylistManager::SetPlaylistFocusItem(uint32_t playlistIndex, uint32_t playlistItemIndex)
+void Plman::SetPlaylistFocusItem(uint32_t playlistIndex, uint32_t playlistItemIndex)
 {
     playlist_manager::get()->playlist_set_focus_item(playlistIndex, playlistItemIndex);
 }
 
-void JsFbPlaylistManager::SetPlaylistFocusItemByHandle(uint32_t playlistIndex, JsFbMetadbHandle* handle)
+void Plman::SetPlaylistFocusItemByHandle(uint32_t playlistIndex, JsFbMetadbHandle* handle)
 {
     qwr::QwrException::ExpectTrue(handle, "handle argument is null");
 
     playlist_manager::get()->playlist_set_focus_by_handle(playlistIndex, handle->GetHandle());
 }
 
-void JsFbPlaylistManager::SetPlaylistLockedActions(uint32_t playlistIndex, JS::HandleValue lockedActions)
+void Plman::SetPlaylistLockedActions(uint32_t playlistIndex, JS::HandleValue lockedActions)
 {
     const auto api = playlist_manager::get();
 
@@ -758,7 +758,7 @@ void JsFbPlaylistManager::SetPlaylistLockedActions(uint32_t playlistIndex, JS::H
     }
 }
 
-void JsFbPlaylistManager::SetPlaylistLockedActionsWithOpt(size_t optArgCount, uint32_t playlistIndex, JS::HandleValue lockedActions)
+void Plman::SetPlaylistLockedActionsWithOpt(size_t optArgCount, uint32_t playlistIndex, JS::HandleValue lockedActions)
 {
     switch (optArgCount)
     {
@@ -771,7 +771,7 @@ void JsFbPlaylistManager::SetPlaylistLockedActionsWithOpt(size_t optArgCount, ui
     }
 }
 
-void JsFbPlaylistManager::SetPlaylistSelection(uint32_t playlistIndex, JS::HandleValue affectedItems, bool state)
+void Plman::SetPlaylistSelection(uint32_t playlistIndex, JS::HandleValue affectedItems, bool state)
 {
     auto api = playlist_manager::get();
     pfc::bit_array_bittable affected(api->playlist_get_item_count(playlistIndex));
@@ -785,12 +785,12 @@ void JsFbPlaylistManager::SetPlaylistSelection(uint32_t playlistIndex, JS::Handl
     api->playlist_set_selection(playlistIndex, affected, status);
 }
 
-void JsFbPlaylistManager::SetPlaylistSelectionSingle(uint32_t playlistIndex, uint32_t playlistItemIndex, bool state)
+void Plman::SetPlaylistSelectionSingle(uint32_t playlistIndex, uint32_t playlistItemIndex, bool state)
 {
     playlist_manager::get()->playlist_set_selection_single(playlistIndex, playlistItemIndex, state);
 }
 
-bool JsFbPlaylistManager::ShowAutoPlaylistUI(uint32_t playlistIndex)
+bool Plman::ShowAutoPlaylistUI(uint32_t playlistIndex)
 {
     qwr::QwrException::ExpectTrue(playlistIndex < playlist_manager::get()->get_playlist_count(), "Index is out of bounds");
 
@@ -806,12 +806,12 @@ bool JsFbPlaylistManager::ShowAutoPlaylistUI(uint32_t playlistIndex)
     return true;
 }
 
-bool JsFbPlaylistManager::SortByFormat(uint32_t playlistIndex, const std::string& pattern, bool selOnly)
+bool Plman::SortByFormat(uint32_t playlistIndex, const std::string& pattern, bool selOnly)
 {
     return playlist_manager::get()->playlist_sort_by_format(playlistIndex, pattern.empty() ? nullptr : pattern.c_str(), selOnly);
 }
 
-bool JsFbPlaylistManager::SortByFormatWithOpt(size_t optArgCount, uint32_t playlistIndex, const std::string& pattern, bool selOnly)
+bool Plman::SortByFormatWithOpt(size_t optArgCount, uint32_t playlistIndex, const std::string& pattern, bool selOnly)
 {
     switch (optArgCount)
     {
@@ -824,7 +824,7 @@ bool JsFbPlaylistManager::SortByFormatWithOpt(size_t optArgCount, uint32_t playl
     }
 }
 
-bool JsFbPlaylistManager::SortByFormatV2(uint32_t playlistIndex, const std::string& pattern, int8_t direction)
+bool Plman::SortByFormatV2(uint32_t playlistIndex, const std::string& pattern, int8_t direction)
 {
     auto api = playlist_manager::get();
 
@@ -841,7 +841,7 @@ bool JsFbPlaylistManager::SortByFormatV2(uint32_t playlistIndex, const std::stri
     return api->playlist_reorder_items(playlistIndex, order.data(), order.size());
 }
 
-bool JsFbPlaylistManager::SortByFormatV2WithOpt(size_t optArgCount, uint32_t playlistIndex, const std::string& pattern, int8_t direction)
+bool Plman::SortByFormatV2WithOpt(size_t optArgCount, uint32_t playlistIndex, const std::string& pattern, int8_t direction)
 {
     switch (optArgCount)
     {
@@ -854,7 +854,7 @@ bool JsFbPlaylistManager::SortByFormatV2WithOpt(size_t optArgCount, uint32_t pla
     }
 }
 
-void JsFbPlaylistManager::SortPlaylistsByName(int8_t direction)
+void Plman::SortPlaylistsByName(int8_t direction)
 {
     auto api = playlist_manager::get();
     const auto count = api->get_playlist_count();
@@ -876,7 +876,7 @@ void JsFbPlaylistManager::SortPlaylistsByName(int8_t direction)
     api->reorder(order.get_ptr(), count);
 }
 
-void JsFbPlaylistManager::SortPlaylistsByNameWithOpt(size_t optArgCount, int8_t direction)
+void Plman::SortPlaylistsByNameWithOpt(size_t optArgCount, int8_t direction)
 {
     switch (optArgCount)
     {
@@ -889,14 +889,14 @@ void JsFbPlaylistManager::SortPlaylistsByNameWithOpt(size_t optArgCount, int8_t 
     }
 }
 
-void JsFbPlaylistManager::Undo(uint32_t playlistIndex)
+void Plman::Undo(uint32_t playlistIndex)
 {
     qwr::QwrException::ExpectTrue(IsUndoAvailable(playlistIndex), "Undo is not available");
 
     (void)playlist_manager::get()->playlist_undo_restore(playlistIndex);
 }
 
-void JsFbPlaylistManager::UndoBackup(uint32_t playlistIndex)
+void Plman::UndoBackup(uint32_t playlistIndex)
 {
     auto api = playlist_manager::get();
     qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
@@ -904,29 +904,29 @@ void JsFbPlaylistManager::UndoBackup(uint32_t playlistIndex)
     api->playlist_undo_backup(playlistIndex);
 }
 
-int32_t JsFbPlaylistManager::get_ActivePlaylist()
+int32_t Plman::get_ActivePlaylist()
 {
     uint32_t upos = playlist_manager::get()->get_active_playlist();
     return (pfc_infinite == upos ? -1 : static_cast<int32_t>(upos));
 }
 
-uint32_t JsFbPlaylistManager::get_PlaybackOrder()
+uint32_t Plman::get_PlaybackOrder()
 {
     return playlist_manager::get()->playback_order_get_active();
 }
 
-int32_t JsFbPlaylistManager::get_PlayingPlaylist()
+int32_t Plman::get_PlayingPlaylist()
 {
     uint32_t upos = playlist_manager::get()->get_playing_playlist();
     return (pfc_infinite == upos ? -1 : static_cast<int32_t>(upos));
 }
 
-uint32_t JsFbPlaylistManager::get_PlaylistCount()
+uint32_t Plman::get_PlaylistCount()
 {
     return playlist_manager::get()->get_playlist_count();
 }
 
-JSObject* JsFbPlaylistManager::get_PlaylistRecycler()
+JSObject* Plman::get_PlaylistRecycler()
 {
     if (!jsPlaylistRecycler_.initialized())
     {
@@ -936,7 +936,7 @@ JSObject* JsFbPlaylistManager::get_PlaylistRecycler()
     return jsPlaylistRecycler_;
 }
 
-void JsFbPlaylistManager::put_ActivePlaylist(uint32_t playlistIndex)
+void Plman::put_ActivePlaylist(uint32_t playlistIndex)
 {
     auto api = playlist_manager::get();
     qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");
@@ -944,7 +944,7 @@ void JsFbPlaylistManager::put_ActivePlaylist(uint32_t playlistIndex)
     api->set_active_playlist(playlistIndex);
 }
 
-void JsFbPlaylistManager::put_PlaybackOrder(uint32_t order)
+void Plman::put_PlaybackOrder(uint32_t order)
 {
     auto api = playlist_manager::get();
     qwr::QwrException::ExpectTrue(order < api->playback_order_get_count(), "Unknown playback order id: {}", order);
@@ -952,7 +952,7 @@ void JsFbPlaylistManager::put_PlaybackOrder(uint32_t order)
     api->playback_order_set_active(order);
 }
 
-void JsFbPlaylistManager::put_PlayingPlaylist(uint32_t playlistIndex)
+void Plman::put_PlayingPlaylist(uint32_t playlistIndex)
 {
     auto api = playlist_manager::get();
     qwr::QwrException::ExpectTrue(playlistIndex < api->get_playlist_count(), "Index is out of bounds");

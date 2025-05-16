@@ -17,8 +17,8 @@ class JsFbMetadbHandleList;
 class JsFbPlayingItemLocation;
 class JsFbPlaylistRecycler;
 
-class JsFbPlaylistManager
-    : public JsObjectBase<JsFbPlaylistManager>
+class Plman
+    : public JsObjectBase<Plman>
 {
 public:
     static constexpr bool HasProto = false;
@@ -30,9 +30,9 @@ public:
     static const JSPropertySpec* JsProperties;
 
 public:
-    ~JsFbPlaylistManager() override;
+    ~Plman() override;
 
-    static std::unique_ptr<JsFbPlaylistManager> CreateNative(JSContext* cx);
+    static std::unique_ptr<Plman> CreateNative(JSContext* cx);
     static size_t GetInternalSize();
 
     void PrepareForGc();
@@ -115,7 +115,7 @@ public:
     void put_PlayingPlaylist(uint32_t playlistIndex);
 
 private:
-    JsFbPlaylistManager(JSContext* cx);
+    Plman(JSContext* cx);
 
 private:
     JSContext* pJsCtx_ = nullptr;

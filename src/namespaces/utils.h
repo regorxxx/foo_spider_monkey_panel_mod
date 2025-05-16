@@ -14,8 +14,8 @@ namespace mozjs
 
 class JsFbMetadbHandle;
 
-class JsUtils
-    : public JsObjectBase<JsUtils>
+class Utils
+    : public JsObjectBase<Utils>
 {
 public:
     static constexpr bool HasProto = false;
@@ -27,7 +27,7 @@ public:
     static const JSPropertySpec* JsProperties;
 
 public:
-    static std::unique_ptr<JsUtils> CreateNative(JSContext* cx);
+    static std::unique_ptr<Utils> CreateNative(JSContext* cx);
     static size_t GetInternalSize();
 
 public:
@@ -82,7 +82,7 @@ public:
     std::string get_Version() const;
 
 private:
-    JsUtils(JSContext* cx);
+    Utils(JSContext* cx);
 
 private:
     JSContext* pJsCtx_ = nullptr;

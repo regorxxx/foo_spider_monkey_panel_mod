@@ -10,12 +10,6 @@
     <ClCompile Include="js_objects\global_object.cpp">
       <Filter>js_objects</Filter>
     </ClCompile>
-    <ClCompile Include="js_objects\console.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\gdi_utils.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
     <ClCompile Include="js_objects\gdi_font.cpp">
       <Filter>js_objects</Filter>
     </ClCompile>
@@ -64,9 +58,6 @@
     <ClCompile Include="js_objects\fb_profiler.cpp">
       <Filter>js_objects</Filter>
     </ClCompile>
-    <ClCompile Include="js_objects\fb_playlist_manager.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
     <ClCompile Include="js_objects\main_menu_manager.cpp">
       <Filter>js_objects</Filter>
     </ClCompile>
@@ -83,15 +74,6 @@
       <Filter>js_objects</Filter>
     </ClCompile>
     <ClCompile Include="js_objects\theme_manager.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\utils.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\fb_utils.cpp">
-      <Filter>js_objects</Filter>
-    </ClCompile>
-    <ClCompile Include="js_objects\window.cpp">
       <Filter>js_objects</Filter>
     </ClCompile>
     <ClCompile Include="js_utils\serialized_value.cpp">
@@ -421,6 +403,24 @@
     <ClCompile Include="js_objects\fb_audio_chunk.cpp">
       <Filter>js_objects</Filter>
     </ClCompile>
+    <ClCompile Include="namespaces\console.cpp">
+      <Filter>namespaces</Filter>
+    </ClCompile>
+    <ClCompile Include="namespaces\fb.cpp">
+      <Filter>namespaces</Filter>
+    </ClCompile>
+    <ClCompile Include="namespaces\gdi.cpp">
+      <Filter>namespaces</Filter>
+    </ClCompile>
+    <ClCompile Include="namespaces\plman.cpp">
+      <Filter>namespaces</Filter>
+    </ClCompile>
+    <ClCompile Include="namespaces\utils.cpp">
+      <Filter>namespaces</Filter>
+    </ClCompile>
+    <ClCompile Include="namespaces\window.cpp">
+      <Filter>namespaces</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="js_engine\js_engine.h">
@@ -430,12 +430,6 @@
       <Filter>js_objects</Filter>
     </ClInclude>
     <ClInclude Include="js_objects\global_object.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\console.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\gdi_utils.h">
       <Filter>js_objects</Filter>
     </ClInclude>
     <ClInclude Include="js_objects\gdi_font.h">
@@ -477,12 +471,6 @@
     <ClInclude Include="js_objects\theme_manager.h">
       <Filter>js_objects</Filter>
     </ClInclude>
-    <ClInclude Include="js_objects\utils.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\window.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
     <ClInclude Include="js_objects\context_menu_manager.h">
       <Filter>js_objects</Filter>
     </ClInclude>
@@ -495,9 +483,6 @@
     <ClInclude Include="js_objects\fb_playing_item_location.h">
       <Filter>js_objects</Filter>
     </ClInclude>
-    <ClInclude Include="js_objects\fb_playlist_manager.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
     <ClInclude Include="js_objects\fb_profiler.h">
       <Filter>js_objects</Filter>
     </ClInclude>
@@ -508,9 +493,6 @@
       <Filter>js_objects</Filter>
     </ClInclude>
     <ClInclude Include="js_objects\fb_ui_selection_holder.h">
-      <Filter>js_objects</Filter>
-    </ClInclude>
-    <ClInclude Include="js_objects\fb_utils.h">
       <Filter>js_objects</Filter>
     </ClInclude>
     <ClInclude Include="js_objects\main_menu_manager.h">
@@ -904,6 +886,24 @@
     <ClInclude Include="js_objects\fb_audio_chunk.h">
       <Filter>js_objects</Filter>
     </ClInclude>
+    <ClInclude Include="namespaces\console.h">
+      <Filter>namespaces</Filter>
+    </ClInclude>
+    <ClInclude Include="namespaces\fb.h">
+      <Filter>namespaces</Filter>
+    </ClInclude>
+    <ClInclude Include="namespaces\gdi.h">
+      <Filter>namespaces</Filter>
+    </ClInclude>
+    <ClInclude Include="namespaces\plman.h">
+      <Filter>namespaces</Filter>
+    </ClInclude>
+    <ClInclude Include="namespaces\utils.h">
+      <Filter>namespaces</Filter>
+    </ClInclude>
+    <ClInclude Include="namespaces\window.h">
+      <Filter>namespaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="js_engine">
@@ -959,6 +959,9 @@
     </Filter>
     <Filter Include="timeout">
       <UniqueIdentifier>{19b3e8c9-9302-44fe-8178-88312a4df487}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="namespaces">
+      <UniqueIdentifier>{a7239c8c-3acf-4e4f-9e79-c72ed2555921}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
