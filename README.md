@@ -1,4 +1,4 @@
-# 1.62.25.05.14
+# 1.6.2.25.05.14
 - Add `fb.AddLocationsAsync(locations)` and `on_locations_added` callback.
 
 `locations` must be an array of strings and it can contain file paths, playlists or urls.
@@ -18,7 +18,7 @@ function on_locations_added(task_id, handle_list) {
 }
 ```
 
-# 1.62.25.05.13
+# 1.6.2.25.05.13
 - Add `FbMetadbHandleList` `SaveAs`. Saves using native `.fpl`
 format so you should use that as the file extension. The
 parent folder must already exist.
@@ -26,13 +26,13 @@ parent folder must already exist.
 - Add `fb.ShowPictureViewer(image_path)`. This uses the image
 viewer built in to `foobar2000`.
 
-# 1.62.25.05.10
+# 1.6.2.25.05.10
 - `foobar2000` `2.25` preview has changed the behaviour of `FbMetadbHandle` `RawPath` if you
 have a portable install and music files on the same drive. Any code that checks `startsWith("file://")`
 will fail because the `RawPath` now starts with `file-relative://`. This release restores the old
 behaviour.
 
-# 1.62.25.05.05
+# 1.6.2.25.05.05
 
 - Requires at least `foobar2000` `2.0` because new methods from the `SDK` are being used.
 
