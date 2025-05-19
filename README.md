@@ -1,3 +1,8 @@
+# 1.6.2.25.05.19
+- Add `window.IsDark` boolean property. The `on_colours_changed` callback has always
+responded to dark mode being toggled.
+- Ensure `fb.IsMainMenuCommandChecked` is always reliable.
+
 # 1.6.2.25.05.14
 - Add `fb.AddLocationsAsync(locations)` and `on_locations_added` callback.
 
