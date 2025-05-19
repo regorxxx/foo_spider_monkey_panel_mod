@@ -271,10 +271,11 @@ void ExecuteMainmenuCommandByName(const std::string& name)
 {
     try
     {
-        bool bRet = ApplyFnOnMainmenuNode(
+        const bool bRet = ApplyFnOnMainmenuNode(
             name,
             [](auto node) { node->execute(nullptr); },
             [](auto idx, auto ptr) { ptr->execute(idx, nullptr); });
+
         qwr::QwrException::ExpectTrue(bRet, "Unknown menu command: {}", name);
     }
     catch (const pfc::exception& e)
@@ -287,19 +288,22 @@ uint32_t GetMainmenuCommandStatusByName(const std::string& name)
 {
     try
     {
-        uint32_t status;
-        bool bRet = ApplyFnOnMainmenuNode(
+        uint32_t status{};
+
+        const bool bRet = ApplyFnOnMainmenuNode(
             name,
             [&status](auto node) {
-                pfc::string8_fast tmp;
+                pfc::string8 tmp;
+                status = 0;
                 node->get_display(tmp, status);
             },
             [&status](auto idx, auto ptr) {
-                pfc::string8_fast tmp;
+                pfc::string8 tmp;
+                status = 0;
                 ptr->get_display(idx, tmp, status);
             });
-        qwr::QwrException::ExpectTrue(bRet, "Unknown menu command: {}", name);
 
+        qwr::QwrException::ExpectTrue(bRet, "Unknown menu command: {}", name);
         return status;
     }
     catch (const pfc::exception& e)
