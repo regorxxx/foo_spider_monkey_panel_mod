@@ -10,7 +10,9 @@
 #define mozilla_DoublyLinkedList_h
 
 #include <algorithm>
+#include <iosfwd>
 #include <iterator>
+#include <type_traits>
 
 #include "mozilla/Assertions.h"
 
@@ -93,7 +95,7 @@ class DoublyLinkedListElement {
  */
 template <typename T>
 struct GetDoublyLinkedListElement {
-  static_assert(mozilla::IsBaseOf<DoublyLinkedListElement<T>, T>::value,
+  static_assert(std::is_base_of<DoublyLinkedListElement<T>, T>::value,
                 "You need your own specialization of GetDoublyLinkedListElement"
                 " or use a separate Trait.");
   static DoublyLinkedListElement<T>& Get(T* aThis) { return *aThis; }

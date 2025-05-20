@@ -9,7 +9,8 @@
 #ifndef mozilla_Assertions_h
 #define mozilla_Assertions_h
 
-#if defined(MOZILLA_INTERNAL_API) && defined(__cplusplus)
+#if (defined(MOZ_HAS_MOZGLUE) || defined(MOZILLA_INTERNAL_API)) && \
+    !defined(__wasi__)
 #  define MOZ_DUMP_ASSERTION_STACK
 #endif
 
@@ -20,7 +21,7 @@
 #include "mozilla/StaticAnalysisFunctions.h"
 #include "mozilla/Types.h"
 #ifdef MOZ_DUMP_ASSERTION_STACK
-#  include "nsTraceRefcnt.h"
+#  include "mozilla/StackWalk.h"
 #endif
 
 /*
@@ -59,6 +60,10 @@ __declspec(dllimport) int __stdcall TerminateProcess(void* hProcess,
                                                      unsigned int uExitCode);
 __declspec(dllimport) void* __stdcall GetCurrentProcess(void);
 MOZ_END_EXTERN_C
+#elif defined(__wasi__)
+/*
+ * On Wasm/WASI platforms, we just call __builtin_trap().
+ */
 #else
 #  include <signal.h>
 #endif
@@ -66,85 +71,14 @@ MOZ_END_EXTERN_C
 #  include <android/log.h>
 #endif
 
-/*
- * MOZ_STATIC_ASSERT may be used to assert a condition *at compile time* in C.
- * In C++11, static_assert is provided by the compiler to the same effect.
- * This can be useful when you make certain assumptions about what must hold for
- * optimal, or even correct, behavior.  For example, you might assert that the
- * size of a struct is a multiple of the target architecture's word size:
- *
- *   struct S { ... };
- *   // C
- *   MOZ_STATIC_ASSERT(sizeof(S) % sizeof(size_t) == 0,
- *                     "S should be a multiple of word size for efficiency");
- *   // C++11
- *   static_assert(sizeof(S) % sizeof(size_t) == 0,
- *                 "S should be a multiple of word size for efficiency");
- *
- * This macro can be used in any location where both an extern declaration and a
- * typedef could be used.
- */
-#ifndef __cplusplus
-/*
- * Some of the definitions below create an otherwise-unused typedef.  This
- * triggers compiler warnings with some versions of gcc, so mark the typedefs
- * as permissibly-unused to disable the warnings.
- */
-#  if defined(__GNUC__)
-#    define MOZ_STATIC_ASSERT_UNUSED_ATTRIBUTE __attribute__((unused))
-#  else
-#    define MOZ_STATIC_ASSERT_UNUSED_ATTRIBUTE /* nothing */
-#  endif
-#  define MOZ_STATIC_ASSERT_GLUE1(x, y) x##y
-#  define MOZ_STATIC_ASSERT_GLUE(x, y) MOZ_STATIC_ASSERT_GLUE1(x, y)
-#  if defined(__SUNPRO_CC)
-/*
- * The Sun Studio C++ compiler is buggy when declaring, inside a function,
- * another extern'd function with an array argument whose length contains a
- * sizeof, triggering the error message "sizeof expression not accepted as
- * size of array parameter".  This bug (6688515, not public yet) would hit
- * defining moz_static_assert as a function, so we always define an extern
- * array for Sun Studio.
- *
- * We include the line number in the symbol name in a best-effort attempt
- * to avoid conflicts (see below).
- */
-#    define MOZ_STATIC_ASSERT(cond, reason)                 \
-      extern char MOZ_STATIC_ASSERT_GLUE(moz_static_assert, \
-                                         __LINE__)[(cond) ? 1 : -1]
-#  elif defined(__COUNTER__)
-/*
- * If there was no preferred alternative, use a compiler-agnostic version.
- *
- * Note that the non-__COUNTER__ version has a bug in C++: it can't be used
- * in both |extern "C"| and normal C++ in the same translation unit.  (Alas
- * |extern "C"| isn't allowed in a function.)  The only affected compiler
- * we really care about is gcc 4.2.  For that compiler and others like it,
- * we include the line number in the function name to do the best we can to
- * avoid conflicts.  These should be rare: a conflict would require use of
- * MOZ_STATIC_ASSERT on the same line in separate files in the same
- * translation unit, *and* the uses would have to be in code with
- * different linkage, *and* the first observed use must be in C++-linkage
- * code.
- */
-#    define MOZ_STATIC_ASSERT(cond, reason) \
-      typedef int MOZ_STATIC_ASSERT_GLUE(   \
-          moz_static_assert,                \
-          __COUNTER__)[(cond) ? 1 : -1] MOZ_STATIC_ASSERT_UNUSED_ATTRIBUTE
-#  else
-#    define MOZ_STATIC_ASSERT(cond, reason)                            \
-      extern void MOZ_STATIC_ASSERT_GLUE(moz_static_assert, __LINE__)( \
-          int arg[(cond) ? 1 : -1]) MOZ_STATIC_ASSERT_UNUSED_ATTRIBUTE
-#  endif
-
-#  define MOZ_STATIC_ASSERT_IF(cond, expr, reason) \
-    MOZ_STATIC_ASSERT(!(cond) || (expr), reason)
-#else
-#  define MOZ_STATIC_ASSERT_IF(cond, expr, reason) \
-    static_assert(!(cond) || (expr), reason)
-#endif
-
 MOZ_BEGIN_EXTERN_C
+
+#if defined(ANDROID) && defined(MOZ_DUMP_ASSERTION_STACK)
+MOZ_MAYBE_UNUSED static void MOZ_ReportAssertionFailurePrintFrame(
+    const char* aBuf) {
+  __android_log_print(ANDROID_LOG_FATAL, "MOZ_Assert", "%s\n", aBuf);
+}
+#endif
 
 /*
  * Prints |aStr| as an assertion failure (using aFilename and aLine as the
@@ -161,10 +95,14 @@ MOZ_ReportAssertionFailure(const char* aStr, const char* aFilename,
   __android_log_print(ANDROID_LOG_FATAL, "MOZ_Assert",
                       "Assertion failure: %s, at %s:%d\n", aStr, aFilename,
                       aLine);
+#  if defined(MOZ_DUMP_ASSERTION_STACK)
+  MozWalkTheStackWithWriter(MOZ_ReportAssertionFailurePrintFrame, CallerPC(),
+                            /* aMaxFrames */ 0);
+#  endif
 #else
   fprintf(stderr, "Assertion failure: %s, at %s:%d\n", aStr, aFilename, aLine);
 #  if defined(MOZ_DUMP_ASSERTION_STACK)
-  nsTraceRefcnt::WalkTheStack(stderr);
+  MozWalkTheStack(stderr, CallerPC(), /* aMaxFrames */ 0);
 #  endif
   fflush(stderr);
 #endif
@@ -179,7 +117,7 @@ MOZ_MAYBE_UNUSED static MOZ_COLD MOZ_NEVER_INLINE void MOZ_ReportCrash(
 #else
   fprintf(stderr, "Hit MOZ_CRASH(%s) at %s:%d\n", aStr, aFilename, aLine);
 #  if defined(MOZ_DUMP_ASSERTION_STACK)
-  nsTraceRefcnt::WalkTheStack(stderr);
+  MozWalkTheStack(stderr, CallerPC(), /* aMaxFrames */ 0);
 #  endif
   fflush(stderr);
 #endif
@@ -223,6 +161,11 @@ MOZ_NoReturn(int aLine) {
       __debugbreak();            \
       MOZ_NoReturn(line);        \
     } while (false)
+
+#elif __wasi__
+
+#  define MOZ_REALLY_CRASH(line) __builtin_trap()
+
 #else
 
 /*
@@ -242,16 +185,16 @@ MOZ_NoReturn(int aLine) {
 #  endif
 
 #  ifdef __cplusplus
-#    define MOZ_REALLY_CRASH(line)                     \
-      do {                                             \
-        *((volatile int*)MOZ_CRASH_WRITE_ADDR) = line; \
-        ::abort();                                     \
+#    define MOZ_REALLY_CRASH(line)                                  \
+      do {                                                          \
+        *((volatile int*)MOZ_CRASH_WRITE_ADDR) = line; /* NOLINT */ \
+        ::abort();                                                  \
       } while (false)
 #  else
-#    define MOZ_REALLY_CRASH(line)                     \
-      do {                                             \
-        *((volatile int*)MOZ_CRASH_WRITE_ADDR) = line; \
-        abort();                                       \
+#    define MOZ_REALLY_CRASH(line)                                  \
+      do {                                                          \
+        *((volatile int*)MOZ_CRASH_WRITE_ADDR) = line; /* NOLINT */ \
+        abort();                                                    \
       } while (false)
 #  endif
 #endif
@@ -396,20 +339,20 @@ MOZ_END_EXTERN_C
  */
 
 #ifdef __cplusplus
-#  include "mozilla/TypeTraits.h"
+#  include <type_traits>
 namespace mozilla {
 namespace detail {
 
 template <typename T>
 struct AssertionConditionType {
-  typedef typename RemoveReference<T>::Type ValueT;
-  static_assert(!IsArray<ValueT>::value,
+  using ValueT = std::remove_reference_t<T>;
+  static_assert(!std::is_array_v<ValueT>,
                 "Expected boolean assertion condition, got an array or a "
                 "string!");
-  static_assert(!IsFunction<ValueT>::value,
+  static_assert(!std::is_function_v<ValueT>,
                 "Expected boolean assertion condition, got a function! Did "
                 "you intend to call that function?");
-  static_assert(!IsFloatingPoint<ValueT>::value,
+  static_assert(!std::is_floating_point_v<ValueT>,
                 "It's often a bad idea to assert that a floating-point number "
                 "is nonzero, because such assertions tend to intermittently "
                 "fail. Shouldn't your code gracefully handle this case instead "
@@ -439,49 +382,54 @@ struct AssertionConditionType {
 #endif
 
 /* First the single-argument form. */
-#define MOZ_ASSERT_HELPER1(expr)                               \
+#define MOZ_ASSERT_HELPER1(kind, expr)                         \
   do {                                                         \
     MOZ_VALIDATE_ASSERT_CONDITION_TYPE(expr);                  \
     if (MOZ_UNLIKELY(!MOZ_CHECK_ASSERT_ASSIGNMENT(expr))) {    \
       MOZ_REPORT_ASSERTION_FAILURE(#expr, __FILE__, __LINE__); \
-      MOZ_CRASH_ANNOTATE("MOZ_RELEASE_ASSERT(" #expr ")");     \
+      MOZ_CRASH_ANNOTATE(kind "(" #expr ")");                  \
       MOZ_REALLY_CRASH(__LINE__);                              \
     }                                                          \
   } while (false)
 /* Now the two-argument form. */
-#define MOZ_ASSERT_HELPER2(expr, explain)                                \
-  do {                                                                   \
-    MOZ_VALIDATE_ASSERT_CONDITION_TYPE(expr);                            \
-    if (MOZ_UNLIKELY(!MOZ_CHECK_ASSERT_ASSIGNMENT(expr))) {              \
-      MOZ_REPORT_ASSERTION_FAILURE(#expr " (" explain ")", __FILE__,     \
-                                   __LINE__);                            \
-      MOZ_CRASH_ANNOTATE("MOZ_RELEASE_ASSERT(" #expr ") (" explain ")"); \
-      MOZ_REALLY_CRASH(__LINE__);                                        \
-    }                                                                    \
+#define MOZ_ASSERT_HELPER2(kind, expr, explain)                      \
+  do {                                                               \
+    MOZ_VALIDATE_ASSERT_CONDITION_TYPE(expr);                        \
+    if (MOZ_UNLIKELY(!MOZ_CHECK_ASSERT_ASSIGNMENT(expr))) {          \
+      MOZ_REPORT_ASSERTION_FAILURE(#expr " (" explain ")", __FILE__, \
+                                   __LINE__);                        \
+      MOZ_CRASH_ANNOTATE(kind "(" #expr ") (" explain ")");          \
+      MOZ_REALLY_CRASH(__LINE__);                                    \
+    }                                                                \
   } while (false)
 
-#define MOZ_RELEASE_ASSERT_GLUE(a, b) a b
+#define MOZ_ASSERT_GLUE(a, b) a b
 #define MOZ_RELEASE_ASSERT(...)                                       \
-  MOZ_RELEASE_ASSERT_GLUE(                                            \
+  MOZ_ASSERT_GLUE(                                                    \
       MOZ_PASTE_PREFIX_AND_ARG_COUNT(MOZ_ASSERT_HELPER, __VA_ARGS__), \
-      (__VA_ARGS__))
+      ("MOZ_RELEASE_ASSERT", __VA_ARGS__))
 
 #ifdef DEBUG
-#  define MOZ_ASSERT(...) MOZ_RELEASE_ASSERT(__VA_ARGS__)
+#  define MOZ_ASSERT(...)                                               \
+    MOZ_ASSERT_GLUE(                                                    \
+        MOZ_PASTE_PREFIX_AND_ARG_COUNT(MOZ_ASSERT_HELPER, __VA_ARGS__), \
+        ("MOZ_ASSERT", __VA_ARGS__))
 #else
 #  define MOZ_ASSERT(...) \
     do {                  \
     } while (false)
 #endif /* DEBUG */
 
-#if defined(NIGHTLY_BUILD) || defined(MOZ_DEV_EDITION)
-#  define MOZ_DIAGNOSTIC_ASSERT MOZ_RELEASE_ASSERT
+#if defined(NIGHTLY_BUILD) || defined(MOZ_DEV_EDITION) || defined(DEBUG)
+#  define MOZ_DIAGNOSTIC_ASSERT(...)                                    \
+    MOZ_ASSERT_GLUE(                                                    \
+        MOZ_PASTE_PREFIX_AND_ARG_COUNT(MOZ_ASSERT_HELPER, __VA_ARGS__), \
+        ("MOZ_DIAGNOSTIC_ASSERT", __VA_ARGS__))
 #  define MOZ_DIAGNOSTIC_ASSERT_ENABLED 1
 #else
-#  define MOZ_DIAGNOSTIC_ASSERT MOZ_ASSERT
-#  ifdef DEBUG
-#    define MOZ_DIAGNOSTIC_ASSERT_ENABLED 1
-#  endif
+#  define MOZ_DIAGNOSTIC_ASSERT(...) \
+    do {                             \
+    } while (false)
 #endif
 
 /*
@@ -605,11 +553,11 @@ struct AssertionConditionType {
  * debug builds, but intentionally fall through in release builds to handle
  * unexpected values.
  *
- * Why do we need MOZ_FALLTHROUGH_ASSERT in addition to MOZ_FALLTHROUGH? In
+ * Why do we need MOZ_FALLTHROUGH_ASSERT in addition to [[fallthrough]]? In
  * release builds, the MOZ_ASSERT(false) will expand to `do { } while (false)`,
- * requiring a MOZ_FALLTHROUGH annotation to suppress a -Wimplicit-fallthrough
+ * requiring a [[fallthrough]] annotation to suppress a -Wimplicit-fallthrough
  * warning. In debug builds, the MOZ_ASSERT(false) will expand to something like
- * `if (true) { MOZ_CRASH(); }` and the MOZ_FALLTHROUGH annotation will cause
+ * `if (true) { MOZ_CRASH(); }` and the [[fallthrough]] annotation will cause
  * a -Wunreachable-code warning. The MOZ_FALLTHROUGH_ASSERT macro breaks this
  * warning stalemate.
  *
@@ -618,7 +566,7 @@ struct AssertionConditionType {
  *   default:
  *     // This case wants to assert in debug builds, fall through in release.
  *     MOZ_ASSERT(false); // -Wimplicit-fallthrough warning in release builds!
- *     MOZ_FALLTHROUGH;   // but -Wunreachable-code warning in debug builds!
+ *     [[fallthrough]];   // but -Wunreachable-code warning in debug builds!
  *   case 5:
  *     return 5;
  * }
@@ -636,85 +584,27 @@ struct AssertionConditionType {
 #  define MOZ_FALLTHROUGH_ASSERT(...) \
     MOZ_CRASH("MOZ_FALLTHROUGH_ASSERT: " __VA_ARGS__)
 #else
-#  define MOZ_FALLTHROUGH_ASSERT(...) MOZ_FALLTHROUGH
+#  define MOZ_FALLTHROUGH_ASSERT(...) [[fallthrough]]
 #endif
 
 /*
- * MOZ_ALWAYS_TRUE(expr) and MOZ_ALWAYS_FALSE(expr) always evaluate the provided
- * expression, in debug builds and in release builds both.  Then, in debug
- * builds only, the value of the expression is asserted either true or false
- * using MOZ_ASSERT.
+ * MOZ_ALWAYS_TRUE(expr) and friends always evaluate the provided expression,
+ * in debug builds and in release builds both.  Then, in debug builds and
+ * Nightly and DevEdition release builds, the value of the expression is
+ * asserted either true or false using MOZ_DIAGNOSTIC_ASSERT.
  */
-#ifdef DEBUG
-#  define MOZ_ALWAYS_TRUE(expr)   \
-    do {                          \
-      if ((expr)) {               \
-        /* Do nothing. */         \
-      } else {                    \
-        MOZ_ASSERT(false, #expr); \
-      }                           \
-    } while (false)
-#  define MOZ_ALWAYS_FALSE(expr)  \
-    do {                          \
-      if ((expr)) {               \
-        MOZ_ASSERT(false, #expr); \
-      } else {                    \
-        /* Do nothing. */         \
-      }                           \
-    } while (false)
-#  define MOZ_ALWAYS_OK(expr) MOZ_ASSERT((expr).isOk())
-#  define MOZ_ALWAYS_ERR(expr) MOZ_ASSERT((expr).isErr())
-#else
-#  define MOZ_ALWAYS_TRUE(expr)     \
-    do {                            \
-      if ((expr)) {                 \
-        /* Silence MOZ_MUST_USE. */ \
-      }                             \
-    } while (false)
-#  define MOZ_ALWAYS_FALSE(expr)    \
-    do {                            \
-      if ((expr)) {                 \
-        /* Silence MOZ_MUST_USE. */ \
-      }                             \
-    } while (false)
-#  define MOZ_ALWAYS_OK(expr)       \
-    do {                            \
-      if ((expr).isOk()) {          \
-        /* Silence MOZ_MUST_USE. */ \
-      }                             \
-    } while (false)
-#  define MOZ_ALWAYS_ERR(expr)      \
-    do {                            \
-      if ((expr).isErr()) {         \
-        /* Silence MOZ_MUST_USE. */ \
-      }                             \
-    } while (false)
-#endif
+#define MOZ_ALWAYS_TRUE(expr)              \
+  do {                                     \
+    if (MOZ_LIKELY(expr)) {                \
+      /* Silence [[nodiscard]]. */         \
+    } else {                               \
+      MOZ_DIAGNOSTIC_ASSERT(false, #expr); \
+    }                                      \
+  } while (false)
 
-/*
- * MOZ_DIAGNOSTIC_ALWAYS_TRUE is like MOZ_ALWAYS_TRUE, but using
- * MOZ_DIAGNOSTIC_ASSERT as the underlying assert.
- *
- * See the block comment for MOZ_DIAGNOSTIC_ASSERT above for more details on how
- * diagnostic assertions work and how to use them.
- */
-#ifdef MOZ_DIAGNOSTIC_ASSERT_ENABLED
-#  define MOZ_DIAGNOSTIC_ALWAYS_TRUE(expr)   \
-    do {                                     \
-      if ((expr)) {                          \
-        /* Do nothing. */                    \
-      } else {                               \
-        MOZ_DIAGNOSTIC_ASSERT(false, #expr); \
-      }                                      \
-    } while (false)
-#else
-#  define MOZ_DIAGNOSTIC_ALWAYS_TRUE(expr) \
-    do {                                   \
-      if ((expr)) {                        \
-        /* Silence MOZ_MUST_USE. */        \
-      }                                    \
-    } while (false)
-#endif
+#define MOZ_ALWAYS_FALSE(expr) MOZ_ALWAYS_TRUE(!(expr))
+#define MOZ_ALWAYS_OK(expr) MOZ_ALWAYS_TRUE((expr).isOk())
+#define MOZ_ALWAYS_ERR(expr) MOZ_ALWAYS_TRUE((expr).isErr())
 
 #undef MOZ_DUMP_ASSERTION_STACK
 #undef MOZ_CRASH_CRASHREPORT

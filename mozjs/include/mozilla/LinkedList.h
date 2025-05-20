@@ -64,10 +64,12 @@
 #ifndef mozilla_LinkedList_h
 #define mozilla_LinkedList_h
 
+#include <algorithm>
+#include <utility>
+
 #include "mozilla/Assertions.h"
 #include "mozilla/Attributes.h"
 #include "mozilla/MemoryReporting.h"
-#include "mozilla/Move.h"
 #include "mozilla/RefPtr.h"
 
 #ifdef __cplusplus
@@ -312,7 +314,7 @@ class LinkedListElement {
    */
   void setNextUnsafe(RawType aElem) {
     LinkedListElement* listElem = static_cast<LinkedListElement*>(aElem);
-    MOZ_ASSERT(!listElem->isInList());
+    MOZ_RELEASE_ASSERT(!listElem->isInList());
 
     listElem->mNext = this->mNext;
     listElem->mPrev = this;
@@ -328,7 +330,7 @@ class LinkedListElement {
    */
   void setPreviousUnsafe(RawType aElem) {
     LinkedListElement<T>* listElem = static_cast<LinkedListElement<T>*>(aElem);
-    MOZ_ASSERT(!listElem->isInList());
+    MOZ_RELEASE_ASSERT(!listElem->isInList());
 
     listElem->mNext = this;
     listElem->mPrev = this->mPrev;
@@ -401,6 +403,12 @@ class LinkedList {
     Type mCurrent;
 
    public:
+    using iterator_category = std::forward_iterator_tag;
+    using value_type = T;
+    using difference_type = std::ptrdiff_t;
+    using pointer = T*;
+    using reference = T&;
+
     explicit Iterator(Type aCurrent) : mCurrent(aCurrent) {}
 
     Type operator*() const { return mCurrent; }
@@ -427,10 +435,15 @@ class LinkedList {
   }
 
   ~LinkedList() {
-    MOZ_ASSERT(isEmpty(),
-               "failing this assertion means this LinkedList's creator is "
-               "buggy: it should have removed all this list's elements before "
-               "the list's destruction");
+#  ifdef DEBUG
+    if (!isEmpty()) {
+      MOZ_CRASH_UNSAFE_PRINTF(
+          "%s has a buggy user: "
+          "it should have removed all this list's elements before "
+          "the list's destruction",
+          __FUNCSIG__);
+    }
+#  endif
   }
 
   /*
@@ -487,6 +500,13 @@ class LinkedList {
    */
   bool isEmpty() const { return !sentinel.isInList(); }
 
+  /**
+   * Returns whether the given element is in the list.
+   */
+  bool contains(ConstRawType aElm) const {
+    return std::find(begin(), end(), aElm) != end();
+  }
+
   /*
    * Remove all the elements from the list.
    *
@@ -497,6 +517,11 @@ class LinkedList {
     while (popFirst()) {
     }
   }
+
+  /**
+   * Return the length of elements in the list.
+   */
+  size_t length() const { return std::distance(begin(), end()); }
 
   /*
    * Allow range-based iteration:
@@ -611,6 +636,26 @@ class LinkedList {
 };
 
 template <typename T>
+inline void ImplCycleCollectionUnlink(LinkedList<RefPtr<T>>& aField) {
+  aField.clear();
+}
+
+template <typename T>
+inline void ImplCycleCollectionTraverse(
+    nsCycleCollectionTraversalCallback& aCallback,
+    LinkedList<RefPtr<T>>& aField, const char* aName, uint32_t aFlags = 0) {
+  typedef typename detail::LinkedListElementTraits<T> Traits;
+  typedef typename Traits::RawType RawType;
+  for (RawType element : aField) {
+    // RefPtr is stored as a raw pointer in LinkedList.
+    // So instead of creating a new RefPtr from the raw
+    // pointer (which is not allowed), we simply call
+    // CycleCollectionNoteChild against the raw pointer
+    CycleCollectionNoteChild(aCallback, element, aName, aFlags);
+  }
+}
+
+template <typename T>
 class AutoCleanLinkedList : public LinkedList<T> {
  private:
   using Traits = detail::LinkedListElementTraits<T>;
@@ -619,10 +664,7 @@ class AutoCleanLinkedList : public LinkedList<T> {
  public:
   ~AutoCleanLinkedList() { clear(); }
 
-  AutoCleanLinkedList& operator=(AutoCleanLinkedList&& aOther) {
-    LinkedList<T>::operator=(std::forward<LinkedList<T>>(aOther));
-    return *this;
-  }
+  AutoCleanLinkedList& operator=(AutoCleanLinkedList&& aOther) = default;
 
   void clear() {
     while (ClientType element = this->popFirst()) {

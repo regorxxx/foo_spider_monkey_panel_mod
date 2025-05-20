@@ -116,13 +116,21 @@ bool PrependTextToJsObjectException(JSContext* cx, JS::HandleValue excn, const s
     JS::RootedObject excnObject(cx, &excn.toObject());
     JS_ClearPendingException(cx); ///< need this for js::ErrorReport::init
 
-    js::ErrorReport report(cx);
-    if (!report.init(cx, excn, js::ErrorReport::SniffingBehavior::WithSideEffects))
+    JS::RootedObject excnStackObject(cx, JS::ExceptionStackOrNull(excnObject));
+    if (!excnStackObject)
     { // Sometimes happens with custom JS errors
         return false;
     }
 
-    JSErrorReport* pReport = report.report();
+    JS::ExceptionStack excnStack(cx, excn, excnStackObject);
+
+    JS::ErrorReportBuilder reportBuilder(cx);
+    if (!reportBuilder.init(cx, excnStack, JS::ErrorReportBuilder::SniffingBehavior::WithSideEffects))
+    { // Sometimes happens with custom JS errors
+        return false;
+    }
+
+    JSErrorReport* pReport = reportBuilder.report();
 
     std::string currentMessage = pReport->message().c_str();
     const std::string newMessage = [&text, &currentMessage] {
@@ -150,17 +158,16 @@ bool PrependTextToJsObjectException(JSContext* cx, JS::HandleValue excn, const s
         return false;
     }
 
-    JS::RootedObject excnStack(cx, JS::ExceptionStackOrNull(excnObject));
     JS::RootedValue newExcn(cx);
     JS::RootedString jsFilenameStr(cx, jsFilename.toString());
     JS::RootedString jsMessageStr(cx, jsMessage.toString());
 
-    if (!JS_WrapObject(cx, &excnStack))
+    if (!JS_WrapObject(cx, &excnStackObject))
     { // Need wrapping for the case when exception is thrown from internal global
         return false;
     }
 
-    if (!JS::CreateError(cx, static_cast<JSExnType>(pReport->exnType), excnStack, jsFilenameStr, pReport->lineno, pReport->column, nullptr, jsMessageStr, &newExcn))
+    if (!JS::CreateError(cx, static_cast<JSExnType>(pReport->exnType), excnStackObject, jsFilenameStr, pReport->lineno, pReport->column, nullptr, jsMessageStr, &newExcn))
     {
         return false;
     }
@@ -204,7 +211,7 @@ AutoJsReport::~AutoJsReport() noexcept
             return;
         }
 
-        auto globalCtx = static_cast<JsGlobalObject*>(JS_GetPrivate(global));
+        auto globalCtx = static_cast<JsGlobalObject*>(JS::GetPrivate(global));
         if (!globalCtx)
         {
             assert(0);
@@ -234,7 +241,7 @@ std::string JsErrorToText(JSContext* cx)
 
     qwr::final_action autoErrorClear([cx]() { // There should be no exceptions on function exit
         JS_ClearPendingException(cx);
-    });
+        });
 
     std::string errorText;
     if (excn.isString())
@@ -248,16 +255,17 @@ std::string JsErrorToText(JSContext* cx)
             mozjs::error::SuppressException(cx);
         }
     }
-    else
+    else if (excn.isObject())
     {
-        js::ErrorReport report(cx);
-        if (!report.init(cx, excn, js::ErrorReport::SniffingBehavior::WithSideEffects))
+        JS::RootedObject excnObject(cx, &excn.toObject());
+
+        JSErrorReport* pReport = JS_ErrorFromException(cx, excnObject);
+        if (!pReport)
         { // Sometimes happens with custom JS errors
             return errorText;
         }
 
-        JSErrorReport* pReport = report.report();
-        assert(!JSREPORT_IS_WARNING(pReport->flags));
+        assert(!pReport->isWarning());
 
         errorText = pReport->message().c_str();
 
@@ -267,7 +275,7 @@ std::string JsErrorToText(JSContext* cx)
             if (pReport->filename)
             {
                 const auto stdPath = [&]() -> std::string {
-                    if (std::string{ pReport->filename } == "")
+                    if (std::string(pReport->filename) == "")
                     {
                         return "<main>";
                     }
@@ -279,7 +287,7 @@ std::string JsErrorToText(JSContext* cx)
                     }
 
                     return pReport->filename;
-                }();
+                    }();
 
                 additionalInfo += "\n";
                 additionalInfo += fmt::format("File: {}\n", stdPath);
@@ -292,7 +300,7 @@ std::string JsErrorToText(JSContext* cx)
                         pfc::string8_fast tmpBuf = pfc::stringcvt::string_utf8_from_utf16(pReport->linebuf(), pReport->linebufLength()).get_ptr();
                         tmpBuf.truncate_eol();
                         return tmpBuf;
-                    }();
+                        }();
                 }
             }
 
@@ -309,7 +317,7 @@ std::string JsErrorToText(JSContext* cx)
             }
 
             return additionalInfo;
-        }();
+            }();
 
         if (!additionalInfo.empty())
         {

@@ -20,6 +20,21 @@ constexpr uint32_t kHighFreqHeapGrowthMultiplier = 2;
 
 } // namespace
 
+namespace
+{
+enum class CustomGcReason : std::underlying_type_t<JS::GCReason>
+{
+    kIncrementalNormal = static_cast<std::underlying_type_t<JS::GCReason>>(JS::GCReason::FIRST_FIREFOX_REASON),
+    kIncrementalFull,
+    kNonIncremental
+};
+
+constexpr JS::GCReason GetGcReason(CustomGcReason customReason)
+{
+    return JS::GCReason{ static_cast<std::underlying_type_t<CustomGcReason>>(customReason) };
+}
+} // namespace
+
 namespace mozjs
 {
 
@@ -61,10 +76,10 @@ void JsGc::Initialize(JSContext* pJsCtx)
     gcCheckDelay_ = static_cast<uint32_t>(smp_advconf::gc_delay.get());
     allocCountTrigger_ = static_cast<uint32_t>(smp_advconf::gc_max_alloc_increase.get());
 
-    JS_SetGCParameter(pJsCtx_, JSGC_MODE, JSGC_MODE_INCREMENTAL);
+    JS_SetGCParameter(pJsCtx_, JSGC_INCREMENTAL_GC_ENABLED, 1);
     // The following two parameters are not used, since we are doing everything manually.
     // Left here mostly for future-proofing.
-    JS_SetGCParameter(pJsCtx_, JSGC_SLICE_TIME_BUDGET, gcSliceTimeBudget_);
+    JS_SetGCParameter(pJsCtx_, JSGC_SLICE_TIME_BUDGET_MS, gcSliceTimeBudget_);
     JS_SetGCParameter(pJsCtx_, JSGC_HIGH_FREQUENCY_TIME_LIMIT, kHighFreqTimeLimitMs);
 
 #ifdef DEBUG
@@ -250,7 +265,7 @@ uint64_t JsGc::GetCurrentTotalHeapSize()
 {
     uint64_t curTotalHeapSize = JS_GetGCParameter(pJsCtx_, JSGC_BYTES);
 
-    JS::IterateRealms(pJsCtx_, &curTotalHeapSize, [](JSContext*, void* data, JS::Handle<JS::Realm*> pJsRealm) {
+    JS::IterateRealms(pJsCtx_, &curTotalHeapSize, [](JSContext*, void* data, JS::Realm* pJsRealm, const JS::AutoRequireNoGC& /*nogc*/) {
         auto pCurTotalHeapSize = static_cast<uint64_t*>(data);
         auto pNativeRealm = static_cast<JsRealmInner*>(JS::GetRealmPrivate(pJsRealm));
         if (!pNativeRealm)
@@ -258,7 +273,7 @@ uint64_t JsGc::GetCurrentTotalHeapSize()
             return;
         }
         *pCurTotalHeapSize += pNativeRealm->GetCurrentHeapBytes();
-    });
+        });
 
     return curTotalHeapSize;
 }
@@ -266,7 +281,7 @@ uint64_t JsGc::GetCurrentTotalHeapSize()
 uint64_t JsGc::GetCurrentTotalAllocCount()
 {
     uint64_t curTotalAllocCount = 0;
-    JS::IterateRealms(pJsCtx_, &curTotalAllocCount, [](JSContext*, void* data, JS::Handle<JS::Realm*> pJsRealm) {
+    JS::IterateRealms(pJsCtx_, &curTotalAllocCount, [](JSContext*, void* data, JS::Realm* pJsRealm, const JS::AutoRequireNoGC& /*nogc*/) {
         auto pCurTotalAllocCount = static_cast<uint64_t*>(data);
         auto pNativeRealm = static_cast<JsRealmInner*>(JS::GetRealmPrivate(pJsRealm));
         if (!pNativeRealm)
@@ -274,7 +289,7 @@ uint64_t JsGc::GetCurrentTotalAllocCount()
             return;
         }
         *pCurTotalAllocCount += pNativeRealm->GetCurrentAllocCount();
-    });
+        });
 
     return curTotalAllocCount;
 }
@@ -311,7 +326,7 @@ void JsGc::PerformGc(GcLevel gcLevel)
 void JsGc::PrepareRealmsForGc(GcLevel gcLevel)
 {
     const auto markAllRealms = [&] {
-        JS::IterateRealms(pJsCtx_, nullptr, [](JSContext*, void*, JS::Handle<JS::Realm*> pJsRealm) {
+        JS::IterateRealms(pJsCtx_, nullptr, [](JSContext*, void*, JS::Realm* pJsRealm, const JS::AutoRequireNoGC& nogc) {
             auto pNativeRealm = static_cast<JsRealmInner*>(JS::GetRealmPrivate(pJsRealm));
             if (!pNativeRealm)
             {
@@ -319,8 +334,8 @@ void JsGc::PrepareRealmsForGc(GcLevel gcLevel)
             }
 
             pNativeRealm->OnGcStart();
-        });
-    };
+            });
+        };
 
     switch (gcLevel)
     {
@@ -343,7 +358,7 @@ void JsGc::PrepareRealmsForGc(GcLevel gcLevel)
         }
         else
         {
-            JS::IterateRealms(pJsCtx_, &triggers, [](JSContext*, void* data, JS::Handle<JS::Realm*> pJsRealm) {
+            JS::IterateRealms(pJsCtx_, &triggers, [](JSContext*, void* data, JS::Realm* pJsRealm, const JS::AutoRequireNoGC& nogc) {
                 const TriggerData& pTriggerData = *reinterpret_cast<const TriggerData*>(data);
 
                 auto pNativeRealm = static_cast<JsRealmInner*>(JS::GetRealmPrivate(pJsRealm));
@@ -383,7 +398,8 @@ void JsGc::PerformIncrementalGc()
     {
         std::vector<JS::Realm*> realms;
 
-        JS::IterateRealms(pJsCtx_, &realms, [](JSContext*, void* data, JS::Handle<JS::Realm*> pJsRealm) {
+        JS::IterateRealms(pJsCtx_, &realms, [](JSContext*, void* data, JS::Realm* pJsRealm, const JS::AutoRequireNoGC& nogc)
+            {
             auto pRealms = static_cast<std::vector<JS::Realm*>*>(data);
             auto pNativeRealm = static_cast<JsRealmInner*>(JS::GetRealmPrivate(pJsRealm));
 
@@ -391,12 +407,13 @@ void JsGc::PerformIncrementalGc()
             {
                 pRealms->push_back(pJsRealm);
             }
-        });
+            });
+
         if (!realms.empty())
         {
-            for (auto pRealm: realms)
+            for (auto pRealm : realms)
             {
-                JS::PrepareZoneForGC(js::GetRealmZone(pRealm));
+                JS::PrepareZoneForGC(pJsCtx_, js::GetRealmZone(pRealm));
             }
         }
         else
@@ -404,12 +421,12 @@ void JsGc::PerformIncrementalGc()
             JS::PrepareForFullGC(pJsCtx_);
         }
 
-        JS::StartIncrementalGC(pJsCtx_, GC_NORMAL, JS::GCReason::RESERVED4, sliceBudget);
+        JS::StartIncrementalGC(pJsCtx_, JS::GCOptions::Normal, GetGcReason(CustomGcReason::kIncrementalNormal), sliceBudget);
     }
     else
     {
         JS::PrepareForIncrementalGC(pJsCtx_);
-        JS::IncrementalGCSlice(pJsCtx_, JS::GCReason::RESERVED5, sliceBudget);
+        JS::IncrementalGCSlice(pJsCtx_, GetGcReason(CustomGcReason::kIncrementalNormal), sliceBudget);
     }
 }
 
@@ -418,7 +435,7 @@ void JsGc::PerformNormalGc()
     if (JS::IsIncrementalGCInProgress(pJsCtx_))
     {
         JS::PrepareForIncrementalGC(pJsCtx_);
-        JS::FinishIncrementalGC(pJsCtx_, JS::GCReason::RESERVED6);
+        JS::FinishIncrementalGC(pJsCtx_, GetGcReason(CustomGcReason::kIncrementalNormal));
     }
 
     JS_GC(pJsCtx_);
@@ -432,26 +449,27 @@ void JsGc::PerformFullGc()
         JS::FinishIncrementalGC(pJsCtx_, JS::GCReason::RESERVED7);
     }
 
-    JS_SetGCParameter(pJsCtx_, JSGC_MODE, JSGC_MODE_GLOBAL);
+    JS_SetGCParameter(pJsCtx_, JSGC_INCREMENTAL_GC_ENABLED, 0);
     JS::PrepareForFullGC(pJsCtx_);
-    JS::NonIncrementalGC(pJsCtx_, GC_SHRINK, JS::GCReason::RESERVED8);
-    JS_SetGCParameter(pJsCtx_, JSGC_MODE, JSGC_MODE_INCREMENTAL);
+    JS::NonIncrementalGC(pJsCtx_, JS::GCOptions::Shrink, GetGcReason(CustomGcReason::kNonIncremental));
+    JS_SetGCParameter(pJsCtx_, JSGC_INCREMENTAL_GC_ENABLED, 1);
 }
 
 void JsGc::NotifyRealmsOnGcEnd()
 {
-    JS::IterateRealms(pJsCtx_, nullptr, [](JSContext*, void*, JS::Handle<JS::Realm*> pJsRealm) {
-        auto pNativeRealm = static_cast<JsRealmInner*>(JS::GetRealmPrivate(pJsRealm));
-        if (!pNativeRealm)
+    JS::IterateRealms(pJsCtx_, nullptr, [](JSContext*, void*, JS::Realm* pJsRealm, const JS::AutoRequireNoGC& nogc)
         {
-            return;
-        }
+            auto pNativeRealm = static_cast<JsRealmInner*>(JS::GetRealmPrivate(pJsRealm));
+            if (!pNativeRealm)
+            {
+                return;
+            }
 
-        if (pNativeRealm->IsMarkedForGc())
-        {
-            pNativeRealm->OnGcDone();
-        }
-    });
+            if (pNativeRealm->IsMarkedForGc())
+            {
+                pNativeRealm->OnGcDone();
+            }
+        });
 }
 
 } // namespace mozjs

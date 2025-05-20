@@ -13,13 +13,14 @@
 #include "mozilla/HashFunctions.h"
 #include "mozilla/Maybe.h"
 #include "mozilla/MemoryReporting.h"
-#include "mozilla/Move.h"
 #include "mozilla/RangedPtr.h"
-#include "mozilla/TypeTraits.h"
 #include "mozilla/Variant.h"
+
+#include <utility>
 
 #include "jspubtd.h"
 
+#include "js/AllocPolicy.h"
 #include "js/GCAPI.h"
 #include "js/HashTable.h"
 #include "js/RootingAPI.h"
@@ -163,18 +164,24 @@
 // structure of the snapshot file, the analyses should be prepared for ubi::Node
 // graphs constructed from snapshots to be even more bizarre.
 
+namespace js {
+class BaseScript;
+}  // namespace js
+
 namespace JS {
+
+using ZoneSet =
+    js::HashSet<Zone*, js::DefaultHasher<Zone*>, js::SystemAllocPolicy>;
+
+using CompartmentSet =
+    js::HashSet<Compartment*, js::DefaultHasher<Compartment*>,
+                js::SystemAllocPolicy>;
+
 namespace ubi {
 
 class Edge;
 class EdgeRange;
 class StackFrame;
-
-}  // namespace ubi
-}  // namespace JS
-
-namespace JS {
-namespace ubi {
 
 using mozilla::Maybe;
 using mozilla::RangedPtr;
@@ -287,7 +294,7 @@ class BaseStackFrame {
   // simplifies the principals check into the boolean isSystem() state. This
   // is fine because we only expose JS::ubi::Stack to devtools and chrome
   // code, and not to the web platform.
-  virtual MOZ_MUST_USE bool constructSavedFrameStack(
+  [[nodiscard]] virtual bool constructSavedFrameStack(
       JSContext* cx, MutableHandleObject outSavedFrameStack) const = 0;
 
   // Trace the concrete implementation of JS::ubi::StackFrame.
@@ -322,9 +329,8 @@ class StackFrame {
 
   template <typename T>
   void construct(T* ptr) {
-    static_assert(
-        mozilla::IsBaseOf<BaseStackFrame, ConcreteStackFrame<T>>::value,
-        "ConcreteStackFrame<T> must inherit from BaseStackFrame");
+    static_assert(std::is_base_of_v<BaseStackFrame, ConcreteStackFrame<T>>,
+                  "ConcreteStackFrame<T> must inherit from BaseStackFrame");
     static_assert(
         sizeof(ConcreteStackFrame<T>) == sizeof(*base()),
         "ubi::ConcreteStackFrame<T> specializations must be the same size as "
@@ -424,7 +430,7 @@ class StackFrame {
   StackFrame parent() const { return base()->parent(); }
   bool isSystem() const { return base()->isSystem(); }
   bool isSelfHosted(JSContext* cx) const { return base()->isSelfHosted(cx); }
-  MOZ_MUST_USE bool constructSavedFrameStack(
+  [[nodiscard]] bool constructSavedFrameStack(
       JSContext* cx, MutableHandleObject outSavedFrameStack) const {
     return base()->constructSavedFrameStack(cx, outSavedFrameStack);
   }
@@ -457,7 +463,7 @@ class ConcreteStackFrame<void> : public BaseStackFrame {
 
   uint64_t identifier() const override { return 0; }
   void trace(JSTracer* trc) override {}
-  MOZ_MUST_USE bool constructSavedFrameStack(
+  [[nodiscard]] bool constructSavedFrameStack(
       JSContext* cx, MutableHandleObject out) const override {
     out.set(nullptr);
     return true;
@@ -479,7 +485,7 @@ class ConcreteStackFrame<void> : public BaseStackFrame {
   }
 };
 
-MOZ_MUST_USE JS_PUBLIC_API bool ConstructSavedFrameStackSlow(
+[[nodiscard]] JS_PUBLIC_API bool ConstructSavedFrameStackSlow(
     JSContext* cx, JS::ubi::StackFrame& frame,
     MutableHandleObject outSavedFrameStack);
 
@@ -508,6 +514,11 @@ enum class CoarseType : uint32_t {
   FIRST = Other,
   LAST = DOMNode
 };
+
+/**
+ * Convert a CoarseType enum into a string. The string is statically allocated.
+ */
+JS_PUBLIC_API const char* CoarseTypeToString(CoarseType type);
 
 inline uint32_t CoarseTypeToUint32(CoarseType type) {
   return static_cast<uint32_t>(type);
@@ -647,17 +658,6 @@ class JS_PUBLIC_API Base {
   // Return the object's [[Class]]'s name.
   virtual const char* jsObjectClassName() const { return nullptr; }
 
-  // If this object was constructed with `new` and we have the data available,
-  // place the contructor function's display name in the out parameter.
-  // Otherwise, place nullptr in the out parameter. Caller maintains ownership
-  // of the out parameter. True is returned on success, false is returned on
-  // OOM.
-  virtual MOZ_MUST_USE bool jsObjectConstructorName(
-      JSContext* cx, UniqueTwoByteChars& outName) const {
-    outName.reset(nullptr);
-    return true;
-  }
-
   // Methods for CoarseType::Script referents
 
   // Return the script's source's filename if available. If unavailable,
@@ -706,7 +706,7 @@ class Node {
     static_assert(
         sizeof(Concrete<T>) == sizeof(*base()),
         "ubi::Base specializations must be the same size as ubi::Base");
-    static_assert(mozilla::IsBaseOf<Base, Concrete<T>>::value,
+    static_assert(std::is_base_of_v<Base, Concrete<T>>,
                   "ubi::Concrete<T> must inherit from ubi::Base");
     Concrete<T>::construct(base(), ptr);
   }
@@ -806,10 +806,6 @@ class Node {
   const char16_t* descriptiveTypeName() const {
     return base()->descriptiveTypeName();
   }
-  MOZ_MUST_USE bool jsObjectConstructorName(JSContext* cx,
-                                            UniqueTwoByteChars& outName) const {
-    return base()->jsObjectConstructorName(cx, outName);
-  }
 
   const char* scriptFilename() const { return base()->scriptFilename(); }
 
@@ -865,7 +861,7 @@ using EdgeName = UniqueTwoByteChars;
 // An outgoing edge to a referent node.
 class Edge {
  public:
-  Edge() : name(nullptr), referent() {}
+  Edge() = default;
 
   // Construct an initialized Edge, taking ownership of |name|.
   Edge(char16_t* name, const Node& referent) : name(name), referent(referent) {}
@@ -893,7 +889,7 @@ class Edge {
   // (In real life we'll want a better representation for names, to avoid
   // creating tons of strings when the names follow a pattern; and we'll need
   // to think about lifetimes carefully to ensure traversal stays cheap.)
-  EdgeName name;
+  EdgeName name = nullptr;
 
   // This edge's referent.
   Node referent;
@@ -915,7 +911,7 @@ class EdgeRange {
   EdgeRange() : front_(nullptr) {}
 
  public:
-  virtual ~EdgeRange() {}
+  virtual ~EdgeRange() = default;
 
   // True if there are no more edges in this range.
   bool empty() const { return !front_; }
@@ -1002,15 +998,15 @@ class MOZ_STACK_CLASS JS_PUBLIC_API RootList {
            bool wantNames = false);
 
   // Find all GC roots.
-  MOZ_MUST_USE bool init();
+  [[nodiscard]] bool init();
   // Find only GC roots in the provided set of |JS::Compartment|s. Note: it's
   // important to take a CompartmentSet and not a RealmSet: objects in
   // same-compartment realms can reference each other directly, without going
   // through CCWs, so if we used a RealmSet here we would miss edges.
-  MOZ_MUST_USE bool init(CompartmentSet& debuggees);
+  [[nodiscard]] bool init(CompartmentSet& debuggees);
   // Find only GC roots in the given Debugger object's set of debuggee
   // compartments.
-  MOZ_MUST_USE bool init(HandleObject debuggees);
+  [[nodiscard]] bool init(HandleObject debuggees);
 
   // Returns true if the RootList has been initialized successfully, false
   // otherwise.
@@ -1019,7 +1015,7 @@ class MOZ_STACK_CLASS JS_PUBLIC_API RootList {
   // Explicitly add the given Node as a root in this RootList. If wantNames is
   // true, you must pass an edgeName. The RootList does not take ownership of
   // edgeName.
-  MOZ_MUST_USE bool addRoot(Node node, const char16_t* edgeName = nullptr);
+  [[nodiscard]] bool addRoot(Node node, const char16_t* edgeName = nullptr);
 };
 
 /*** Concrete classes for ubi::Node referent types ****************************/
@@ -1102,12 +1098,14 @@ class JS_PUBLIC_API Concrete<JS::BigInt> : TracerConcrete<JS::BigInt> {
 };
 
 template <>
-class JS_PUBLIC_API Concrete<JSScript> : TracerConcreteWithRealm<JSScript> {
+class JS_PUBLIC_API Concrete<js::BaseScript>
+    : TracerConcreteWithRealm<js::BaseScript> {
  protected:
-  explicit Concrete(JSScript* ptr) : TracerConcreteWithRealm<JSScript>(ptr) {}
+  explicit Concrete(js::BaseScript* ptr)
+      : TracerConcreteWithRealm<js::BaseScript>(ptr) {}
 
  public:
-  static void construct(void* storage, JSScript* ptr) {
+  static void construct(void* storage, js::BaseScript* ptr) {
     new (storage) Concrete(ptr);
   }
 
@@ -1132,8 +1130,6 @@ class JS_PUBLIC_API Concrete<JSObject> : public TracerConcrete<JSObject> {
   JS::Realm* realm() const override;
 
   const char* jsObjectClassName() const override;
-  MOZ_MUST_USE bool jsObjectConstructorName(
-      JSContext* cx, UniqueTwoByteChars& outName) const override;
   Size size(mozilla::MallocSizeOf mallocSizeOf) const override;
 
   bool hasAllocationStack() const override;

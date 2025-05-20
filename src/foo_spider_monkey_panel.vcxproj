@@ -42,7 +42,7 @@
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>GdiPlus.lib;shlwapi.lib;WinMM.lib;Imm32.lib;uxtheme.lib;Windowscodecs.lib;../foobar2000-sdk/foobar2000/shared/shared-$(Platform).lib;../mozjs/lib/mozjs-68.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>GdiPlus.lib;shlwapi.lib;WinMM.lib;Imm32.lib;uxtheme.lib;Windowscodecs.lib;../foobar2000-sdk/foobar2000/shared/shared-$(Platform).lib;../mozjs/lib/mozjs-91.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
     <ResourceCompile>

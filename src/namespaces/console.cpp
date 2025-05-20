@@ -30,7 +30,7 @@ std::string ParseJsArray(JSContext* cx, JS::HandleObject jsObject, JS::MutableHa
     output += "[";
 
     uint32_t arraySize;
-    if (!JS_GetArrayLength(cx, jsObject, &arraySize))
+    if (!JS::GetArrayLength(cx, jsObject, &arraySize))
     {
         throw JsException();
     }
@@ -168,7 +168,7 @@ std::string ParseJsValue(JSContext* cx, JS::HandleValue jsValue, JS::MutableHand
             qwr::final_action autoPop([&curObjects] { curObjects.popBack(); });
 
             bool is;
-            if (!JS_IsArrayObject(cx, jsObject, &is))
+            if (!JS::IsArrayObject(cx, jsObject, &is))
             {
                 throw JsException();
             }

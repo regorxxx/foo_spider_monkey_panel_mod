@@ -351,7 +351,7 @@ bool JsEngine::OnInterrupt()
     return jsMonitor_.OnInterrupt();
 }
 
-void JsEngine::RejectedPromiseHandler(JSContext*, JS::HandleObject promise, JS::PromiseRejectionHandlingState state, void* data)
+void JsEngine::RejectedPromiseHandler(JSContext*, bool mutedErrors, JS::HandleObject promise, JS::PromiseRejectionHandlingState state, void* data)
 {
     JsEngine& self = *reinterpret_cast<JsEngine*>(data);
 

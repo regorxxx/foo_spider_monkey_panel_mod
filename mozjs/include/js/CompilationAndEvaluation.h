@@ -8,11 +8,10 @@
 #ifndef js_CompilationAndEvaluation_h
 #define js_CompilationAndEvaluation_h
 
-#include "mozilla/Utf8.h"  // mozilla::Utf8Unit
-
 #include <stddef.h>  // size_t
 #include <stdio.h>   // FILE
 
+#include "jsapi.h"    // JSGetElementCallback
 #include "jstypes.h"  // JS_PUBLIC_API
 
 #include "js/CompileOptions.h"  // JS::CompileOptions, JS::ReadOnlyCompileOptions
@@ -23,6 +22,10 @@ struct JS_PUBLIC_API JSContext;
 class JS_PUBLIC_API JSFunction;
 class JS_PUBLIC_API JSObject;
 class JS_PUBLIC_API JSScript;
+
+namespace mozilla {
+union Utf8Unit;
+}
 
 namespace JS {
 
@@ -138,24 +141,6 @@ extern JS_PUBLIC_API bool Evaluate(JSContext* cx,
                                    MutableHandle<Value> rval);
 
 /**
- * Evaluate the provided UTF-8 data in the scope of the current global of |cx|,
- * and return the completion value in |rval|.  If the data contains invalid
- * UTF-8, an error is reported.
- *
- * The "DontInflate" suffix and (semantically unobservable) don't-inflate
- * characteristic are temporary while bugs in UTF-8 compilation are ironed out.
- * In the long term |JS::Evaluate| for UTF-8 will just never inflate, and this
- * separate function will die.
- *
- * NOTE: UTF-8 compilation is currently experimental, and it's possible it has
- *       as-yet-undiscovered bugs that the UTF-16 compilation functions do not
- *       have.  Use only if you're willing to take a risk!
- */
-extern JS_PUBLIC_API bool EvaluateDontInflate(
-    JSContext* cx, const ReadOnlyCompileOptions& options,
-    SourceText<mozilla::Utf8Unit>& srcBuf, MutableHandle<Value> rval);
-
-/**
  * Evaluate the UTF-8 contents of the file at the given path, and return the
  * completion value in |rval|.  (The path itself is in the system encoding, not
  * [necessarily] UTF-8.)  If the contents contain any malformed UTF-8, an error
@@ -182,19 +167,21 @@ extern JS_PUBLIC_API JSScript* Compile(JSContext* cx,
                                        SourceText<mozilla::Utf8Unit>& srcBuf);
 
 /**
- * Identical to |JS::Compile| for UTF-8, except this function directly parses
- * its UTF-8 input without inflating it to UTF-16 and parsing that.
+ * Compile the provided script using the given options, and register an encoder
+ * on is script source, such that all functions can be encoded as they are
+ * parsed. This strategy is used to avoid blocking the main thread in a
+ * non-interruptible way.
  *
- * The "DontInflate" suffix and (semantically unobservable) don't-inflate
- * characteristic are temporary while bugs in UTF-8 compilation are ironed out.
- * In the long term |JS::Compile| for UTF-8 will just never inflate, and this
- * separate function will die.
+ * See also JS::FinishIncrementalEncoding.
  *
- * NOTE: UTF-8 compilation is currently experimental, and it's possible it has
- *       as-yet-undiscovered bugs that the UTF-16 compilation functions do not
- *       have.  Use only if you're willing to take a risk!
+ * Return the script on success, or return null on failure (usually with an
+ * error reported)
  */
-extern JS_PUBLIC_API JSScript* CompileDontInflate(
+extern JS_PUBLIC_API JSScript* CompileAndStartIncrementalEncoding(
+    JSContext* cx, const ReadOnlyCompileOptions& options,
+    SourceText<char16_t>& srcBuf);
+
+extern JS_PUBLIC_API JSScript* CompileAndStartIncrementalEncoding(
     JSContext* cx, const ReadOnlyCompileOptions& options,
     SourceText<mozilla::Utf8Unit>& srcBuf);
 
@@ -207,18 +194,6 @@ extern JS_PUBLIC_API JSScript* CompileUtf8File(
     JSContext* cx, const ReadOnlyCompileOptions& options, FILE* file);
 
 /**
- * Compile the UTF-8 contents of the given file into a script.  It is an error
- * if the file contains invalid UTF-8.  Return the script on success, or return
- * null on failure (usually with an error reported).
- *
- * NOTE: UTF-8 compilation is currently experimental, and it's possible it has
- *       as-yet-undiscovered bugs not present in |JS::CompileUtf8File| that
- *       first inflates to UTF-16.  Use only if you're willing to take a risk!
- */
-extern JS_PUBLIC_API JSScript* CompileUtf8FileDontInflate(
-    JSContext* cx, const ReadOnlyCompileOptions& options, FILE* file);
-
-/**
  * Compile the UTF-8 contents of the file at the given path into a script.
  * (The path itself is in the system encoding, not [necessarily] UTF-8.)  It
  * is an error if the file's contents are invalid UTF-8.  Return the script on
@@ -226,37 +201,6 @@ extern JS_PUBLIC_API JSScript* CompileUtf8FileDontInflate(
  */
 extern JS_PUBLIC_API JSScript* CompileUtf8Path(
     JSContext* cx, const ReadOnlyCompileOptions& options, const char* filename);
-
-extern JS_PUBLIC_API JSScript* CompileForNonSyntacticScope(
-    JSContext* cx, const ReadOnlyCompileOptions& options,
-    SourceText<char16_t>& srcBuf);
-
-/**
- * Compile the provided UTF-8 data into a script in a non-syntactic scope.  It
- * is an error if the data contains invalid UTF-8.  Return the script on
- * success, or return null on failure (usually with an error reported).
- */
-extern JS_PUBLIC_API JSScript* CompileForNonSyntacticScope(
-    JSContext* cx, const ReadOnlyCompileOptions& options,
-    SourceText<mozilla::Utf8Unit>& srcBuf);
-
-/**
- * Compile the provided UTF-8 data into a script in a non-syntactic scope.  It
- * is an error if the data contains invalid UTF-8.  Return the script on
- * success, or return null on failure (usually with an error reported).
- *
- * The "DontInflate" suffix and (semantically unobservable) don't-inflate
- * characteristic are temporary while bugs in UTF-8 compilation are ironed out.
- * In the long term |JS::CompileForNonSyntacticScope| for UTF-8 will just never
- * inflate, and this separate function will die.
- *
- * NOTE: UTF-8 compilation is currently experimental, and it's possible it has
- *       as-yet-undiscovered bugs that the UTF-16 compilation functions do not
- *       have.  Use only if you're willing to take a risk!
- */
-extern JS_PUBLIC_API JSScript* CompileForNonSyntacticScopeDontInflate(
-    JSContext* cx, const ReadOnlyCompileOptions& options,
-    SourceText<mozilla::Utf8Unit>& srcBuf);
 
 /**
  * Compile a function with envChain plus the global as its scope chain.
@@ -292,20 +236,43 @@ extern JS_PUBLIC_API JSFunction* CompileFunctionUtf8(
     const char* const* argnames, const char* utf8, size_t length);
 
 /*
- * Associate an element wrapper and attribute name with a previously compiled
- * script, for debugging purposes. Calling this function is optional, but should
- * be done before script execution if it is required.
- */
-extern JS_PUBLIC_API bool InitScriptSourceElement(
-    JSContext* cx, Handle<JSScript*> script, Handle<JSObject*> element,
-    Handle<JSString*> elementAttrName = nullptr);
-
-/*
  * For a script compiled with the hideScriptFromDebugger option, expose the
  * script to the debugger by calling the debugger's onNewScript hook.
  */
 extern JS_PUBLIC_API void ExposeScriptToDebugger(JSContext* cx,
                                                  Handle<JSScript*> script);
+
+/*
+ * JSScripts have associated with them (via their ScriptSourceObjects) some
+ * metadata used by the debugger. The following API functions are used to set
+ * that metadata on scripts, functions and modules.
+ *
+ * The metadata consists of:
+ * - A privateValue, which is used to keep some object value associated
+ *   with the script.
+ * - The elementAttributeName is used by Gecko
+ * - The introductionScript is used by the debugger to identify which
+ *   script created which. Only set for dynamicaly generated scripts.
+ * - scriptOrModule is used to transfer private value metadata from
+ *   script to script
+ *
+ * Callers using UpdateDebugMetaData need to have set deferDebugMetadata
+ * in the compile options; this hides the script from the debugger until
+ * the debug metadata is provided by the UpdateDebugMetadata call.
+ */
+extern JS_PUBLIC_API bool UpdateDebugMetadata(
+    JSContext* cx, Handle<JSScript*> script,
+    const ReadOnlyCompileOptions& options, HandleValue privateValue,
+    HandleString elementAttributeName, HandleScript introScript,
+    HandleScript scriptOrModule);
+
+// The debugger API exposes an optional "element" property on DebuggerSource
+// objects.  The callback defined here provides that value.  SpiderMonkey
+// doesn't particularly care about this, but within Firefox the "element" is the
+// HTML script tag for the script which DevTools can use for a better debugging
+// experience.
+extern JS_PUBLIC_API void SetSourceElementCallback(
+    JSContext* cx, JSSourceElementCallback callback);
 
 } /* namespace JS */
 

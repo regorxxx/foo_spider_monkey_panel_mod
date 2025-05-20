@@ -13,8 +13,9 @@
 #include "mozilla/Attributes.h"
 #include "mozilla/MemoryReporting.h"
 
-#include "jsapi.h"
-#include "jspubtd.h"
+#include <utility>
+
+#include "jstypes.h"
 
 #include "js/GCAPI.h"
 #include "js/RootingAPI.h"
@@ -202,7 +203,7 @@ class Builder {
 
    public:
     Object(JSContext* cx, Builder& owner_) : Base(cx, owner_, nullptr) {}
-    Object(const Object& rhs) : Base(rhs) {}
+    Object(const Object& rhs) = default;
 
     // Our automatically-generated assignment operator can see our base
     // class's assignment operator, so we don't need to write one out here.

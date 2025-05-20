@@ -8,7 +8,7 @@
 #define mozilla_AutoProfilerLabel_h
 
 #include "mozilla/Attributes.h"
-#include "mozilla/GuardObjects.h"
+#include "mozilla/Tuple.h"
 #include "mozilla/Types.h"
 
 // The Gecko Profiler defines AutoProfilerLabel, an RAII class for
@@ -25,12 +25,12 @@
 // this file would require #including ProfilingCategory.h in mozglue, which we
 // don't want to do.)
 
-class ProfilingStack;
-
 namespace mozilla {
 
-typedef ProfilingStack* (*ProfilerLabelEnter)(const char*, const char*, void*);
-typedef void (*ProfilerLabelExit)(ProfilingStack*);
+// Enter should return a pointer that will be given to Exit.
+typedef void* (*ProfilerLabelEnter)(const char* aLabel,
+                                    const char* aDynamicString, void* aSp);
+typedef void (*ProfilerLabelExit)(void* EntryContext);
 
 // Register callbacks that do the entry/exit work involving sProfilingStack.
 MFBT_API void RegisterProfilerLabelEnterExit(ProfilerLabelEnter aEnter,
@@ -42,14 +42,26 @@ MFBT_API void RegisterProfilerLabelEnterExit(ProfilerLabelEnter aEnter,
 
 class MOZ_RAII AutoProfilerLabel {
  public:
-  AutoProfilerLabel(const char* aLabel,
-                    const char* aDynamicString MOZ_GUARD_OBJECT_NOTIFIER_PARAM);
+  AutoProfilerLabel(const char* aLabel, const char* aDynamicString);
   ~AutoProfilerLabel();
 
  private:
-  MOZ_DECL_USE_GUARD_OBJECT_NOTIFIER
-  ProfilingStack* mProfilingStack;
+  void* mEntryContext;
+  // Number of RegisterProfilerLabelEnterExit calls, to avoid giving an entry
+  // context from one generation to the next.
+  uint32_t mGeneration;
 };
+
+using ProfilerLabel = Tuple<void*, uint32_t>;
+
+bool IsProfilerPresent();
+ProfilerLabel ProfilerLabelBegin(const char* aLabelName,
+                                 const char* aDynamicString, void* aSp);
+void ProfilerLabelEnd(const ProfilerLabel& aLabel);
+
+inline bool IsValidProfilerLabel(const ProfilerLabel& aLabel) {
+  return !!Get<0>(aLabel);
+}
 
 #endif
 

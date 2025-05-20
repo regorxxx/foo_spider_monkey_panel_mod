@@ -36,6 +36,8 @@
 #ifndef _JEMALLOC_TYPES_H_
 #define _JEMALLOC_TYPES_H_
 
+#include <stdint.h>
+
 // grab size_t
 #ifdef _MSC_VER
 #  include <crtdefs.h>
@@ -56,11 +58,17 @@ typedef MALLOC_USABLE_SIZE_CONST_PTR void* usable_ptr_t;
 
 typedef size_t arena_id_t;
 
+#define ARENA_FLAG_RANDOMIZE_SMALL_MASK 0x3
+#define ARENA_FLAG_RANDOMIZE_SMALL_DEFAULT 0
+#define ARENA_FLAG_RANDOMIZE_SMALL_ENABLED 1
+#define ARENA_FLAG_RANDOMIZE_SMALL_DISABLED 2
+
 typedef struct arena_params_s {
   size_t mMaxDirty;
+  uint32_t mFlags;
 
 #ifdef __cplusplus
-  arena_params_s() : mMaxDirty(0) {}
+  arena_params_s() : mMaxDirty(0), mFlags(0) {}
 #endif
 } arena_params_t;
 
@@ -69,11 +77,12 @@ typedef struct arena_params_s {
 // file.
 typedef struct {
   // Run-time configuration settings.
-  bool opt_junk;     // Fill allocated memory with kAllocJunk?
-  bool opt_zero;     // Fill allocated memory with 0x0?
-  size_t narenas;    // Number of arenas.
-  size_t quantum;    // Allocation quantum.
-  size_t small_max;  // Max quantum-spaced allocation size.
+  bool opt_junk;       // Fill allocated memory with kAllocJunk?
+  bool opt_zero;       // Fill allocated memory with 0x0?
+  size_t narenas;      // Number of arenas.
+  size_t quantum;      // Allocation quantum.
+  size_t quantum_max;  // Max quantum-spaced allocation size.
+  // The next size class, sub-pagesize's max is always page_size/2.
   size_t large_max;  // Max sub-chunksize allocation size.
   size_t chunksize;  // Size of each virtual memory mapping.
   size_t page_size;  // Size of pages.
@@ -92,6 +101,18 @@ typedef struct {
   size_t bin_unused;   // Bytes committed to a bin but currently unused.
 } jemalloc_stats_t;
 
+typedef struct {
+  size_t size;               // The size of objects in this bin, zero if this
+                             // bin stats array entry is unused (no more bins).
+  size_t num_non_full_runs;  // The number of non-full runs
+  size_t num_runs;           // The number of runs in this bin
+  size_t bytes_unused;       // The unallocated bytes across all these bins
+  size_t bytes_total;        // The total storage area for runs in this bin,
+  size_t bytes_per_run;      // The number of bytes per run, including headers.
+} jemalloc_bin_stats_t;
+
+#define JEMALLOC_MAX_STATS_BINS 40
+
 enum PtrInfoTag {
   // The pointer is not currently known to the allocator.
   // 'addr', 'size', and 'arenaId' are always 0.
@@ -99,21 +120,16 @@ enum PtrInfoTag {
 
   // The pointer is within a live allocation.
   // 'addr', 'size', and 'arenaId' describe the allocation.
-  TagLiveSmall,
-  TagLiveLarge,
-  TagLiveHuge,
+  TagLiveAlloc,
 
   // The pointer is within a small freed allocation.
   // 'addr', 'size', and 'arenaId' describe the allocation.
-  TagFreedSmall,
+  TagFreedAlloc,
 
   // The pointer is within a freed page. Details about the original
   // allocation, including its size, are not available.
   // 'addr', 'size', and 'arenaId' describe the page.
-  TagFreedPageDirty,
-  TagFreedPageDecommitted,
-  TagFreedPageMadvised,
-  TagFreedPageZeroed,
+  TagFreedPage,
 };
 
 // The information in jemalloc_ptr_info_t could be represented in a variety of
@@ -147,20 +163,15 @@ typedef struct jemalloc_ptr_info_s {
 } jemalloc_ptr_info_t;
 
 static inline bool jemalloc_ptr_is_live(jemalloc_ptr_info_t* info) {
-  return info->tag == TagLiveSmall || info->tag == TagLiveLarge ||
-         info->tag == TagLiveHuge;
+  return info->tag == TagLiveAlloc;
 }
 
 static inline bool jemalloc_ptr_is_freed(jemalloc_ptr_info_t* info) {
-  return info->tag == TagFreedSmall || info->tag == TagFreedPageDirty ||
-         info->tag == TagFreedPageDecommitted ||
-         info->tag == TagFreedPageMadvised || info->tag == TagFreedPageZeroed;
+  return info->tag == TagFreedAlloc || info->tag == TagFreedPage;
 }
 
 static inline bool jemalloc_ptr_is_freed_page(jemalloc_ptr_info_t* info) {
-  return info->tag == TagFreedPageDirty ||
-         info->tag == TagFreedPageDecommitted ||
-         info->tag == TagFreedPageMadvised || info->tag == TagFreedPageZeroed;
+  return info->tag == TagFreedPage;
 }
 
 #ifdef __cplusplus

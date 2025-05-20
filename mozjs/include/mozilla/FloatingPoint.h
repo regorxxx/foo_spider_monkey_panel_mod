@@ -15,8 +15,9 @@
 #include "mozilla/MathAlgorithms.h"
 #include "mozilla/MemoryChecking.h"
 #include "mozilla/Types.h"
-#include "mozilla/TypeTraits.h"
 
+#include <algorithm>
+#include <climits>
 #include <limits>
 #include <stdint.h>
 
@@ -278,6 +279,18 @@ static MOZ_ALWAYS_INLINE T NegativeInfinity() {
 }
 
 /**
+ * Computes the bit pattern for an infinity with the specified sign bit.
+ */
+template <typename T, int SignBit>
+struct InfinityBits {
+  using Traits = FloatingPoint<T>;
+
+  static_assert(SignBit == 0 || SignBit == 1, "bad sign bit");
+  static constexpr typename Traits::Bits value =
+      (SignBit * Traits::kSignBit) | Traits::kExponentBits;
+};
+
+/**
  * Computes the bit pattern for a NaN with the specified sign bit and
  * significand bits.
  */
@@ -345,9 +358,9 @@ namespace detail {
 
 template <typename Float, typename SignedInteger>
 inline bool NumberEqualsSignedInteger(Float aValue, SignedInteger* aInteger) {
-  static_assert(IsSame<Float, float>::value || IsSame<Float, double>::value,
+  static_assert(std::is_same_v<Float, float> || std::is_same_v<Float, double>,
                 "Float must be an IEEE-754 floating point type");
-  static_assert(IsSigned<SignedInteger>::value,
+  static_assert(std::is_signed_v<SignedInteger>,
                 "this algorithm only works for signed types: a different one "
                 "will be required for unsigned types");
   static_assert(sizeof(SignedInteger) >= sizeof(int),
@@ -416,9 +429,9 @@ inline bool NumberEqualsSignedInteger(Float aValue, SignedInteger* aInteger) {
 
 template <typename Float, typename SignedInteger>
 inline bool NumberIsSignedInteger(Float aValue, SignedInteger* aInteger) {
-  static_assert(IsSame<Float, float>::value || IsSame<Float, double>::value,
+  static_assert(std::is_same_v<Float, float> || std::is_same_v<Float, double>,
                 "Float must be an IEEE-754 floating point type");
-  static_assert(IsSigned<SignedInteger>::value,
+  static_assert(std::is_signed_v<SignedInteger>,
                 "this algorithm only works for signed types: a different one "
                 "will be required for unsigned types");
   static_assert(sizeof(SignedInteger) >= sizeof(int),
@@ -450,6 +463,19 @@ static MOZ_ALWAYS_INLINE bool NumberIsInt32(T aValue, int32_t* aInt32) {
 }
 
 /**
+ * If |aValue| is identical to some |int64_t| value, set |*aInt64| to that value
+ * and return true.  Otherwise return false, leaving |*aInt64| in an
+ * indeterminate state.
+ *
+ * This method returns false for negative zero.  If you want to consider -0 to
+ * be 0, use NumberEqualsInt64 below.
+ */
+template <typename T>
+static MOZ_ALWAYS_INLINE bool NumberIsInt64(T aValue, int64_t* aInt64) {
+  return detail::NumberIsSignedInteger(aValue, aInt64);
+}
+
+/**
  * If |aValue| is equal to some int32_t value (where -0 and +0 are considered
  * equal), set |*aInt32| to that value and return true.  Otherwise return false,
  * leaving |*aInt32| in an indeterminate state.
@@ -460,6 +486,19 @@ static MOZ_ALWAYS_INLINE bool NumberIsInt32(T aValue, int32_t* aInt32) {
 template <typename T>
 static MOZ_ALWAYS_INLINE bool NumberEqualsInt32(T aValue, int32_t* aInt32) {
   return detail::NumberEqualsSignedInteger(aValue, aInt32);
+}
+
+/**
+ * If |aValue| is equal to some int64_t value (where -0 and +0 are considered
+ * equal), set |*aInt64| to that value and return true.  Otherwise return false,
+ * leaving |*aInt64| in an indeterminate state.
+ *
+ * |NumberEqualsInt64(-0.0, ...)| will return true.  To test whether a value can
+ * be losslessly converted to |int64_t| and back, use NumberIsInt64 above.
+ */
+template <typename T>
+static MOZ_ALWAYS_INLINE bool NumberEqualsInt64(T aValue, int64_t* aInt64) {
+  return detail::NumberEqualsSignedInteger(aValue, aInt64);
 }
 
 /**
@@ -485,12 +524,56 @@ static MOZ_ALWAYS_INLINE T UnspecifiedNaN() {
  */
 template <typename T>
 static inline bool NumbersAreIdentical(T aValue1, T aValue2) {
-  typedef FloatingPoint<T> Traits;
-  typedef typename Traits::Bits Bits;
+  using Bits = typename FloatingPoint<T>::Bits;
   if (IsNaN(aValue1)) {
     return IsNaN(aValue2);
   }
   return BitwiseCast<Bits>(aValue1) == BitwiseCast<Bits>(aValue2);
+}
+
+/**
+ * Compare two floating point values for bit-wise equality.
+ */
+template <typename T>
+static inline bool NumbersAreBitwiseIdentical(T aValue1, T aValue2) {
+  using Bits = typename FloatingPoint<T>::Bits;
+  return BitwiseCast<Bits>(aValue1) == BitwiseCast<Bits>(aValue2);
+}
+
+/**
+ * Return true iff |aValue| and |aValue2| are equal (ignoring sign if both are
+ * zero) or both NaN.
+ */
+template <typename T>
+static inline bool EqualOrBothNaN(T aValue1, T aValue2) {
+  if (IsNaN(aValue1)) {
+    return IsNaN(aValue2);
+  }
+  return aValue1 == aValue2;
+}
+
+/**
+ * Return NaN if either |aValue1| or |aValue2| is NaN, or the minimum of
+ * |aValue1| and |aValue2| otherwise.
+ */
+template <typename T>
+static inline T NaNSafeMin(T aValue1, T aValue2) {
+  if (IsNaN(aValue1) || IsNaN(aValue2)) {
+    return UnspecifiedNaN<T>();
+  }
+  return std::min(aValue1, aValue2);
+}
+
+/**
+ * Return NaN if either |aValue1| or |aValue2| is NaN, or the maximum of
+ * |aValue1| and |aValue2| otherwise.
+ */
+template <typename T>
+static inline T NaNSafeMax(T aValue1, T aValue2) {
+  if (IsNaN(aValue1) || IsNaN(aValue2)) {
+    return UnspecifiedNaN<T>();
+  }
+  return std::max(aValue1, aValue2);
 }
 
 namespace detail {
@@ -527,7 +610,7 @@ struct FuzzyEqualsEpsilon<double> {
 template <typename T>
 static MOZ_ALWAYS_INLINE bool FuzzyEqualsAdditive(
     T aValue1, T aValue2, T aEpsilon = detail::FuzzyEqualsEpsilon<T>::value()) {
-  static_assert(IsFloatingPoint<T>::value, "floating point type required");
+  static_assert(std::is_floating_point_v<T>, "floating point type required");
   return Abs(aValue1 - aValue2) <= aEpsilon;
 }
 
@@ -546,7 +629,7 @@ static MOZ_ALWAYS_INLINE bool FuzzyEqualsAdditive(
 template <typename T>
 static MOZ_ALWAYS_INLINE bool FuzzyEqualsMultiplicative(
     T aValue1, T aValue2, T aEpsilon = detail::FuzzyEqualsEpsilon<T>::value()) {
-  static_assert(IsFloatingPoint<T>::value, "floating point type required");
+  static_assert(std::is_floating_point_v<T>, "floating point type required");
   // can't use std::min because of bug 965340
   T smaller = Abs(aValue1) < Abs(aValue2) ? Abs(aValue1) : Abs(aValue2);
   return Abs(aValue1 - aValue2) <= aEpsilon * smaller;
@@ -558,8 +641,7 @@ static MOZ_ALWAYS_INLINE bool FuzzyEqualsMultiplicative(
  * representable (even though the bit patterns of double precision NaNs can't
  * all be exactly represented in single precision).
  */
-MOZ_MUST_USE
-extern MFBT_API bool IsFloat32Representable(double aValue);
+[[nodiscard]] extern MFBT_API bool IsFloat32Representable(double aValue);
 
 } /* namespace mozilla */
 

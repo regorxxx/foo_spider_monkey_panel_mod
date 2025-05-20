@@ -15,15 +15,19 @@
 #ifndef mozilla_PodOperations_h
 #define mozilla_PodOperations_h
 
-#include "mozilla/Array.h"
-#include "mozilla/ArrayUtils.h"
+#include "mozilla/Assertions.h"
 #include "mozilla/Attributes.h"
 
-#include <algorithm>
 #include <stdint.h>
 #include <string.h>
 
 namespace mozilla {
+
+template <typename T, size_t Length>
+class Array;
+
+template <typename T>
+class NotNull;
 
 /** Set the contents of |aT| to 0. */
 template <typename T>
@@ -42,6 +46,12 @@ static MOZ_ALWAYS_INLINE void PodZero(T* aT, size_t aNElem) {
   for (T* end = aT + aNElem; aT < end; aT++) {
     memset(aT, 0, sizeof(T));
   }
+}
+
+/** Set the contents of |aNElem| elements starting at |aT| to 0. */
+template <typename T>
+static MOZ_ALWAYS_INLINE void PodZero(NotNull<T*> aT, size_t aNElem) {
+  PodZero(aT.get(), aNElem);
 }
 
 /*

@@ -48,16 +48,19 @@
 #define js_SourceText_h
 
 #include "mozilla/Assertions.h"  // MOZ_ASSERT
-#include "mozilla/Attributes.h"  // MOZ_COLD, MOZ_IS_CLASS_INIT, MOZ_MUST_USE
+#include "mozilla/Attributes.h"  // MOZ_COLD, MOZ_IS_CLASS_INIT
 #include "mozilla/Likely.h"      // MOZ_UNLIKELY
-#include "mozilla/Utf8.h"        // mozilla::Utf8Unit
 
 #include <stddef.h>     // size_t
 #include <stdint.h>     // UINT32_MAX
-#include <type_traits>  // std::conditional, std::is_same
+#include <type_traits>  // std::conditional_t, std::is_same_v
 
 #include "js/UniquePtr.h"  // js::UniquePtr
 #include "js/Utility.h"    // JS::FreePolicy
+
+namespace mozilla {
+union Utf8Unit;
+}
 
 namespace JS {
 
@@ -75,8 +78,8 @@ enum class SourceOwnership {
 template <typename Unit>
 class SourceText final {
  private:
-  static_assert(std::is_same<Unit, mozilla::Utf8Unit>::value ||
-                    std::is_same<Unit, char16_t>::value,
+  static_assert(std::is_same_v<Unit, mozilla::Utf8Unit> ||
+                    std::is_same_v<Unit, char16_t>,
                 "Unit must be either char16_t or Utf8Unit for "
                 "SourceText<Unit>");
 
@@ -95,8 +98,8 @@ class SourceText final {
  public:
   // A C++ character type that can represent the source units -- suitable for
   // passing to C++ string functions.
-  using CharT = typename std::conditional<std::is_same<Unit, char16_t>::value,
-                                          char16_t, char>::type;
+  using CharT =
+      std::conditional_t<std::is_same_v<Unit, char16_t>, char16_t, char>;
 
  public:
   /**
@@ -138,9 +141,9 @@ class SourceText final {
    * |units| may be null if |unitsLength == 0|; if so, this will silently be
    * initialized using non-null, unowned units.
    */
-  MOZ_IS_CLASS_INIT MOZ_MUST_USE bool init(JSContext* cx, const Unit* units,
-                                           size_t unitsLength,
-                                           SourceOwnership ownership) {
+  [[nodiscard]] MOZ_IS_CLASS_INIT bool init(JSContext* cx, const Unit* units,
+                                            size_t unitsLength,
+                                            SourceOwnership ownership) {
     MOZ_ASSERT_IF(units == nullptr, unitsLength == 0);
 
     // Ideally we'd use |Unit| and not cast below, but the risk of a static
@@ -179,12 +182,12 @@ class SourceText final {
    * UTF-16 case this overload and the one above would be identical.  So we
    * use SFINAE to expose the |CharT| overload only if it's different.)
    */
-  template <typename Char, typename = typename std::enable_if<
-                               std::is_same<Char, CharT>::value &&
-                               !std::is_same<Char, Unit>::value>::type>
-  MOZ_IS_CLASS_INIT MOZ_MUST_USE bool init(JSContext* cx, const Char* chars,
-                                           size_t charsLength,
-                                           SourceOwnership ownership) {
+  template <typename Char,
+            typename = std::enable_if_t<std::is_same_v<Char, CharT> &&
+                                        !std::is_same_v<Char, Unit>>>
+  [[nodiscard]] MOZ_IS_CLASS_INIT bool init(JSContext* cx, const Char* chars,
+                                            size_t charsLength,
+                                            SourceOwnership ownership) {
     return init(cx, reinterpret_cast<const Unit*>(chars), charsLength,
                 ownership);
   }
@@ -192,9 +195,27 @@ class SourceText final {
   /**
    * Initialize this using source units transferred out of |data|.
    */
-  MOZ_MUST_USE bool init(JSContext* cx,
-                         js::UniquePtr<CharT[], JS::FreePolicy> data,
-                         size_t dataLength) {
+  [[nodiscard]] bool init(JSContext* cx,
+                          js::UniquePtr<Unit[], JS::FreePolicy> data,
+                          size_t dataLength) {
+    return init(cx, data.release(), dataLength, SourceOwnership::TakeOwnership);
+  }
+
+  /**
+   * Exactly identical to the |init()| overload above that accepts
+   * |UniquePtr<Unit[], JS::FreePolicy>|, but instead takes character data:
+   * |UniquePtr<CharT[], JS::FreePolicy>|.
+   *
+   * (We can't just duplicate the signature above with s/Unit/CharT/, because
+   * then in the UTF-16 case this overload and the one above would be identical.
+   * So we use SFINAE to expose the |CharT| overload only if it's different.)
+   */
+  template <typename Char,
+            typename = std::enable_if_t<std::is_same_v<Char, CharT> &&
+                                        !std::is_same_v<Char, Unit>>>
+  [[nodiscard]] bool init(JSContext* cx,
+                          js::UniquePtr<Char[], JS::FreePolicy> data,
+                          size_t dataLength) {
     return init(cx, data.release(), dataLength, SourceOwnership::TakeOwnership);
   }
 

@@ -83,7 +83,7 @@ ActiveXObjectProxyHandler::has(JSContext* cx, JS::HandleObject proxy, JS::Handle
     }
 
     JS::RootedObject target(cx, js::GetProxyTargetObject(proxy));
-    auto pNativeTarget = static_cast<JsActiveXObject*>(JS_GetPrivate(target));
+    auto pNativeTarget = static_cast<JsActiveXObject*>(JS::GetPrivate(target));
     assert(pNativeTarget);
 
     JS::RootedString jsString(cx, JSID_TO_STRING(id));
@@ -109,21 +109,21 @@ bool ActiveXObjectProxyHandler::get(JSContext* cx, JS::HandleObject proxy, JS::H
 {
     try
     {
-        const auto isString = JSID_IS_STRING(id);
-        const auto isInt = JSID_IS_INT(id);
+        const auto isString = id.isString();
+        const auto isInt = id.isInt();
         const auto isEnumSymbol = [&] {
-            if (!JSID_IS_SYMBOL(id))
+            if (!id.isSymbol())
             {
                 return false;
             }
-            JS::RootedSymbol sym(cx, JSID_TO_SYMBOL(id));
+            JS::RootedSymbol sym(cx, id.toSymbol());
             return (JS::GetSymbolCode(sym) == JS::SymbolCode::iterator);
         }();
 
         if (isEnumSymbol)
         {
             JS::RootedObject target(cx, js::GetProxyTargetObject(proxy));
-            auto pNativeTarget = static_cast<JsActiveXObject*>(JS_GetPrivate(target));
+            auto pNativeTarget = static_cast<JsActiveXObject*>(JS::GetPrivate(target));
             assert(pNativeTarget);
 
             if (pNativeTarget->HasIterator())
@@ -136,7 +136,7 @@ bool ActiveXObjectProxyHandler::get(JSContext* cx, JS::HandleObject proxy, JS::H
         else if (isString || isInt)
         {
             JS::RootedObject target(cx, js::GetProxyTargetObject(proxy));
-            auto pNativeTarget = static_cast<JsActiveXObject*>(JS_GetPrivate(target));
+            auto pNativeTarget = static_cast<JsActiveXObject*>(JS::GetPrivate(target));
             assert(pNativeTarget);
 
             std::wstring propName;
@@ -188,7 +188,7 @@ bool ActiveXObjectProxyHandler::set(JSContext* cx, JS::HandleObject proxy, JS::H
         }
 
         JS::RootedObject target(cx, js::GetProxyTargetObject(proxy));
-        auto pNativeTarget = static_cast<JsActiveXObject*>(JS_GetPrivate(target));
+        auto pNativeTarget = static_cast<JsActiveXObject*>(JS::GetPrivate(target));
         assert(pNativeTarget);
 
         JS::RootedString jsString(cx, JSID_TO_STRING(id));
@@ -215,7 +215,7 @@ bool ActiveXObjectProxyHandler::set(JSContext* cx, JS::HandleObject proxy, JS::H
 bool ActiveXObjectProxyHandler::ownPropertyKeys(JSContext* cx, JS::HandleObject proxy, JS::AutoIdVector& props) const
 {
     JS::RootedObject target(cx, js::GetProxyTargetObject(proxy));
-    auto pNativeTarget = static_cast<JsActiveXObject*>(JS_GetPrivate(target));
+    auto pNativeTarget = static_cast<JsActiveXObject*>(JS::GetPrivate(target));
     assert(pNativeTarget);
 
     const auto memberList = pNativeTarget->GetAllMembers();
@@ -499,7 +499,7 @@ JSObject* JsActiveXObject::CreateFromArray(JSContext* cx, JS::HandleValue arr, u
     qwr::QwrException::ExpectTrue(jsObjectIn, "Value is not a JS object");
 
     bool is;
-    if (!JS_IsArrayObject(cx, jsObjectIn, &is))
+    if (!JS::IsArrayObject(cx, jsObjectIn, &is))
     {
         throw smp::JsException();
     }

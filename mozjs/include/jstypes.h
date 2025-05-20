@@ -21,15 +21,14 @@
 #ifndef jstypes_h
 #define jstypes_h
 
-#include "mozilla/Attributes.h"
 #include "mozilla/Casting.h"
 #include "mozilla/Types.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 // jstypes.h is (or should be!) included by every file in SpiderMonkey.
 // js-config.h also should be included by every file. So include it here.
-// XXX: including it in js/RequiredDefines.h should be a better option, since
-// that is by definition the header file that should be included in all
-// SpiderMonkey code.  However, Gecko doesn't do this!  See bug 909576.
 #include "js-config.h"
 
 /*
@@ -41,27 +40,12 @@
 #if defined(STATIC_JS_API)
 #  define JS_PUBLIC_API
 #  define JS_PUBLIC_DATA
-#  define JS_FRIEND_API
-#  define JS_FRIEND_DATA
 #elif defined(EXPORT_JS_API) || defined(STATIC_EXPORTABLE_JS_API)
 #  define JS_PUBLIC_API MOZ_EXPORT
 #  define JS_PUBLIC_DATA MOZ_EXPORT
-#  define JS_FRIEND_API MOZ_EXPORT
-#  define JS_FRIEND_DATA MOZ_EXPORT
 #else
 #  define JS_PUBLIC_API MOZ_IMPORT_API
 #  define JS_PUBLIC_DATA MOZ_IMPORT_DATA
-#  define JS_FRIEND_API MOZ_IMPORT_API
-#  define JS_FRIEND_DATA MOZ_IMPORT_DATA
-#endif
-
-#if defined(_MSC_VER) && defined(_M_IX86)
-#  define JS_FASTCALL __fastcall
-#elif defined(__GNUC__) && defined(__i386__)
-#  define JS_FASTCALL __attribute__((fastcall))
-#else
-#  define JS_FASTCALL
-#  define JS_NO_FASTCALL
 #endif
 
 /***********************************************************************
@@ -77,24 +61,34 @@
   while (0)
 
 /***********************************************************************
-** MACROS:      JS_BIT
-**              JS_BITMASK
+** FUNCTIONS:   Bit
+**              BitMask
 ** DESCRIPTION:
-** Bit masking macros.  XXX n must be <= 31 to be portable
+** Bit masking functions.  XXX n must be <= 31 to be portable
 ***********************************************************************/
-#define JS_BIT(n) ((uint32_t)1 << (n))
-#define JS_BITMASK(n) (JS_BIT(n) - 1)
+namespace js {
+constexpr uint32_t Bit(uint32_t n) { return uint32_t(1) << n; }
+
+constexpr uint32_t BitMask(uint32_t n) { return Bit(n) - 1; }
+}  // namespace js
 
 /***********************************************************************
-** MACROS:      JS_HOWMANY
-**              JS_ROUNDUP
+** FUNCTIONS:   HowMany
+**              RoundUp
+**              RoundDown
+**              Round
 ** DESCRIPTION:
-**      Commonly used macros for operations on compatible types.
+**      Commonly used functions for operations on compatible types.
 ***********************************************************************/
-#define JS_HOWMANY(x, y) (((x) + (y)-1) / (y))
-#define JS_ROUNDUP(x, y) (JS_HOWMANY(x, y) * (y))
-#define JS_ROUNDDOWN(x, y) (((x) / (y)) * (y))
-#define JS_ROUND(x, y) ((((x) + (y) / 2) / (y)) * (y))
+namespace js {
+constexpr size_t HowMany(size_t x, size_t y) { return (x + y - 1) / y; }
+
+constexpr size_t RoundUp(size_t x, size_t y) { return HowMany(x, y) * y; }
+
+constexpr size_t RoundDown(size_t x, size_t y) { return (x / y) * y; }
+
+constexpr size_t Round(size_t x, size_t y) { return ((x + y / 2) / y) * y; }
+}  // namespace js
 
 #if (defined(__SIZEOF_POINTER__) && __SIZEOF_POINTER__ == 8) || \
     (defined(UINTPTR_MAX) && UINTPTR_MAX == 0xFFFFFFFFFFFFFFFFu)

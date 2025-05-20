@@ -126,7 +126,7 @@ std::ostream& operator<<(std::ostream& aOut,
 template <typename T, size_t N,
           typename = std::enable_if_t<!std::is_same<T, char>::value>>
 std::ostream& operator<<(std::ostream& aOut, const T (&aArray)[N]) {
-  return aOut << mozilla::MakeSpan(aArray);
+  return aOut << mozilla::Span(aArray);
 }
 
 // MOZ_DBG is a macro like the Rust dbg!() macro -- it will print out the
@@ -194,13 +194,13 @@ std::ostream& operator<<(std::ostream& aOut, const T (&aArray)[N]) {
 //
 // generates an operator<< that outputs strings like
 // "Point { x = 1.0, y = 2.0 }".
-#define MOZ_DEFINE_DBG(type_, ...)                                   \
+#define MOZ_DEFINE_DBG(type_, ...)                                           \
   friend std::ostream& operator<<(std::ostream& aOut, const type_& aValue) { \
     return aOut << #type_                                                    \
-                << (MOZ_ARG_COUNT(__VA_ARGS__) == 0 ? "" : " { ")               \
+                << (MOZ_ARG_COUNT(__VA_ARGS__) == 0 ? "" : " { ")            \
                        MOZ_FOR_EACH_SEPARATED(MOZ_DBG_FIELD, (<< ", "), (),  \
-                                              (__VA_ARGS__))                    \
-                << (MOZ_ARG_COUNT(__VA_ARGS__) == 0 ? "" : " }");               \
+                                              (__VA_ARGS__))                 \
+                << (MOZ_ARG_COUNT(__VA_ARGS__) == 0 ? "" : " }");            \
   }
 
 #endif  // mozilla_DbgMacro_h

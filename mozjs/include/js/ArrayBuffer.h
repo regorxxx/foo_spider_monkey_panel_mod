@@ -12,21 +12,21 @@
 #include <stdint.h>  // uint32_t
 
 #include "jstypes.h"  // JS_PUBLIC_API
-
-#include "js/GCAPI.h"       // JS::AutoRequireNoGC
-#include "js/RootingAPI.h"  // JS::Handle
+#include "js/TypeDecls.h"
 
 struct JS_PUBLIC_API JSContext;
 class JS_PUBLIC_API JSObject;
 
 namespace JS {
 
+class JS_PUBLIC_API AutoRequireNoGC;
+
 // CREATION
 
 /**
  * Create a new ArrayBuffer with the given byte length.
  */
-extern JS_PUBLIC_API JSObject* NewArrayBuffer(JSContext* cx, uint32_t nbytes);
+extern JS_PUBLIC_API JSObject* NewArrayBuffer(JSContext* cx, size_t nbytes);
 
 /**
  * Create a new ArrayBuffer with the given |contents|, which may be null only
@@ -35,10 +35,37 @@ extern JS_PUBLIC_API JSObject* NewArrayBuffer(JSContext* cx, uint32_t nbytes);
  *
  * If and only if an ArrayBuffer is successfully created and returned,
  * ownership of |contents| is transferred to the new ArrayBuffer.
+ *
+ * Care must be taken that |nbytes| bytes of |content| remain valid for the
+ * duration of this call.  In particular, passing the length/pointer of existing
+ * typed array or ArrayBuffer data is generally unsafe: if a GC occurs during a
+ * call to this function, it could move those contents to a different location
+ * and invalidate the provided pointer.
  */
 extern JS_PUBLIC_API JSObject* NewArrayBufferWithContents(JSContext* cx,
                                                           size_t nbytes,
                                                           void* contents);
+
+/**
+ * Create a new ArrayBuffer, whose bytes are set to the values of the bytes in
+ * the provided ArrayBuffer.
+ *
+ * |maybeArrayBuffer| is asserted to be non-null.  An error is thrown if
+ * |maybeArrayBuffer| would fail the |IsArrayBufferObject| test given further
+ * below or if |maybeArrayBuffer| is detached.
+ *
+ * |maybeArrayBuffer| may store its contents in any fashion (i.e. it doesn't
+ * matter whether |maybeArrayBuffer| was allocated using |JS::NewArrayBuffer|,
+ * |JS::NewExternalArrayBuffer|, or any other ArrayBuffer-allocating function).
+ *
+ * The newly-created ArrayBuffer is effectively creatd as if by
+ * |JS::NewArrayBufferWithContents| passing in |maybeArrayBuffer|'s internal
+ * data pointer and length, in a manner safe against |maybeArrayBuffer|'s data
+ * being moved around by the GC.  In particular, the new ArrayBuffer will not
+ * behave like one created for WASM or asm.js, so it *can* be detached.
+ */
+extern JS_PUBLIC_API JSObject* CopyArrayBuffer(
+    JSContext* cx, JS::Handle<JSObject*> maybeArrayBuffer);
 
 using BufferContentsFreeFunc = void (*)(void* contents, void* userData);
 
@@ -170,7 +197,7 @@ extern JS_PUBLIC_API JSObject* UnwrapArrayBuffer(JSObject* obj);
  * |*data|.
  */
 extern JS_PUBLIC_API JSObject* GetObjectAsArrayBuffer(JSObject* obj,
-                                                      uint32_t* length,
+                                                      size_t* length,
                                                       uint8_t** data);
 
 /**
@@ -180,7 +207,7 @@ extern JS_PUBLIC_API JSObject* GetObjectAsArrayBuffer(JSObject* obj,
  * that it would pass such a test: it is an ArrayBuffer or a wrapper of an
  * ArrayBuffer, and the unwrapping will succeed.
  */
-extern JS_PUBLIC_API uint32_t GetArrayBufferByteLength(JSObject* obj);
+extern JS_PUBLIC_API size_t GetArrayBufferByteLength(JSObject* obj);
 
 // This one isn't inlined because there are a bunch of different ArrayBuffer
 // classes that would have to be individually handled here.
@@ -188,7 +215,7 @@ extern JS_PUBLIC_API uint32_t GetArrayBufferByteLength(JSObject* obj);
 // There is an isShared out argument for API consistency (eases use from DOM).
 // It will always be set to false.
 extern JS_PUBLIC_API void GetArrayBufferLengthAndData(JSObject* obj,
-                                                      uint32_t* length,
+                                                      size_t* length,
                                                       bool* isSharedMemory,
                                                       uint8_t** data);
 
@@ -231,6 +258,12 @@ extern JS_PUBLIC_API bool DetachArrayBuffer(JSContext* cx,
  */
 extern JS_PUBLIC_API void* StealArrayBufferContents(JSContext* cx,
                                                     Handle<JSObject*> obj);
+
+/**
+ * Enable or disable support for large (>= 2 GB) ArrayBuffers on 64-bit builds.
+ * Has no effect on 32-bit builds.
+ */
+extern JS_PUBLIC_API void SetLargeArrayBuffersEnabled(bool enable);
 
 }  // namespace JS
 

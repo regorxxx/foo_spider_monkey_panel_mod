@@ -40,7 +40,7 @@
 
 #include <stddef.h>  // size_t
 
-#include "jstypes.h"  // JS_FRIEND_API
+#include "jstypes.h"  // JS_PUBLIC_API
 
 struct JS_PUBLIC_API JSContext;
 
@@ -59,7 +59,7 @@ namespace js {
  */
 class SourceHook {
  public:
-  virtual ~SourceHook() {}
+  virtual ~SourceHook() = default;
 
   /**
    * Attempt to load the source for |filename|.
@@ -87,13 +87,13 @@ class SourceHook {
  * will delete it when the context itself is deleted, or when a new hook is
  * set.
  */
-extern JS_FRIEND_API void SetSourceHook(JSContext* cx,
+extern JS_PUBLIC_API void SetSourceHook(JSContext* cx,
                                         mozilla::UniquePtr<SourceHook> hook);
 
 /** Remove |cx|'s source hook, and return it. The caller now owns the hook. */
-extern JS_FRIEND_API mozilla::UniquePtr<SourceHook> ForgetSourceHook(
+extern JS_PUBLIC_API mozilla::UniquePtr<SourceHook> ForgetSourceHook(
     JSContext* cx);
 
-} // namespace js
+}  // namespace js
 
-#endif // js_experimental_SourceHook_h
+#endif  // js_experimental_SourceHook_h

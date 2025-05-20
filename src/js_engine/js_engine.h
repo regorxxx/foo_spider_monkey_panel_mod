@@ -66,9 +66,12 @@ private:
 
     static bool InterruptHandler(JSContext* cx);
 
-    static void RejectedPromiseHandler(JSContext* cx, JS::HandleObject promise,
-                                        JS::PromiseRejectionHandlingState state,
-                                        void* data);
+    static void RejectedPromiseHandler(
+        JSContext* cx,
+        bool mutedErrors,
+        JS::HandleObject promise,
+        JS::PromiseRejectionHandlingState state,
+        void* data);
 
     void ReportOomError();
 

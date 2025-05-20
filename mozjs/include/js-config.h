@@ -15,6 +15,9 @@
 /* Define to 1 if SpiderMonkey is in debug mode. */
 /* #undef JS_DEBUG */
 
+/* Define to 1 if SpiderMonkey is in 64-bit mode. */
+/* #undef JS_64BIT */
+
 /*
  * NB: We have a special case for rust-bindgen, which wants to be able to
  * generate both debug and release bindings on a single objdir.
@@ -29,17 +32,14 @@
 # endif
 #endif
 
-/* Define to 1 if SpiderMonkey should not use struct types in debug builds. */
-/* #undef JS_NO_JSVAL_JSID_STRUCT_TYPES */
-
-/* Define to 1 if SpiderMonkey should support multi-threaded clients.  */
-/* #undef JS_THREADSAFE */
-
 /* Define to 1 if SpiderMonkey should include ctypes support.  */
 /* #undef JS_HAS_CTYPES */
 
 /* Define to 1 if SpiderMonkey should include trace logging support. */
 /* #undef JS_TRACE_LOGGING */
+
+/* Define to 1 if SpiderMonkey should include support for the Intl API. */
+#define JS_HAS_INTL_API 1
 
 /* Define to 1 if SpiderMonkey should include a breakpoint function for
  * artificial OOMs. */
@@ -55,27 +55,23 @@
 /* Define to 1 to perform extra assertions and heap poisoning. */
 /* #undef JS_CRASH_DIAGNOSTICS */
 
-/* Define to 1 if SpiderMonkey is compiled with support for private values at
- * odd-numbered memory addresses. */
-/* #undef JS_UNALIGNED_PRIVATE_VALUES */
-
 /* Define to 1 if SpiderMonkey is in NUNBOX32 mode. */
 #define JS_NUNBOX32 1
 
 /* Define to 1 if SpiderMonkey is in PUNBOX64 mode. */
 /* #undef JS_PUNBOX64 */
 
-/* Define exactly one of these to 1 to indicate JIT code generation mode. */
-/* #undef JS_CODEGEN_NONE */
-/* #undef JS_CODEGEN_ARM */
-/* #undef JS_CODEGEN_ARM64 */
-/* #undef JS_CODEGEN_MIPS32 */
-/* #undef JS_CODEGEN_MIPS64 */
-#define JS_CODEGEN_X86 1
-/* #undef JS_CODEGEN_X64 */
+/* Define to 1 if SpiderMonkey should support SmooshMonkey parser. */
+/* #undef JS_ENABLE_SMOOSH */
+
+/* Experimental WASM features */
+/* #undef ENABLE_WASM_EXCEPTIONS */
+/* #undef ENABLE_WASM_FUNCTION_REFERENCES */
+/* #undef ENABLE_WASM_GC */
+#define ENABLE_WASM_SIMD 1
 
 /* MOZILLA JSAPI version number components */
-#define MOZJS_MAJOR_VERSION 68
-#define MOZJS_MINOR_VERSION 8
+#define MOZJS_MAJOR_VERSION 91
+#define MOZJS_MINOR_VERSION 10
 
 #endif /* js_config_h */

@@ -153,7 +153,7 @@ bool FbMetadbHandleListProxyHandler::get(JSContext* cx, JS::HandleObject proxy, 
     if (JSID_IS_INT(id))
     {
         JS::RootedObject target(cx, js::GetProxyTargetObject(proxy));
-        auto pNativeTarget = static_cast<JsFbMetadbHandleList*>(JS_GetPrivate(target));
+        auto pNativeTarget = static_cast<JsFbMetadbHandleList*>(JS::GetPrivate(target));
         assert(pNativeTarget);
 
         const auto index = static_cast<uint32_t>(JSID_TO_INT(id));
@@ -179,7 +179,7 @@ bool FbMetadbHandleListProxyHandler::set(JSContext* cx, JS::HandleObject proxy, 
     if (JSID_IS_INT(id))
     {
         JS::RootedObject target(cx, js::GetProxyTargetObject(proxy));
-        auto pNativeTarget = static_cast<JsFbMetadbHandleList*>(JS_GetPrivate(target));
+        auto pNativeTarget = static_cast<JsFbMetadbHandleList*>(JS::GetPrivate(target));
         assert(pNativeTarget);
 
         const auto index = static_cast<uint32_t>(JSID_TO_INT(id));
@@ -270,7 +270,7 @@ JSObject* JsFbMetadbHandleList::Constructor(JSContext* cx, JS::HandleValue jsVal
 
     {
         bool is;
-        if (!JS_IsArrayObject(cx, jsValue, &is))
+        if (!JS::IsArrayObject(cx, jsValue, &is))
         {
             throw JsException();
         }

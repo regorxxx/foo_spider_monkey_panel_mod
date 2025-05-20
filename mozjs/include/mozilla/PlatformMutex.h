@@ -7,12 +7,12 @@
 #ifndef mozilla_PlatformMutex_h
 #define mozilla_PlatformMutex_h
 
-#include "mozilla/Atomics.h"
-#include "mozilla/Attributes.h"
-#include "mozilla/Move.h"
-#include "mozilla/RecordReplay.h"
+#include <utility>
 
-#if !defined(XP_WIN)
+#include "mozilla/Attributes.h"
+#include "mozilla/Types.h"
+
+#if !defined(XP_WIN) && !defined(__wasi__)
 #  include <pthread.h>
 #endif
 
@@ -26,8 +26,7 @@ class MutexImpl {
  public:
   struct PlatformData;
 
-  explicit MFBT_API MutexImpl(
-      recordreplay::Behavior aRecorded = recordreplay::Behavior::Preserve);
+  explicit MFBT_API MutexImpl();
   MFBT_API ~MutexImpl();
 
  protected:
@@ -49,19 +48,11 @@ class MutexImpl {
 
   PlatformData* platformData();
 
-#if !defined(XP_WIN)
+#if !defined(XP_WIN) && !defined(__wasi__)
   void* platformData_[sizeof(pthread_mutex_t) / sizeof(void*)];
   static_assert(sizeof(pthread_mutex_t) / sizeof(void*) != 0 &&
                     sizeof(pthread_mutex_t) % sizeof(void*) == 0,
                 "pthread_mutex_t must have pointer alignment");
-#  ifdef XP_DARWIN
-  // Moving average of the number of spins it takes to acquire the mutex if we
-  // have to wait. May be accessed by multiple threads concurrently. Getting the
-  // latest value is not essential hence relaxed memory ordering is sufficient.
-  mozilla::Atomic<int32_t, mozilla::MemoryOrdering::Relaxed,
-                  recordreplay::Behavior::DontPreserve>
-      averageSpins;
-#  endif
 #else
   void* platformData_[6];
 #endif

@@ -8,9 +8,9 @@
 #define js_UbiNodeCensus_h
 
 #include "mozilla/Attributes.h"
-#include "mozilla/Move.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "jsapi.h"
 
@@ -94,8 +94,8 @@ using CountBasePtr = js::UniquePtr<CountBase, CountDeleter>;
 
 // Abstract base class for CountType nodes.
 struct CountType {
-  explicit CountType() {}
-  virtual ~CountType() {}
+  explicit CountType() = default;
+  virtual ~CountType() = default;
 
   // Destruct a count tree node that this type instance constructed.
   virtual void destructCount(CountBase& count) = 0;
@@ -109,14 +109,14 @@ struct CountType {
 
   // Implement the 'count' method for counts returned by this CountType
   // instance's 'newCount' method.
-  virtual MOZ_MUST_USE bool count(CountBase& count,
-                                  mozilla::MallocSizeOf mallocSizeOf,
-                                  const Node& node) = 0;
+  [[nodiscard]] virtual bool count(CountBase& count,
+                                   mozilla::MallocSizeOf mallocSizeOf,
+                                   const Node& node) = 0;
 
   // Implement the 'report' method for counts returned by this CountType
   // instance's 'newCount' method.
-  virtual MOZ_MUST_USE bool report(JSContext* cx, CountBase& count,
-                                   MutableHandleValue report) = 0;
+  [[nodiscard]] virtual bool report(JSContext* cx, CountBase& count,
+                                    MutableHandleValue report) = 0;
 };
 
 using CountTypePtr = js::UniquePtr<CountType>;
@@ -130,15 +130,15 @@ class CountBase {
   CountType& type;
 
  protected:
-  ~CountBase() {}
+  ~CountBase() = default;
 
  public:
   explicit CountBase(CountType& type)
       : type(type), total_(0), smallestNodeIdCounted_(SIZE_MAX) {}
 
   // Categorize and count |node| as appropriate for this count's type.
-  MOZ_MUST_USE bool count(mozilla::MallocSizeOf mallocSizeOf,
-                          const Node& node) {
+  [[nodiscard]] bool count(mozilla::MallocSizeOf mallocSizeOf,
+                           const Node& node) {
     total_++;
 
     auto id = node.identifier();
@@ -162,7 +162,7 @@ class CountBase {
   // Construct a JavaScript object reporting the counts recorded in this
   // count, and store it in |report|. Return true on success, or false on
   // failure.
-  MOZ_MUST_USE bool report(JSContext* cx, MutableHandleValue report) {
+  [[nodiscard]] bool report(JSContext* cx, MutableHandleValue report) {
     return type.report(cx, *this, report);
   }
 
@@ -205,14 +205,14 @@ class CensusHandler {
                 mozilla::MallocSizeOf mallocSizeOf)
       : census(census), rootCount(rootCount), mallocSizeOf(mallocSizeOf) {}
 
-  MOZ_MUST_USE bool report(JSContext* cx, MutableHandleValue report) {
+  [[nodiscard]] bool report(JSContext* cx, MutableHandleValue report) {
     return rootCount->report(cx, report);
   }
 
   // This class needs to retain no per-node data.
   class NodeData {};
 
-  MOZ_MUST_USE JS_PUBLIC_API bool operator()(
+  [[nodiscard]] JS_PUBLIC_API bool operator()(
       BreadthFirst<CensusHandler>& traversal, Node origin, const Edge& edge,
       NodeData* referentData, bool first);
 };
@@ -221,10 +221,10 @@ using CensusTraversal = BreadthFirst<CensusHandler>;
 
 // Examine the census options supplied by the API consumer, and (among other
 // things) use that to build a CountType tree.
-MOZ_MUST_USE JS_PUBLIC_API bool ParseCensusOptions(JSContext* cx,
-                                                   Census& census,
-                                                   HandleObject options,
-                                                   CountTypePtr& outResult);
+[[nodiscard]] JS_PUBLIC_API bool ParseCensusOptions(JSContext* cx,
+                                                    Census& census,
+                                                    HandleObject options,
+                                                    CountTypePtr& outResult);
 
 // Parse the breakdown language (as described in
 // js/src/doc/Debugger/Debugger.Memory.md) into a CountTypePtr. A null pointer

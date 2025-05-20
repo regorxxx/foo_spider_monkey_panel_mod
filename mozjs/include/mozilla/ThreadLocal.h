@@ -9,13 +9,14 @@
 #ifndef mozilla_ThreadLocal_h
 #define mozilla_ThreadLocal_h
 
-#if !defined(XP_WIN)
+#if !defined(XP_WIN) && !defined(__wasi__)
 #  include <pthread.h>
 #endif
 
+#include <type_traits>
+
 #include "mozilla/Assertions.h"
 #include "mozilla/Attributes.h"
-#include "mozilla/TypeTraits.h"
 
 namespace mozilla {
 
@@ -110,8 +111,8 @@ class ThreadLocalKeyStorage {
   }
 
   inline bool set(const T aValue) {
-    void* h =
-        reinterpret_cast<void*>(static_cast<typename Helper<T>::Type>(aValue));
+    void* h = const_cast<void*>(reinterpret_cast<const void*>(
+        static_cast<typename Helper<T>::Type>(aValue)));
     return TlsSetValue(mKey, h);
   }
 
@@ -119,6 +120,28 @@ class ThreadLocalKeyStorage {
   unsigned long mKey;
 };
 #  endif
+#elif defined(__wasi__)
+// There are no threads on WASI, so we just use a global variable.
+template <typename T>
+class ThreadLocalKeyStorage {
+ public:
+  constexpr ThreadLocalKeyStorage() : mInited(false) {}
+
+  inline bool initialized() const { return mInited; }
+
+  inline void init() { mInited = true; }
+
+  inline T get() const { return mVal; }
+
+  inline bool set(const T aValue) {
+    mVal = aValue;
+    return true;
+  }
+
+ private:
+  bool mInited;
+  T mVal;
+};
 #else
 template <typename T>
 class ThreadLocalKeyStorage {
@@ -135,8 +158,8 @@ class ThreadLocalKeyStorage {
   }
 
   inline bool set(const T aValue) {
-    void* h =
-        reinterpret_cast<void*>(static_cast<typename Helper<T>::Type>(aValue));
+    const void* h = reinterpret_cast<const void*>(
+        static_cast<typename Helper<T>::Type>(aValue));
     return !pthread_setspecific(mKey, h);
   }
 
@@ -169,7 +192,7 @@ class ThreadLocalNativeStorage {
 template <typename T, template <typename U> class Storage>
 class ThreadLocal : public Storage<T> {
  public:
-  MOZ_MUST_USE inline bool init();
+  [[nodiscard]] inline bool init();
 
   void infallibleInit() {
     MOZ_RELEASE_ASSERT(init(), "Infallible TLS initialization failed");
@@ -184,7 +207,7 @@ class ThreadLocal : public Storage<T> {
 
 template <typename T, template <typename U> class Storage>
 inline bool ThreadLocal<T, Storage>::init() {
-  static_assert(mozilla::IsPointer<T>::value || mozilla::IsIntegral<T>::value,
+  static_assert(std::is_pointer_v<T> || std::is_integral_v<T>,
                 "mozilla::ThreadLocal must be used with a pointer or "
                 "integral type");
   static_assert(sizeof(T) <= sizeof(void*),
