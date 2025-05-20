@@ -4,7 +4,9 @@ requires at least `foobar2000` `2.0`.
 
 # Changelog
 
-## dev
+## 1.6.2.25.05.20
+- Update to `Spider Monkey` `91.10.0esr`.
+- Fix `utils.Glob` so it works with `;` in folder names.
 - Add `utils.DownloadFileAsync(url, path)` and `on_download_file_done` callback. 
 
 The parent folder for `path` must already exist.
@@ -25,6 +27,8 @@ function on_download_file_done(path, success, error_text) {
 ```
 
 - Update included `Thumbs` sample to use the new method above.
+- Smooth wallpaper fixes.
+- Various other sample fixes.
 
 ## 1.6.2.25.05.19
 - Add `window.IsDark` boolean property. The `on_colours_changed` callback has always
