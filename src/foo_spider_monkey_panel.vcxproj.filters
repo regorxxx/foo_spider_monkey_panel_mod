@@ -196,9 +196,6 @@
     <ClCompile Include="js_engine\js_realm_inner.cpp">
       <Filter>js_engine</Filter>
     </ClCompile>
-    <ClCompile Include="fb2k\fb2k_callbacks.cpp">
-      <Filter>fb2k</Filter>
-    </ClCompile>
     <ClCompile Include="fb2k\stats.cpp">
       <Filter>fb2k</Filter>
     </ClCompile>
@@ -423,6 +420,39 @@
     </ClCompile>
     <ClCompile Include="utils\download_file.cpp">
       <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="callbacks\ConfigObjectNotify.cpp">
+      <Filter>callbacks</Filter>
+    </ClCompile>
+    <ClCompile Include="callbacks\DSPConfigCallback.cpp">
+      <Filter>callbacks</Filter>
+    </ClCompile>
+    <ClCompile Include="callbacks\LibraryCallback.cpp">
+      <Filter>callbacks</Filter>
+    </ClCompile>
+    <ClCompile Include="callbacks\MetadbIOCallback.cpp">
+      <Filter>callbacks</Filter>
+    </ClCompile>
+    <ClCompile Include="callbacks\OutputConfigChangeCallback.cpp">
+      <Filter>callbacks</Filter>
+    </ClCompile>
+    <ClCompile Include="callbacks\PlaybackQueueCallback.cpp">
+      <Filter>callbacks</Filter>
+    </ClCompile>
+    <ClCompile Include="callbacks\PlaybackStatisticsCollector.cpp">
+      <Filter>callbacks</Filter>
+    </ClCompile>
+    <ClCompile Include="callbacks\PlayCallbackStatic.cpp">
+      <Filter>callbacks</Filter>
+    </ClCompile>
+    <ClCompile Include="callbacks\PlaylistCallbackStatic.cpp">
+      <Filter>callbacks</Filter>
+    </ClCompile>
+    <ClCompile Include="callbacks\ReplaygainCoreSettingsNotify.cpp">
+      <Filter>callbacks</Filter>
+    </ClCompile>
+    <ClCompile Include="callbacks\UISelectionCallback.cpp">
+      <Filter>callbacks</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -968,6 +998,9 @@
     </Filter>
     <Filter Include="namespaces">
       <UniqueIdentifier>{a7239c8c-3acf-4e4f-9e79-c72ed2555921}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="callbacks">
+      <UniqueIdentifier>{ccac01d2-1ea0-428a-b07b-df99942ee016}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

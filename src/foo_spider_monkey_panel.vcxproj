@@ -74,6 +74,17 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="callbacks\ConfigObjectNotify.cpp" />
+    <ClCompile Include="callbacks\DSPConfigCallback.cpp" />
+    <ClCompile Include="callbacks\LibraryCallback.cpp" />
+    <ClCompile Include="callbacks\MetadbIOCallback.cpp" />
+    <ClCompile Include="callbacks\OutputConfigChangeCallback.cpp" />
+    <ClCompile Include="callbacks\PlaybackQueueCallback.cpp" />
+    <ClCompile Include="callbacks\PlaybackStatisticsCollector.cpp" />
+    <ClCompile Include="callbacks\PlayCallbackStatic.cpp" />
+    <ClCompile Include="callbacks\PlaylistCallbackStatic.cpp" />
+    <ClCompile Include="callbacks\ReplaygainCoreSettingsNotify.cpp" />
+    <ClCompile Include="callbacks\UISelectionCallback.cpp" />
     <ClCompile Include="component_paths.cpp" />
     <ClCompile Include="com_objects\file_drop_target.cpp" />
     <ClCompile Include="com_utils\com_destruction_handler.cpp" />
@@ -107,7 +118,6 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     <ClCompile Include="events\event_timer.cpp" />
     <ClCompile Include="events\task_controller.cpp" />
     <ClCompile Include="fb2k\advanced_config.cpp" />
-    <ClCompile Include="fb2k\fb2k_callbacks.cpp" />
     <ClCompile Include="fb2k\mainmenu.cpp" />
     <ClCompile Include="fb2k\mainmenu_dynamic.cpp" />
     <ClCompile Include="fb2k\playlist_lock.cpp" />
