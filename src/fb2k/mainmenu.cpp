@@ -15,13 +15,13 @@ class MainMenuCommands_Predefined : public mainmenu_commands
 public:
     MainMenuCommands_Predefined();
 
-    t_uint32 get_command_count() override;
-    GUID get_command(t_uint32 p_index) override;
-    void get_name(t_uint32 p_index, pfc::string_base& p_out) override;
-    bool get_description(t_uint32 p_index, pfc::string_base& p_out) override;
+    uint32_t get_command_count() override;
+    GUID get_command(uint32_t p_index) override;
+    void get_name(uint32_t p_index, pfc::string_base& p_out) override;
+    bool get_description(uint32_t p_index, pfc::string_base& p_out) override;
     GUID get_parent() override;
-    void execute(t_uint32 p_index, service_ptr_t<service_base> p_callback) override;
-    bool get_display(t_uint32 p_index, pfc::string_base& p_out, t_uint32& p_flags) override;
+    void execute(uint32_t p_index, service_ptr_t<service_base> p_callback) override;
+    bool get_display(uint32_t p_index, pfc::string_base& p_out, uint32_t& p_flags) override;
 
 private:
     const std::array<GUID, 10> menuObjects_;
@@ -32,13 +32,13 @@ class MainMenuCommands_Help : public mainmenu_commands
 public:
     MainMenuCommands_Help() = default;
 
-    t_uint32 get_command_count() override;
-    GUID get_command(t_uint32 p_index) override;
-    void get_name(t_uint32 p_index, pfc::string_base& p_out) override;
-    bool get_description(t_uint32 p_index, pfc::string_base& p_out) override;
+    uint32_t get_command_count() override;
+    GUID get_command(uint32_t p_index) override;
+    void get_name(uint32_t p_index, pfc::string_base& p_out) override;
+    bool get_description(uint32_t p_index, pfc::string_base& p_out) override;
     GUID get_parent() override;
-    void execute(t_uint32 p_index, service_ptr_t<service_base> p_callback) override;
-    bool get_display(t_uint32 p_index, pfc::string_base& p_out, t_uint32& p_flags) override;
+    void execute(uint32_t p_index, service_ptr_t<service_base> p_callback) override;
+    bool get_display(uint32_t p_index, pfc::string_base& p_out, uint32_t& p_flags) override;
 };
 
 } // namespace
@@ -60,12 +60,12 @@ MainMenuCommands_Predefined::MainMenuCommands_Predefined()
 {
 }
 
-t_uint32 MainMenuCommands_Predefined::get_command_count()
+uint32_t MainMenuCommands_Predefined::get_command_count()
 {
     return menuObjects_.size();
 }
 
-GUID MainMenuCommands_Predefined::get_command(t_uint32 p_index)
+GUID MainMenuCommands_Predefined::get_command(uint32_t p_index)
 {
     if (p_index >= menuObjects_.size())
     {
@@ -76,7 +76,7 @@ GUID MainMenuCommands_Predefined::get_command(t_uint32 p_index)
     return menuObjects_[p_index];
 }
 
-void MainMenuCommands_Predefined::get_name(t_uint32 p_index, pfc::string_base& p_out)
+void MainMenuCommands_Predefined::get_name(uint32_t p_index, pfc::string_base& p_out)
 {
     if (p_index >= menuObjects_.size())
     {
@@ -87,7 +87,7 @@ void MainMenuCommands_Predefined::get_name(t_uint32 p_index, pfc::string_base& p
     p_out << (p_index + 1);
 }
 
-bool MainMenuCommands_Predefined::get_description(t_uint32 /* p_index */, pfc::string_base& p_out)
+bool MainMenuCommands_Predefined::get_description(uint32_t /* p_index */, pfc::string_base& p_out)
 {
     p_out = "Invoke on_main_menu()";
     return true;
@@ -98,24 +98,24 @@ GUID MainMenuCommands_Predefined::get_parent()
     return guid::mainmenu_group_predefined;
 }
 
-void MainMenuCommands_Predefined::execute(t_uint32 p_index, service_ptr_t<service_base>)
+void MainMenuCommands_Predefined::execute(uint32_t p_index, service_ptr_t<service_base>)
 {
     EventDispatcher::Get().PutEventToAll(GenerateEvent_JsCallback(EventId::kStaticMainMenu, p_index + 1), EventPriority::kInput);
 }
 
-bool MainMenuCommands_Predefined::get_display(t_uint32 p_index, pfc::string_base& p_out, t_uint32& p_flags)
+bool MainMenuCommands_Predefined::get_display(uint32_t p_index, pfc::string_base& p_out, uint32_t& p_flags)
 {
     get_name(p_index, p_out);
     p_flags = mainmenu_commands::flag_defaulthidden | (mainmenu_commands::sort_priority_base * 1000);
     return true;
 }
 
-t_uint32 MainMenuCommands_Help::get_command_count()
+uint32_t MainMenuCommands_Help::get_command_count()
 {
     return 1;
 }
 
-GUID MainMenuCommands_Help::get_command(t_uint32 p_index)
+GUID MainMenuCommands_Help::get_command(uint32_t p_index)
 {
     if (p_index != 0)
     {
@@ -126,7 +126,7 @@ GUID MainMenuCommands_Help::get_command(t_uint32 p_index)
     return guid::mainmenu_node_help_docs;
 }
 
-void MainMenuCommands_Help::get_name(t_uint32 p_index, pfc::string_base& p_out)
+void MainMenuCommands_Help::get_name(uint32_t p_index, pfc::string_base& p_out)
 {
     if (p_index != 0)
     {
@@ -138,7 +138,7 @@ void MainMenuCommands_Help::get_name(t_uint32 p_index, pfc::string_base& p_out)
     p_out << "Spider Monkey Panel help";
 }
 
-bool MainMenuCommands_Help::get_description(t_uint32 p_index, pfc::string_base& p_out)
+bool MainMenuCommands_Help::get_description(uint32_t p_index, pfc::string_base& p_out)
 {
     if (p_index != 0)
     {
@@ -155,7 +155,7 @@ GUID MainMenuCommands_Help::get_parent()
     return mainmenu_groups::help;
 }
 
-void MainMenuCommands_Help::execute(t_uint32 p_index, service_ptr_t<service_base>)
+void MainMenuCommands_Help::execute(uint32_t p_index, service_ptr_t<service_base>)
 {
     if (p_index != 0)
     {
@@ -165,7 +165,7 @@ void MainMenuCommands_Help::execute(t_uint32 p_index, service_ptr_t<service_base
     ShellExecute(nullptr, L"open", path::JsDocsIndex().c_str(), nullptr, nullptr, SW_SHOW);
 }
 
-bool MainMenuCommands_Help::get_display(t_uint32 p_index, pfc::string_base& p_out, t_uint32& p_flags)
+bool MainMenuCommands_Help::get_display(uint32_t p_index, pfc::string_base& p_out, uint32_t& p_flags)
 {
     if (p_index != 0)
     {
@@ -184,12 +184,12 @@ namespace
 {
 
 mainmenu_group_popup_factory g_mainmenu_group_predefined(
-    smp::guid::mainmenu_group_predefined, mainmenu_groups::file, static_cast<t_uint32>(mainmenu_commands::sort_priority_dontcare), SMP_NAME);
+    smp::guid::mainmenu_group_predefined, mainmenu_groups::file, static_cast<uint32_t>(mainmenu_commands::sort_priority_dontcare), SMP_NAME);
 
 FB2K_SERVICE_FACTORY(MainMenuCommands_Predefined);
 
 mainmenu_group_popup_factory g_mainmenu_group_help(
-    smp::guid::mainmenu_group_help, mainmenu_groups::help, static_cast<t_uint32>(mainmenu_commands::sort_priority_dontcare), SMP_NAME);
+    smp::guid::mainmenu_group_help, mainmenu_groups::help, static_cast<uint32_t>(mainmenu_commands::sort_priority_dontcare), SMP_NAME);
 
 FB2K_SERVICE_FACTORY(MainMenuCommands_Help);
 

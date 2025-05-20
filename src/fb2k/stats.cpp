@@ -29,7 +29,7 @@ private:
 class init_stage_callback_impl : public init_stage_callback
 {
 public:
-    void on_init_stage(t_uint32 stage) override;
+    void on_init_stage(uint32_t stage) override;
 };
 
 class initquit_impl : public initquit
@@ -41,9 +41,9 @@ public:
 class metadb_display_field_provider_impl : public metadb_display_field_provider
 {
 public:
-    t_uint32 get_field_count() override;
-    void get_field_name(t_uint32 index, pfc::string_base& out) override;
-    bool process_field(t_uint32 index, metadb_handle* handle, titleformat_text_out* out) override;
+    uint32_t get_field_count() override;
+    void get_field_name(uint32_t index, pfc::string_base& out) override;
+    bool process_field(uint32_t index, metadb_handle* handle, titleformat_text_out* out) override;
 };
 
 class track_property_provider_impl : public track_property_provider_v2
@@ -89,7 +89,7 @@ metadb_index_hash metadb_index_client_impl::transform(const file_info& info, con
     return hasher_md5::get()->process_single_string(str).xorHalve();
 }
 
-void init_stage_callback_impl::on_init_stage(t_uint32 stage)
+void init_stage_callback_impl::on_init_stage(uint32_t stage)
 {
     if (stage == init_stages::before_config_read)
     {
@@ -116,12 +116,12 @@ void initquit_impl::on_quit()
     GetIndexManagerInstance().release();
 }
 
-t_uint32 metadb_display_field_provider_impl::get_field_count()
+uint32_t metadb_display_field_provider_impl::get_field_count()
 {
     return 5;
 }
 
-void metadb_display_field_provider_impl::get_field_name(t_uint32 index, pfc::string_base& out)
+void metadb_display_field_provider_impl::get_field_name(uint32_t index, pfc::string_base& out)
 {
     switch (index)
     {
@@ -146,7 +146,7 @@ void metadb_display_field_provider_impl::get_field_name(t_uint32 index, pfc::str
     }
 }
 
-bool metadb_display_field_provider_impl::process_field(t_uint32 index, metadb_handle* handle, titleformat_text_out* out)
+bool metadb_display_field_provider_impl::process_field(uint32_t index, metadb_handle* handle, titleformat_text_out* out)
 {
     metadb_index_hash hash;
     if (!g_client->hashHandle(handle, hash))

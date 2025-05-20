@@ -2,7 +2,6 @@
 
 #include <events/event_dispatcher.h>
 #include <events/event_js_callback.h>
-#include <fb2k/playlist_lock.h>
 
 #include <qwr/error_popup.h>
 
@@ -11,11 +10,6 @@ namespace
 
 using namespace smp;
 using namespace smp::panel;
-
-class InitStageCallback : public init_stage_callback
-{
-    void on_init_stage(t_uint32 stage) override;
-};
 
 class my_initquit
     : public initquit
@@ -128,22 +122,6 @@ private:
 
 namespace
 {
-
-void InitStageCallback::on_init_stage(t_uint32 stage)
-{
-    if (stage == init_stages::before_ui_init)
-    { // SMP is invoked during ui initialization, hence we must init locks before that,
-        // so that scripts would receive correct lock states
-        try
-        {
-            smp::PlaylistLockManager::Get().InitializeLocks();
-        }
-        catch (const qwr::QwrException& e)
-        {
-            qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, fmt::format("Failed to initialize playlist locks: {}", e.what()));
-        }
-    }
-}
 
 void my_initquit::on_selection_changed(metadb_handle_list_cref)
 {
@@ -413,7 +391,6 @@ void my_playlist_callback_static::on_playlists_changed()
 namespace
 {
 
-FB2K_SERVICE_FACTORY(InitStageCallback);
 FB2K_SERVICE_FACTORY(my_initquit);
 FB2K_SERVICE_FACTORY(my_library_callback);
 FB2K_SERVICE_FACTORY(my_play_callback_static);

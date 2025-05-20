@@ -23,7 +23,7 @@ public:
                                       const std::string& commandName,
                                       const std::optional<std::string>& commandDescription);
 
-    void get_display(pfc::string_base& text, t_uint32& flags) override;
+    void get_display(pfc::string_base& text, uint32_t& flags) override;
     void execute(service_ptr_t<service_base> callback) override;
     GUID get_guid() override;
     bool get_description(pfc::string_base& out) override;
@@ -42,7 +42,7 @@ public:
     MainMenuNodeGroup_PanelCommands(HWND panelHwnd,
                                      const std::string& panelName,
                                      const std::unordered_map<uint32_t, DynamicMainMenuManager::CommandData>& idToCommand);
-    void get_display(pfc::string_base& text, t_uint32& flags) override;
+    void get_display(pfc::string_base& text, uint32_t& flags) override;
     t_size get_children_count() override;
     mainmenu_node::ptr get_child(t_size index) override;
 
@@ -56,7 +56,7 @@ class MainMenuNodeGroup_Panels : public mainmenu_node_group
 {
 public:
     MainMenuNodeGroup_Panels();
-    void get_display(pfc::string_base& text, t_uint32& flags) override;
+    void get_display(pfc::string_base& text, uint32_t& flags) override;
     t_size get_children_count() override;
     mainmenu_node::ptr get_child(t_size index) override;
 
@@ -68,17 +68,17 @@ class MainMenuCommands_Panels : public mainmenu_commands_v2
 {
 public:
     // mainmenu_commands
-    t_uint32 get_command_count() override;
-    GUID get_command(t_uint32 p_index) override;
-    void get_name(t_uint32 p_index, pfc::string_base& p_out) override;
-    bool get_description(t_uint32 p_index, pfc::string_base& p_out) override;
+    uint32_t get_command_count() override;
+    GUID get_command(uint32_t p_index) override;
+    void get_name(uint32_t p_index, pfc::string_base& p_out) override;
+    bool get_description(uint32_t p_index, pfc::string_base& p_out) override;
     GUID get_parent() override;
-    void execute(t_uint32 p_index, service_ptr_t<service_base> p_callback) override;
+    void execute(uint32_t p_index, service_ptr_t<service_base> p_callback) override;
 
     // mainmenu_commands_v2
-    bool is_command_dynamic(t_uint32 index) override;
-    mainmenu_node::ptr dynamic_instantiate(t_uint32 index) override;
-    bool dynamic_execute(t_uint32 index, const GUID& subID, service_ptr_t<service_base> callback) override;
+    bool is_command_dynamic(uint32_t index) override;
+    mainmenu_node::ptr dynamic_instantiate(uint32_t index) override;
+    bool dynamic_execute(uint32_t index, const GUID& subID, service_ptr_t<service_base> callback) override;
 };
 
 } // namespace
@@ -99,7 +99,7 @@ MainMenuNodeCommand_PanelCommand::MainMenuNodeCommand_PanelCommand(HWND panelHwn
 {
 }
 
-void MainMenuNodeCommand_PanelCommand::get_display(pfc::string_base& text, t_uint32& flags)
+void MainMenuNodeCommand_PanelCommand::get_display(pfc::string_base& text, uint32_t& flags)
 {
     text.clear();
     text << commandName_;
@@ -152,7 +152,7 @@ MainMenuNodeGroup_PanelCommands::MainMenuNodeGroup_PanelCommands(HWND panelHwnd,
     }
 }
 
-void MainMenuNodeGroup_PanelCommands::get_display(pfc::string_base& text, t_uint32& flags)
+void MainMenuNodeGroup_PanelCommands::get_display(pfc::string_base& text, uint32_t& flags)
 {
     text.clear();
     text << panelName_;
@@ -190,7 +190,7 @@ MainMenuNodeGroup_Panels::MainMenuNodeGroup_Panels()
     }
 }
 
-void MainMenuNodeGroup_Panels::get_display(pfc::string_base& text, t_uint32& flags)
+void MainMenuNodeGroup_Panels::get_display(pfc::string_base& text, uint32_t& flags)
 {
     text = "Script commands";
     flags = mainmenu_commands::flag_defaulthidden | mainmenu_commands::sort_priority_base;
@@ -207,22 +207,22 @@ mainmenu_node::ptr MainMenuNodeGroup_Panels::get_child(t_size index)
     return panelNodes_.at(index);
 }
 
-t_uint32 MainMenuCommands_Panels::get_command_count()
+uint32_t MainMenuCommands_Panels::get_command_count()
 {
     return 1;
 }
 
-GUID MainMenuCommands_Panels::get_command(t_uint32 /*p_index*/)
+GUID MainMenuCommands_Panels::get_command(uint32_t /*p_index*/)
 {
     return smp::guid::menu_script_commands;
 }
 
-void MainMenuCommands_Panels::get_name(t_uint32 /*p_index*/, pfc::string_base& p_out)
+void MainMenuCommands_Panels::get_name(uint32_t /*p_index*/, pfc::string_base& p_out)
 {
     p_out = "Script commands";
 }
 
-bool MainMenuCommands_Panels::get_description(t_uint32 /*p_index*/, pfc::string_base& p_out)
+bool MainMenuCommands_Panels::get_description(uint32_t /*p_index*/, pfc::string_base& p_out)
 {
     p_out = "Commands provided by scripts.";
     return true;
@@ -233,22 +233,22 @@ GUID MainMenuCommands_Panels::get_parent()
     return smp::guid::mainmenu_group_predefined;
 }
 
-void MainMenuCommands_Panels::execute(t_uint32 /*p_index*/, service_ptr_t<service_base> /*p_callback*/)
+void MainMenuCommands_Panels::execute(uint32_t /*p_index*/, service_ptr_t<service_base> /*p_callback*/)
 {
     // Should not get here, someone not aware of our dynamic status tried to invoke us?
 }
 
-bool MainMenuCommands_Panels::is_command_dynamic(t_uint32 /*index*/)
+bool MainMenuCommands_Panels::is_command_dynamic(uint32_t /*index*/)
 {
     return true;
 }
 
-mainmenu_node::ptr MainMenuCommands_Panels::dynamic_instantiate(t_uint32 /*index*/)
+mainmenu_node::ptr MainMenuCommands_Panels::dynamic_instantiate(uint32_t /*index*/)
 {
     return fb2k::service_new<MainMenuNodeGroup_Panels>();
 }
 
-bool MainMenuCommands_Panels::dynamic_execute(t_uint32 index, const GUID& subID, service_ptr_t<service_base> callback)
+bool MainMenuCommands_Panels::dynamic_execute(uint32_t index, const GUID& subID, service_ptr_t<service_base> callback)
 {
     return __super::dynamic_execute(index, subID, callback);
 }

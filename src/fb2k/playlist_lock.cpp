@@ -25,7 +25,7 @@ public:
     void on_playlist_remove() override;
     void get_lock_name(pfc::string_base& p_out) override;
     void show_ui() override;
-    t_uint32 get_filter_mask() override;
+    uint32_t get_filter_mask() override;
 
 private:
     size_t playlistIdx_;
