@@ -12,8 +12,8 @@
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 #include <js_utils/js_property_helper.h>
+#include <utils/custom_sort.h>
 #include <utils/location_processor.h>
-#include <utils/text_helpers.h>
 
 #include <qwr/abort_callback.h>
 #include <qwr/string_helpers.h>

@@ -10,7 +10,7 @@
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 #include <utils/art_helpers.h>
-#include <utils/text_helpers.h>
+#include <utils/custom_sort.h>
 
 #include <qwr/abort_callback.h>
 #include <qwr/string_helpers.h>
