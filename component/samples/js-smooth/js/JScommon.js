@@ -951,9 +951,18 @@ function setWallpaperImg() {
 	var tmp = null
 
 	if (ppt.wallpapermode == 0) {
-		tmp = utils.GetAlbumArtV2(fb.GetNowPlaying(), 0);
+		// fb.IsPlaying check above should be good enough
+		// but someone reported script errors caused
+		// by fb.GetNowPlaying() returning null
+		var handle = fb.GetNowPlaying();
+		if (handle) {
+			tmp = utils.GetAlbumArtV2(handle, 0);
+		}
 	} else {
-		var arr = utils.Glob(fb.TitleFormat(ppt.wallpaperpath).Eval());
+		// regorxxx 30/03/23: fix relative paths for artwork
+		var tfo = fb.TitleFormat(ppt.wallpaperpath);
+		var path = tfo.Eval().replace(/^\.?\\/, fb.ProfilePath);
+		var arr = utils.Glob(path);
 		if (arr.length) {
 			tmp = gdi.Image(arr[0]);
 		}

@@ -50,7 +50,7 @@ ppt = {
 	wallpaperblurred: window.GetProperty("_DISPLAY: Wallpaper Blurred", true),
 	wallpaperblurvalue: 1.05,
 	wallpapermode: window.GetProperty("_SYSTEM: Wallpaper Mode", 0),
-	wallpaperpath: window.GetProperty("_PROPERTY: Default Wallpaper Path", ".\\user-components\\foo_spider_monkey_panel\\samples\\js-smooth\\images\\default.png"),
+	wallpaperpath: window.GetProperty("_PROPERTY: Default Wallpaper Path", ".\\user-components\\foo_spider_monkey_panel\\samples\\js-smooth\\images\\wallpaper.jpg"),
 	extra_font_size: window.GetProperty("_SYSTEM: Extra font size value", 0),
 	enableTouchControl: window.GetProperty("_PROPERTY: Enable Scroll Touch Control", true),
 	default_botStampHeight: 48,

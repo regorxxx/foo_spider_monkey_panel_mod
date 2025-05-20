@@ -29,7 +29,7 @@ ppt = {
 	wallpaperblurred: window.GetProperty("_DISPLAY: Wallpaper Blurred", true),
 	wallpaperblurvalue: 1.05,
 	wallpapermode: window.GetProperty("_SYSTEM: Wallpaper Mode", 0),
-	wallpaperpath: window.GetProperty("_PROPERTY: Default Wallpaper Path", ".\\user-components\\foo_spider_monkey_panel\\samples\\js-smooth\\images\\default.png"),
+	wallpaperpath: window.GetProperty("_PROPERTY: Default Wallpaper Path", ".\\user-components\\foo_spider_monkey_panel\\samples\\js-smooth\\images\\wallpaper.jpg"),
 	extra_font_size: window.GetProperty("_SYSTEM: Extra font size value", 0),
 	showFilterBox: window.GetProperty("_PROPERTY: Enable Playlist Filterbox in Top Bar", true),
 	doubleRowText: window.GetProperty("_PROPERTY: Double Row Text Info", true),
