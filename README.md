@@ -12,7 +12,10 @@ The parent folder for `path` must already exist.
 Example:
 
 ```js
-utils.DownloadFileAsync("https://lastfm.freetls.fastly.net/i/u/770x0/0be145cbf80930684d41ad524fe53768.jpg", "z:\\blah.jpg");
+utils.DownloadFileAsync(
+    "https://lastfm.freetls.fastly.net/i/u/770x0/0be145cbf80930684d41ad524fe53768.jpg",
+    "z:\\blah.jpg"
+);
 
 // success is a boolean value
 // error_text is always empty if success was true
