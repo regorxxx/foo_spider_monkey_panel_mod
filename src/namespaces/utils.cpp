@@ -15,6 +15,7 @@
 #include <ui/ui_input_box.h>
 #include <utils/art_helpers.h>
 #include <utils/colour_helpers.h>
+#include <utils/custom_sort.h>
 #include <utils/edit_text.h>
 #include <utils/download_file.h>
 #include <utils/gdi_error_helpers.h>
@@ -28,6 +29,7 @@
 #include <io.h>
 
 #include <filesystem>
+#include <wil/resource.h>
 
 using namespace smp;
 
@@ -494,41 +496,38 @@ uint32_t Utils::GetSystemMetrics(uint32_t index) const
     return ::GetSystemMetrics(index);
 }
 
-JS::Value Utils::Glob(const std::string& pattern, uint32_t exc_mask, uint32_t inc_mask)
+JS::Value Utils::Glob(const std::wstring& pattern, uint32_t exc_mask, uint32_t inc_mask)
 {
-    std::vector<std::string> files;
+    std::vector<std::wstring> files;
+    WIN32_FIND_DATA data{};
+    auto hFindFile = wil::unique_hfind(FindFirstFileW(pattern.data(), &data));
+
+    if (hFindFile)
     {
-        const auto wPattern = qwr::unicode::ToWide(pattern);
+        const auto folder = std::filesystem::path(pattern).parent_path().native() + std::filesystem::path::preferred_separator;
 
-        std::unique_ptr<uFindFile> ff(uFindFirstFile(pattern.c_str()));
-        if (ff)
+        while (true)
         {
-            const std::string dir(pattern.c_str(), pfc::scan_filename(pattern.c_str()));
-            do
-            {
-                const DWORD attr = ff->GetAttributes();
-                if ((attr & inc_mask) && !(attr & exc_mask))
-                {
-                    const auto wPath = qwr::unicode::ToWide(dir + ff->GetFileName());
-                    if (!PathMatchSpec(wPath.c_str(), wPattern.c_str()))
-                    {
-                        // workaround for FindFirstFile() bug:
-                        // https://stackoverflow.com/a/44933735
-                        continue;
-                    }
+            const DWORD attr = data.dwFileAttributes;
 
-                    files.emplace_back(dir + ff->GetFileName());
-                }
-            } while (ff->FindNext());
+            if (WI_IsAnyFlagSet(attr, inc_mask) && !WI_IsAnyFlagSet(attr, exc_mask))
+            {
+                files.emplace_back(folder + data.cFileName);
+            }
+
+            if (!FindNextFileW(hFindFile.get(), &data))
+                break;
         }
     }
+
+    std::ranges::sort(files, CmpW());
 
     JS::RootedValue jsValue(pJsCtx_);
     convert::to_js::ToArrayValue(pJsCtx_, files, &jsValue);
     return jsValue;
 }
 
-JS::Value Utils::GlobWithOpt(size_t optArgCount, const std::string& pattern, uint32_t exc_mask, uint32_t inc_mask)
+JS::Value Utils::GlobWithOpt(size_t optArgCount, const std::wstring& pattern, uint32_t exc_mask, uint32_t inc_mask)
 {
     switch (optArgCount)
     {

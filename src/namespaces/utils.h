@@ -58,8 +58,8 @@ public:
     std::string GetPackagePath(const std::string& packageId) const;
     uint32_t GetSysColour(uint32_t index) const;
     uint32_t GetSystemMetrics(uint32_t index) const;
-    JS::Value Glob(const std::string& pattern, uint32_t exc_mask = FILE_ATTRIBUTE_DIRECTORY, uint32_t inc_mask = 0xFFFFFFFF);
-    JS::Value GlobWithOpt(size_t optArgCount, const std::string& pattern, uint32_t exc_mask, uint32_t inc_mask);
+    JS::Value Glob(const std::wstring& pattern, uint32_t exc_mask = FILE_ATTRIBUTE_DIRECTORY, uint32_t inc_mask = 0xFFFFFFFF);
+    JS::Value GlobWithOpt(size_t optArgCount, const std::wstring& pattern, uint32_t exc_mask, uint32_t inc_mask);
     std::string InputBox(uint32_t hWnd, const std::string& prompt, const std::string& caption, const std::string& def = "", bool error_on_cancel = false);
     std::string InputBoxWithOpt(size_t optArgCount, uint32_t hWnd, const std::string& prompt, const std::string& caption, const std::string& def, bool error_on_cancel);
     bool IsDirectory(const std::wstring& path) const;
