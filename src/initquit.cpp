@@ -23,6 +23,7 @@ namespace smp::com
 
 namespace
 {
+    CAppModule wtl_module;
     GdiplusScope scope;
     HMODULE rich_edit_ctrl{};
 
@@ -53,12 +54,15 @@ namespace
                 }
 
                 const auto ins = core_api::get_my_instance();
+
                 Scintilla_RegisterClasses(ins);
                 rich_edit_ctrl = LoadLibraryW(CRichEditCtrl::GetLibraryName());
 
                 std::array<wchar_t, MAX_PATH> path{};
                 GetModuleFileNameW(ins, path.data(), path.size());
                 std::ignore = LoadTypeLibEx(path.data(), REGKIND_NONE, &smp::com::g_typelib);
+
+                std::ignore = wtl_module.Init(nullptr, ins);
             }
         }
     };
@@ -71,6 +75,7 @@ namespace
         smp::GetThreadPoolInstance().Finalize();
         Scintilla_ReleaseResources();
         FreeLibrary(rich_edit_ctrl);
+        wtl_module.Term();
         smp::com::g_typelib.Release();
     }
 
