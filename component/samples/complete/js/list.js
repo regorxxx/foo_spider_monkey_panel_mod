@@ -34,6 +34,7 @@ function _list(mode, x, y, w, h) {
 	this.paint = (gr) => {
 		if (this.mode === 'lastfm_info' && !lastfm.api_key.value.length) {
 			gr.GdiDrawText('No API key found. Add it using R. Click.', panel.fonts.normal, panel.colours.text, this.x, this.y + _scale(12), this.w, panel.row_height, LEFT);
+			return;
 		}
 		if (this.items == 0) {
 			return;

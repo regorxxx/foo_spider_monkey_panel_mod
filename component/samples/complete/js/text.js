@@ -12,9 +12,11 @@ function _text(mode, x, y, w, h) {
 	}
 	
 	this.paint = (gr) => {
-		if (this.mode === 'lastfm_info' && !lastfm.api_key.value.length) {
+		if (this.mode === 'lastfm_bio' && !lastfm.api_key.value.length) {
 			gr.GdiDrawText('No API key found. Add it using R. Click.', panel.fonts.normal, panel.colours.text, this.x, this.y + _scale(12), this.w, panel.row_height, LEFT);
+			return;
 		}
+
 		for (let i = 0; i < Math.min(this.rows, this.lines.length); i++) {
 			if (this.mode == 'text_reader' && this.properties.fixed.enabled) {
 				gr.GdiDrawText(this.lines[i + this.offset], panel.fonts.fixed, panel.colours.text, this.x, this.y + _scale(12) + (i * panel.row_height) + Math.floor(panel.row_height / 2), this.w, panel.row_height, LEFT);
