@@ -541,7 +541,7 @@ function _thumbs() {
 			.forEach((item) => {
 				const url = item.getElementsByTagName('img')[0].src.replace('avatar170s/', '');
 				const filename = base + url.substring(url.lastIndexOf('/') + 1) + '.jpg';
-				_runCmd('cscript //nologo ' + _q(this.vbs_file) + ' ' + _q(url) + ' ' + _q(filename), false);
+				utils.DownloadFileAsync(url, filename);
 			})
 	}
 	
@@ -569,7 +569,6 @@ function _thumbs() {
 	this.modes = ['grid', 'left', 'right', 'top', 'bottom', 'off'];
 	this.pxs = [75, 100, 150, 200, 250, 300];
 	this.ini_file = folders.data + 'thumbs.ini';
-	this.vbs_file = folders.home + 'vbs\\download.vbs';
 	this.exts = 'jpg|jpeg|png|gif';
 	this.folder = '';
 	this.default_file = '';

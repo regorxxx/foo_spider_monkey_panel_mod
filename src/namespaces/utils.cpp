@@ -16,6 +16,7 @@
 #include <utils/art_helpers.h>
 #include <utils/colour_helpers.h>
 #include <utils/edit_text.h>
+#include <utils/download_file.h>
 #include <utils/gdi_error_helpers.h>
 
 #include <qwr/file_helpers.h>
@@ -61,6 +62,7 @@ MJS_DEFINE_JS_FN_FROM_NATIVE_WITH_OPT(CheckComponent, Utils::CheckComponent, Uti
 MJS_DEFINE_JS_FN_FROM_NATIVE(CheckFont, Utils::CheckFont);
 MJS_DEFINE_JS_FN_FROM_NATIVE(ColourPicker, Utils::ColourPicker);
 MJS_DEFINE_JS_FN_FROM_NATIVE(DetectCharset, Utils::DetectCharset);
+MJS_DEFINE_JS_FN_FROM_NATIVE(DownloadFileAsync, Utils::DownloadFileAsync);
 MJS_DEFINE_JS_FN_FROM_NATIVE(EditTextFile, Utils::EditTextFile);
 MJS_DEFINE_JS_FN_FROM_NATIVE(FileExists, Utils::FileExists);
 MJS_DEFINE_JS_FN_FROM_NATIVE(FileTest, Utils::FileTest);
@@ -97,6 +99,7 @@ constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
         JS_FN("CheckFont", CheckFont, 1, kDefaultPropsFlags),
         JS_FN("ColourPicker", ColourPicker, 2, kDefaultPropsFlags),
         JS_FN("DetectCharset", DetectCharset, 1, kDefaultPropsFlags),
+        JS_FN("DownloadFileAsync", DownloadFileAsync, 2, kDefaultPropsFlags),
         JS_FN("EditTextFile", ::EditTextFile, 2, kDefaultPropsFlags),
         JS_FN("FileExists", FileExists, 1, kDefaultPropsFlags),
         JS_FN("FileTest", FileTest, 2, kDefaultPropsFlags),
@@ -242,6 +245,13 @@ uint32_t Utils::DetectCharset(const std::wstring& path) const
     const auto cleanedPath = fs::path(path).lexically_normal();
 
     return static_cast<uint32_t>(qwr::file::DetectFileCharset(cleanedPath));
+}
+
+void Utils::DownloadFileAsync(const std::string& url, const std::wstring& path)
+{
+    const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+    auto task = fb2k::service_new<::DownloadFileAsync>(wnd, url, path);
+    fb2k::cpuThreadPool::get()->runSingle(task);
 }
 
 void Utils::EditTextFile(const std::wstring& path)

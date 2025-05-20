@@ -85,6 +85,7 @@ enum class EventId
     kStaticMainMenu,
     kDynamicMainMenu,
     // internal
+    kInternalDownloadFileDone,
     kInternalGetAlbumArtDone,
     kInternalGetAlbumArtPromiseDone,
     kInternalLoadImageDone,
@@ -177,6 +178,7 @@ const std::unordered_map<EventId, std::string> kCallbackIdToName = {
     { EventId::kStaticMainMenu, "main_menu" },
     { EventId::kDynamicMainMenu, "main_menu_dynamic" },
     // internal
+    { EventId::kInternalDownloadFileDone, "download_file_done" },
     { EventId::kInternalGetAlbumArtDone, "get_album_art_done" },
     { EventId::kInternalLoadImageDone, "load_image_done" },
     { EventId::kInternalLocationsAdded, "locations_added" },

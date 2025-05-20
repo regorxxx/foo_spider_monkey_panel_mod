@@ -151,6 +151,7 @@ utils.Version
 utils.CheckComponent(name[, is_dll])
 utils.CheckFont(name)
 utils.ColourPicker(window_id, default_colour)
+utils.DownloadFileAsync(url, path)
 utils.EditTextFile(window_id, path)
 utils.FileTest(path, mode)
 utils.FormatDuration(seconds)

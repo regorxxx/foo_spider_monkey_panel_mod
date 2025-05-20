@@ -421,6 +421,9 @@
     <ClCompile Include="namespaces\window.cpp">
       <Filter>namespaces</Filter>
     </ClCompile>
+    <ClCompile Include="utils\download_file.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="js_engine\js_engine.h">
@@ -903,6 +906,9 @@
     </ClInclude>
     <ClInclude Include="namespaces\window.h">
       <Filter>namespaces</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\download_file.h">
+      <Filter>utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

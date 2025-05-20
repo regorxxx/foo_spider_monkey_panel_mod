@@ -36,6 +36,7 @@ public:
     bool CheckFont(const std::wstring& name) const;
     uint32_t ColourPicker(uint32_t hWnd, uint32_t default_colour);
     uint32_t DetectCharset(const std::wstring& path) const;
+    void DownloadFileAsync(const std::string& url, const std::wstring& path);
     void EditTextFile(const std::wstring& path);
     bool FileExists(const std::wstring& path) const;
     // TODO v2: remove
