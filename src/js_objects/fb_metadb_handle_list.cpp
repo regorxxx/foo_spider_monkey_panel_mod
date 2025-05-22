@@ -3,6 +3,7 @@
 #include "fb_metadb_handle_list.h"
 
 #include <2K3/CustomSort.hpp>
+#include <2K3/TagWriter.hpp>
 #include <fb2k/stats.h>
 #include <js_engine/js_to_native_invoker.h>
 #include <js_objects/fb_metadb_handle.h>
@@ -356,10 +357,7 @@ void JsFbMetadbHandleList::AttachImage(const std::string& image_path, uint32_t a
     if (data.is_valid())
     {
         auto cb = fb2k::service_new<art::EmbedThread>(art::EmbedThread::EmbedAction::embed, data, metadbHandleList_, what);
-        (void)threaded_process::get()->run_modeless(cb,
-                                                     threaded_process::flag_show_progress | threaded_process::flag_show_delayed | threaded_process::flag_show_item,
-                                                     core_api::get_main_window(),
-                                                     "Embedding images...");
+        threaded_process::get()->run_modeless(cb, threaded_process::flag_silent, core_api::get_main_window(), "Embedding images...");
     }
 }
 
@@ -564,12 +562,8 @@ void JsFbMetadbHandleList::RemoveAttachedImage(uint32_t art_id)
     }
 
     const GUID& what = art::GetGuidForArtId(art_id);
-
     auto cb = fb2k::service_new<art::EmbedThread>(art::EmbedThread::EmbedAction::remove, album_art_data_ptr(), metadbHandleList_, what);
-    (void)threaded_process::get()->run_modeless(cb,
-                                                 threaded_process::flag_show_progress | threaded_process::flag_show_delayed | threaded_process::flag_show_item,
-                                                 core_api::get_main_window(),
-                                                 "Removing images...");
+    threaded_process::get()->run_modeless(cb, threaded_process::flag_silent, core_api::get_main_window(), "Removing images...");
 }
 
 void JsFbMetadbHandleList::RemoveAttachedImages()
@@ -581,10 +575,7 @@ void JsFbMetadbHandleList::RemoveAttachedImages()
     }
 
     auto cb = fb2k::service_new<art::EmbedThread>(art::EmbedThread::EmbedAction::removeAll, album_art_data_ptr(), metadbHandleList_, pfc::guid_null);
-    (void)threaded_process::get()->run_modeless(cb,
-                                                 threaded_process::flag_show_progress | threaded_process::flag_show_delayed | threaded_process::flag_show_item,
-                                                 core_api::get_main_window(),
-                                                 "Removing images...");
+    threaded_process::get()->run_modeless(cb, threaded_process::flag_silent, core_api::get_main_window(), "Removing images...");
 }
 
 void JsFbMetadbHandleList::RemoveById(uint32_t index)
@@ -621,48 +612,24 @@ void JsFbMetadbHandleList::UpdateFileInfoFromJSON(const std::string& str)
         return;
     }
 
-    const auto jsonObject = nlohmann::json::parse(str, nullptr, false);
-    bool isArray = jsonObject.is_array();
+    auto j = JSON::parse(str, nullptr, false);
+    auto writer = TagWriter(metadbHandleList_);
 
-    if (isArray)
+    if (j.is_array())
     {
-        if (jsonObject.size() != count)
-        {
-            throw qwr::QwrException("Invalid JSON info: mismatched with handle count");
-        }
+        qwr::QwrException::ExpectTrue(j.size() == count, "Invalid JSON info: mismatched with handle count");
+        writer.from_json_array(j);
+        
     }
-    else if (jsonObject.is_object())
+    else if (j.is_object())
     {
-        if (jsonObject.empty())
-        {
-            throw qwr::QwrException("Invalid JSON info: empty object");
-        }
+        qwr::QwrException::ExpectTrue(j.size() > 0, "Invalid JSON info: empty object");
+        writer.from_json_object(j);
     }
     else
     {
         throw qwr::QwrException("Invalid JSON info: unsupported value type");
     }
-
-    const auto info =
-        ranges::views::enumerate(metadbHandleList_)
-        | ranges::views::transform(
-            [isArray, &jsonObject](const auto& zippedElem) {
-                const auto& [i, handle] = zippedElem;
-
-                // TODO: think of a better way of handling unavalaible info,
-                //       currently it uses dummy value instead
-                file_info_impl fileInfo = handle->get_info_ref()->info();
-                ModifyFileInfoWithJson(isArray ? jsonObject[i] : jsonObject, fileInfo);
-                return fileInfo;
-            })
-        | ranges::to_vector;
-
-    metadb_io_v2::get()->update_info_async_simple(
-        metadbHandleList_,
-        pfc::ptr_list_const_array_t<const file_info, const file_info_impl*>(info.data(), info.size()),
-        core_api::get_main_window(),
-        metadb_io_v2::op_flag_delay_ui,
-        nullptr);
 }
 
 JSObject* JsFbMetadbHandleList::CreateIterator()
@@ -691,47 +658,6 @@ void JsFbMetadbHandleList::put_Item(uint32_t index, JsFbMetadbHandle* handle)
     qwr::QwrException::ExpectTrue(fbHandle.is_valid(), "Internal error: FbMetadbHandle does not contain a valid handle");
 
     metadbHandleList_.replace_item(index, fbHandle);
-}
-
-void JsFbMetadbHandleList::ModifyFileInfoWithJson(const nlohmann::json& jsonObject, file_info_impl& fileInfo)
-{
-    using json = nlohmann::json;
-
-    auto jsonToString = [](const json& value) {
-        return (value.type() == json::value_t::string
-                     ? value.get<std::string>()
-                     : value.dump(2));
-    };
-
-    const json& obj = jsonObject;
-    qwr::QwrException::ExpectTrue(obj.is_object() && !obj.empty(), "Invalid JSON info: unsupported value");
-
-    for (const auto& [key, value]: obj.items())
-    {
-        qwr::QwrException::ExpectTrue(!key.empty(), "Invalid JSON info: key is empty");
-
-        fileInfo.meta_remove_field(key.c_str());
-
-        if (value.is_array())
-        {
-            for (const auto& arrValue: value)
-            {
-                if (const std::string strValue = jsonToString(arrValue);
-                     !strValue.empty())
-                {
-                    fileInfo.meta_add(key.c_str(), strValue.c_str());
-                }
-            }
-        }
-        else
-        {
-            if (const std::string strValue = jsonToString(value);
-                 !strValue.empty())
-            {
-                fileInfo.meta_set(key.c_str(), strValue.c_str());
-            }
-        }
-    }
 }
 
 } // namespace mozjs
