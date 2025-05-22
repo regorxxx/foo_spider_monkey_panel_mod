@@ -29,7 +29,6 @@
 #include <io.h>
 
 #include <filesystem>
-#include <wil/resource.h>
 
 using namespace smp;
 

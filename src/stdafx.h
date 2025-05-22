@@ -6,9 +6,7 @@
 #include <WinSock2.h>
 #include <Windows.h>
 #include <windowsx.h>
-#pragma warning(push, 0)
 #include <GdiPlus.h>
-#pragma warning(pop) 
 
 // COM objects
 #include <ActivScp.h>
@@ -34,17 +32,6 @@
 #include <atltypes.h>
 #include <atlwin.h>
 
-// foobar2000 SDK
-#pragma warning(push, 0)
-#include <foobar2000/SDK/foobar2000.h>
-#include <pfc/string-conv-lite.h>
-#pragma warning(pop) 
-
-// Columns UI SDK
-#pragma warning(push, 0)
-#include <columns_ui-sdk/ui_extension.h>
-#pragma warning(pop)
-
 // 4251: dll interface warning
 #define SMP_MJS_SUPPRESS_WARNINGS_PUSH \
     __pragma(warning(push))        \
@@ -69,15 +56,32 @@ SMP_MJS_SUPPRESS_WARNINGS_POP
 
 // json
 #define JSON_DIAGNOSTICS 1
+#define JSON_USE_IMPLICIT_CONVERSIONS 0
 #include <nlohmann/json.hpp>
+using JSON = nlohmann::json;
 
+// wil
+#include <wil/com.h>
+#include <wil/resource.h>
+#include <wil/win32_helpers.h>
+
+// foobar2000 SDK
+#pragma warning(push, 0)
+#include <foobar2000/SDK/foobar2000.h>
+#include <pfc/string-conv-lite.h>
+#pragma warning(pop) 
+
+// Columns UI SDK
+#pragma warning(push, 0)
+#include <columns_ui-sdk/ui_extension.h>
+#pragma warning(pop)
+
+// fb2k_utils
 #include <qwr/pfc_helpers_cnt.h>
-
 #include <qwr/unicode.h>
 #include <qwr/qwr_exception.h>
 
 #include <utils/js_exception.h>
-
 #include <component_defines.h>
 #include <component_guids.h>
 
