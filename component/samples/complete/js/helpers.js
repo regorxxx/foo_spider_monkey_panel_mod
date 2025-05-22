@@ -640,9 +640,7 @@ const ONE_WEEK = 604800000;
 const DEFAULT_ARTIST = '$meta(artist,0)';
 const N = window.ScriptInfo.Name + ':';
 
-let DPI = 96;
-try { DPI = WshShell.RegRead('HKCU\\Control Panel\\Desktop\\WindowMetrics\\AppliedDPI'); } catch (e) {}
-
+const DPI = window.DPI;
 const LM = _scale(5);
 const TM = _scale(20);
 
