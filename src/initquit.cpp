@@ -58,9 +58,8 @@ namespace
                 Scintilla_RegisterClasses(ins);
                 rich_edit_ctrl = LoadLibraryW(CRichEditCtrl::GetLibraryName());
 
-                std::array<wchar_t, MAX_PATH> path{};
-                GetModuleFileNameW(ins, path.data(), path.size());
-                std::ignore = LoadTypeLibEx(path.data(), REGKIND_NONE, &smp::com::g_typelib);
+                const auto path = wil::GetModuleFileNameW(ins);
+                std::ignore = LoadTypeLibEx(path.get(), REGKIND_NONE, &smp::com::g_typelib);
 
                 std::ignore = wtl_module.Init(nullptr, ins);
             }
