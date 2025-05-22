@@ -2,6 +2,7 @@
 
 #include "fb.h"
 
+#include <2K3/FileHelper.hpp>
 #include <com_objects/drop_source_impl.h>
 #include <events/event_dispatcher.h>
 #include <events/event_js_callback.h>
@@ -174,6 +175,7 @@ constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
 MJS_DEFINE_JS_FN_FROM_NATIVE(get_AlwaysOnTop, Fb::get_AlwaysOnTop)
 MJS_DEFINE_JS_FN_FROM_NATIVE(get_ComponentPath, Fb::get_ComponentPath)
 MJS_DEFINE_JS_FN_FROM_NATIVE(get_CursorFollowPlayback, Fb::get_CursorFollowPlayback)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_CustomVolume, Fb::get_CustomVolume)
 MJS_DEFINE_JS_FN_FROM_NATIVE(get_FoobarPath, Fb::get_FoobarPath)
 MJS_DEFINE_JS_FN_FROM_NATIVE(get_IsPaused, Fb::get_IsPaused)
 MJS_DEFINE_JS_FN_FROM_NATIVE(get_IsPlaying, Fb::get_IsPlaying)
@@ -198,6 +200,7 @@ constexpr auto jsProperties = std::to_array<JSPropertySpec>(
         JS_PSGS("AlwaysOnTop", get_AlwaysOnTop, put_AlwaysOnTop, kDefaultPropsFlags),
         JS_PSG("ComponentPath", get_ComponentPath, kDefaultPropsFlags),
         JS_PSGS("CursorFollowPlayback", get_CursorFollowPlayback, put_CursorFollowPlayback, kDefaultPropsFlags),
+        JS_PSG("CustomVolume", get_CustomVolume, kDefaultPropsFlags),
         JS_PSG("FoobarPath", get_FoobarPath, kDefaultPropsFlags),
         JS_PSG("IsPaused", get_IsPaused, kDefaultPropsFlags),
         JS_PSG("IsPlaying", get_IsPlaying, kDefaultPropsFlags),
@@ -948,6 +951,18 @@ bool Fb::get_CursorFollowPlayback()
     return config_object::g_get_data_bool_simple(standard_config_objects::bool_cursor_follows_playback, false);
 }
 
+int32_t Fb::get_CustomVolume()
+{
+    auto api = playback_control_v3::get();
+
+    if (api->custom_volume_is_active())
+    {
+        return api->custom_volume_get();
+    }
+
+    return -1;
+}
+
 std::string Fb::get_FoobarPath()
 {
     return (qwr::path::Foobar2000() / "").u8string();
@@ -1049,7 +1064,12 @@ void Fb::put_StopAfterCurrent(bool p)
 
 void Fb::put_Volume(float value)
 {
-    playback_control::get()->set_volume(value);
+    auto api = playback_control_v3::get();
+
+    if (!api->custom_volume_is_active())
+    {
+        api->set_volume(value);
+    }
 }
 
 Fb::DoDragDropOptions Fb::ParseDoDragDropOptions(JS::HandleValue options)

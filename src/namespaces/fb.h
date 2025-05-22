@@ -105,6 +105,7 @@ public:
     bool get_AlwaysOnTop();
     std::string get_ComponentPath();
     bool get_CursorFollowPlayback();
+    int32_t get_CustomVolume();
     std::string get_FoobarPath();
     bool get_IsPaused();
     bool get_IsPlaying();

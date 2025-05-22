@@ -12,6 +12,7 @@ setTimeout(func, delay[, param1, param2, ...])
 fb.AlwaysOnTop
 fb.ComponentPath
 fb.CursorFollowPlayback
+fb.CustomVolume
 fb.FoobarPath
 fb.IsPaused
 fb.IsPlaying
