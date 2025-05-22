@@ -21,6 +21,7 @@
 #include <timeout/timeout_manager.h>
 #include <utils/gdi_helpers.h>
 
+#include <libPPUI/win32_utility.h>
 #include <qwr/winapi_error_helpers.h>
 
 using namespace smp;
@@ -173,6 +174,7 @@ constexpr auto jsFunctions = std::to_array<JSFunctionSpec>(
     });
 
 MJS_DEFINE_JS_FN_FROM_NATIVE(get_DlgCode, Window::get_DlgCode)
+MJS_DEFINE_JS_FN_FROM_NATIVE(get_DPI, Window::get_DPI)
 MJS_DEFINE_JS_FN_FROM_NATIVE(get_Height, Window::get_Height)
 MJS_DEFINE_JS_FN_FROM_NATIVE(get_ID, Window::get_ID)
 MJS_DEFINE_JS_FN_FROM_NATIVE(get_InstanceType, Window::get_InstanceType)
@@ -200,6 +202,7 @@ MJS_DEFINE_JS_FN_FROM_NATIVE(put_MinWidth, Window::put_MinWidth)
 constexpr auto jsProperties = std::to_array<JSPropertySpec>(
     {
         JS_PSGS("DlgCode", get_DlgCode, put_DlgCode, kDefaultPropsFlags),
+        JS_PSG("DPI", get_DPI, kDefaultPropsFlags),
         JS_PSG("Height", get_Height, kDefaultPropsFlags),
         JS_PSG("ID", get_ID, kDefaultPropsFlags),
         JS_PSG("InstanceType", get_InstanceType, kDefaultPropsFlags),
@@ -799,6 +802,12 @@ uint32_t Window::get_DlgCode()
     }
 
     return parentPanel_.DlgCode();
+}
+
+uint32_t Window::get_DPI()
+{
+    static const auto dpi = QueryScreenDPI(core_api::get_main_window());
+    return dpi;
 }
 
 uint32_t Window::get_Height()

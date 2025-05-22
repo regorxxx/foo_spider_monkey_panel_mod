@@ -178,6 +178,7 @@ utils.WriteINI(filename, section, key, val)
 utils.WriteTextFile(filename, content)
 
 window.DlgCode
+window.DPI
 window.Height
 window.ID
 window.InstanceType

@@ -86,6 +86,7 @@ public: // methods
 
 public: // props
     uint32_t get_DlgCode();
+    uint32_t get_DPI();
     uint32_t get_Height();
     uint32_t get_ID() const;
     uint32_t get_InstanceType();
