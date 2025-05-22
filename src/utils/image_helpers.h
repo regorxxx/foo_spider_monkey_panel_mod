@@ -20,6 +20,6 @@ LoadImage(const std::wstring& imagePath);
 
 /// @remark WIC loads images 'eagerly' which makes loading operation slower by x100, so it should be used only as a last resort
 [[nodiscard]] std::unique_ptr<Gdiplus::Bitmap>
-LoadImageWithWIC(IStreamPtr pStream);
+LoadImageWithWIC(IStream* pStream);
 
 } // namespace smp::image

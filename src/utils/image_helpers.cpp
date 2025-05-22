@@ -2,6 +2,7 @@
 
 #include "image_helpers.h"
 
+#include <2K3/FileHelper.hpp>
 #include <events/event_dispatcher.h>
 #include <events/event_js_callback.h>
 #include <utils/gdi_helpers.h>
@@ -125,122 +126,57 @@ uint32_t LoadImageAsync(HWND hWnd, const std::wstring& imagePath)
 
 std::unique_ptr<Gdiplus::Bitmap> LoadImage(const std::wstring& imagePath)
 {
-    // Note: this prevents the file from being modified or being deleted, but it allows 'delayed' loading
-    IStreamPtr pStream;
-    auto hr = SHCreateStreamOnFileEx(imagePath.c_str(), STGM_READ | STGM_SHARE_DENY_WRITE, GENERIC_READ, FALSE, nullptr, &pStream);
-    if (FAILED(hr))
-    {
+    wil::com_ptr<IStream> stream;
+    if FAILED(FileHelper(imagePath).read(stream))
         return nullptr;
-    }
 
-    auto pImg = std::make_unique<Gdiplus::Bitmap>(static_cast<IStream*>(pStream), TRUE);
-    if (!gdi::IsGdiPlusObjectValid(pImg))
-    {
-        return LoadImageWithWIC(pStream);
-    }
+    auto pImg = std::make_unique<Gdiplus::Bitmap>(stream.get(), TRUE);
+    if (gdi::IsGdiPlusObjectValid(pImg))
+        return pImg;
 
-    return pImg;
+    return LoadImageWithWIC(stream.get());
 }
 
-std::unique_ptr<Gdiplus::Bitmap> LoadImageWithWIC(IStreamPtr pStream)
+std::unique_ptr<Gdiplus::Bitmap> LoadImageWithWIC(IStream* pStream)
 {
-    // TODO: replace nullptr with proper exception handling
-    pfc::com_ptr_t<IWICImagingFactory> pFactory;
-    auto hr = CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_IUnknown, pFactory.receive_void_ptr());
-    if (FAILED(hr))
-    {
+    auto pFactory = wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
+    if (!pFactory)
         return nullptr;
-    }
 
-    pfc::com_ptr_t<IWICBitmapDecoder> pDecoder;
-    hr = pFactory->CreateDecoderFromStream(
-        pStream, nullptr, WICDecodeMetadataCacheOnDemand, pDecoder.receive_ptr());
-    if (FAILED(hr))
-    {
+    wil::com_ptr<IWICBitmapDecoder> pDecoder;
+    wil::com_ptr<IWICBitmapFrameDecode> pFrame;
+    wil::com_ptr<IWICBitmapSource> pSource;
+
+    if FAILED(pFactory->CreateDecoderFromStream(pStream, nullptr, WICDecodeMetadataCacheOnDemand, &pDecoder))
         return nullptr;
-    }
 
-    pfc::com_ptr_t<IWICBitmapFrameDecode> pFrame;
-    hr = pDecoder->GetFrame(0, pFrame.receive_ptr());
-    if (FAILED(hr))
-    {
+    if FAILED(pDecoder->GetFrame(0, &pFrame))
         return nullptr;
-    }
 
-    pfc::com_ptr_t<IWICBitmapSource> pSource = pFrame;
-
-    WICPixelFormatGUID pixelFormat;
-    hr = pSource->GetPixelFormat(&pixelFormat);
-    if (FAILED(hr))
-    {
+    if FAILED(WICConvertBitmapSource(GUID_WICPixelFormat32bppPBGRA, pFrame.get(), &pSource))
         return nullptr;
-    }
 
-    static const std::unordered_map<GUID, int, smp::utils::GuidHasher> wicFormatToGdiPlusFormat = {
-        { GUID_WICPixelFormat1bppIndexed, PixelFormat1bppIndexed },
-        { GUID_WICPixelFormat4bppIndexed, PixelFormat4bppIndexed },
-        { GUID_WICPixelFormat8bppIndexed, PixelFormat8bppIndexed },
-        { GUID_WICPixelFormat8bppIndexed, PixelFormat16bppGrayScale },
-        { GUID_WICPixelFormat16bppBGR555, PixelFormat16bppRGB555 },
-        { GUID_WICPixelFormat16bppBGR565, PixelFormat16bppRGB565 },
-        { GUID_WICPixelFormat16bppBGRA5551, PixelFormat16bppARGB1555 },
-        { GUID_WICPixelFormat24bppBGR, PixelFormat24bppRGB },
-        { GUID_WICPixelFormat32bppBGR, PixelFormat32bppRGB },
-        { GUID_WICPixelFormat32bppBGRA, PixelFormat32bppARGB },
-        { GUID_WICPixelFormat32bppPBGRA, PixelFormat32bppPARGB },
-        { GUID_WICPixelFormat48bppBGR, PixelFormat48bppRGB },
-        { GUID_WICPixelFormat64bppBGRA, PixelFormat64bppARGB },
-        { GUID_WICPixelFormat64bppPBGRA, PixelFormat64bppPARGB },
-        { GUID_WICPixelFormat32bppCMYK, PixelFormat32bppCMYK },
-    };
-    if (!wicFormatToGdiPlusFormat.contains(pixelFormat))
-    { // convert only when necessary
-        pixelFormat = GUID_WICPixelFormat32bppPBGRA;
-
-        pfc::com_ptr_t<IWICBitmapSource> pConvertedSource;
-        hr = WICConvertBitmapSource(pixelFormat, pSource.get_ptr(), pConvertedSource.receive_ptr());
-        if (FAILED(hr))
-        {
-            return nullptr;
-        }
-
-        pSource = pConvertedSource;
-    }
-
-    assert(wicFormatToGdiPlusFormat.contains(pixelFormat));
-    const auto gdiFormat = wicFormatToGdiPlusFormat.at(pixelFormat);
-
-    UINT h;
-    UINT w;
-    hr = pSource->GetSize(&w, &h);
-    if (FAILED(hr))
-    {
+    uint32_t w{}, h{};
+    if FAILED(pSource->GetSize(&w, &h))
         return nullptr;
-    }
 
+    static constexpr auto gdiFormat = PixelFormat32bppPARGB;
     auto pGdiBitmap = std::make_unique<Gdiplus::Bitmap>(w, h, gdiFormat);
     if (!pGdiBitmap || Gdiplus::Status::Ok != pGdiBitmap->GetLastStatus())
-    {
         return nullptr;
-    }
 
     Gdiplus::Rect rect{ 0, 0, static_cast<INT>(w), static_cast<INT>(h) };
     Gdiplus::BitmapData bmpdata{};
     auto gdiStatus = pGdiBitmap->LockBits(&rect, Gdiplus::ImageLockModeRead | Gdiplus::ImageLockModeWrite, gdiFormat, &bmpdata);
     if (gdiStatus != Gdiplus::Ok)
-    {
         return nullptr;
-    }
 
     {
         // unlock bits before returning
         qwr::final_action autoDstBits([&pGdiBitmap, &bmpdata] { pGdiBitmap->UnlockBits(&bmpdata); });
 
-        hr = pSource->CopyPixels(nullptr, bmpdata.Stride, bmpdata.Stride * bmpdata.Height, static_cast<uint8_t*>(bmpdata.Scan0));
-        if (FAILED(hr))
-        {
+        if FAILED(pSource->CopyPixels(nullptr, bmpdata.Stride, bmpdata.Stride * bmpdata.Height, static_cast<uint8_t*>(bmpdata.Scan0)))
             return nullptr;
-        }
     }
 
     return pGdiBitmap;
