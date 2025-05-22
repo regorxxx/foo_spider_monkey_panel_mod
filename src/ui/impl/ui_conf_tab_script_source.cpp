@@ -34,7 +34,7 @@ std::vector<CConfigTabScriptSource::SampleComboBoxElem> GetSampleFileData()
 
         const auto sampleFolderPath = path::ScriptSamples();
 
-        for (const auto& subdir: { "complete", "jsplaylist-mod", "js-smooth", "basic" })
+        for (const auto& subdir: { "complete", "basic" })
         {
             for (const auto& filepath: fs::directory_iterator(sampleFolderPath / subdir))
             {
