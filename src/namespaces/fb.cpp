@@ -855,8 +855,8 @@ void Fb::ShowLibrarySearchUI(const std::string& query)
 
 void Fb::ShowPictureViewer(const std::wstring& image_path)
 {
-    pfc::com_ptr_t<IStream> stream;
-    if FAILED(SHCreateStreamOnFileEx(image_path.data(), STGM_READ | STGM_SHARE_DENY_WRITE, GENERIC_READ, FALSE, nullptr, stream.receive_ptr()))
+    wil::com_ptr<IStream> stream;
+    if FAILED(FileHelper(image_path).read(stream))
         return;
 
     STATSTG stats{};
@@ -1038,9 +1038,8 @@ void Fb::put_PlaybackTime(double time)
 
 void Fb::put_ReplaygainMode(uint32_t p)
 {
-    // Take care when changing this array:
-    // guid indexes are part of SMP API
-    const std::array<const GUID*, 4> guids = {
+    static constexpr std::array guids =
+    {
         &standard_commands::guid_main_rg_disable,
         &standard_commands::guid_main_rg_set_track,
         &standard_commands::guid_main_rg_set_album,

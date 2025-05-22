@@ -3,6 +3,7 @@
 #include "utils.h"
 
 #include <2K3/CustomSort.hpp>
+#include <2K3/FileHelper.hpp>
 #include <config/package_utils.h>
 #include <js_engine/js_to_native_invoker.h>
 #include <js_objects/fb_metadb_handle.h>
@@ -443,12 +444,7 @@ std::string Utils::GetClipboardText() const
 
 uint64_t Utils::GetFileSize(const std::wstring& path) const
 {
-    if (fs::is_regular_file(path))
-    {
-        return fs::file_size(path);
-    }
-
-    return {};
+    return FileHelper(path).file_size();
 }
 
 JSObject* Utils::GetPackageInfo(const std::string& packageId) const
@@ -584,14 +580,12 @@ std::string Utils::InputBoxWithOpt(size_t optArgCount, uint32_t hWnd, const std:
 
 bool Utils::IsDirectory(const std::wstring& path) const
 {
-    std::error_code ec;
-    return fs::is_directory(path, ec);
+    return FileHelper(path).is_folder();
 }
 
 bool Utils::IsFile(const std::wstring& path) const
 {
-    std::error_code ec;
-    return fs::is_regular_file(path, ec);
+    return FileHelper(path).is_file();
 }
 
 bool Utils::IsKeyPressed(uint32_t vkey) const
