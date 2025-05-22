@@ -328,7 +328,6 @@ JS::Value JsGdiBitmap::GetColourScheme(uint32_t count)
 
 std::string JsGdiBitmap::GetColourSchemeJSON(uint32_t count)
 {
-    using json = nlohmann::json;
     namespace kmeans = smp::utils::kmeans;
 
     // rescaled image will have max of ~48k pixels
@@ -391,7 +390,7 @@ std::string JsGdiBitmap::GetColourSchemeJSON(uint32_t count)
         clusters.resize(count);
     }
 
-    json j = json::array();
+    auto j = JSON::array();
     for (const auto& cluster: clusters)
     {
         const auto& centralValues = cluster.central_values;

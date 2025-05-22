@@ -57,8 +57,6 @@ void Parse_Sample(const config::PanelSettings_Sample& settings, config::ParsedPa
 
 void Parse_Package(const config::PanelSettings_Package& settings, config::ParsedPanelSettings& parsedSettings)
 {
-    using json = nlohmann::json;
-
     qwr::QwrException::ExpectTrue(!settings.id.empty(), "Corrupted settings (package): `id` is empty");
 
     try
@@ -80,7 +78,7 @@ void Parse_Package(const config::PanelSettings_Package& settings, config::Parsed
     {
         throw qwr::QwrException(e);
     }
-    catch (const json::exception& e)
+    catch (const JSON::exception& e)
     {
         throw qwr::QwrException("Corrupted `package.json`: {}", e.what());
     }
@@ -88,8 +86,6 @@ void Parse_Package(const config::PanelSettings_Package& settings, config::Parsed
 
 void Reparse_Package(config::ParsedPanelSettings& parsedSettings)
 {
-    using json = nlohmann::json;
-
     assert(parsedSettings.packageId);
     const auto packageId = *parsedSettings.packageId;
 
@@ -112,7 +108,7 @@ void Reparse_Package(config::ParsedPanelSettings& parsedSettings)
     {
         throw qwr::QwrException(e);
     }
-    catch (const json::exception& e)
+    catch (const JSON::exception& e)
     {
         throw qwr::QwrException("Corrupted `package.json`: {}", e.what());
     }

@@ -23,8 +23,6 @@ using namespace smp;
 
 void Parse_PackageFromPath(const std::filesystem::path& packageDir, config::ParsedPanelSettings& parsedSettings)
 {
-    using json = nlohmann::json;
-
     try
     {
         qwr::QwrException::ExpectTrue(fs::exists(packageDir),
@@ -37,7 +35,7 @@ void Parse_PackageFromPath(const std::filesystem::path& packageDir, config::Pars
         parsedSettings.scriptPath = (packageDir / config::GetRelativePathToMainFile());
         parsedSettings.isSample = (packageDir.parent_path() == path::Packages_Sample());
 
-        const json jsonMain = json::parse(qwr::file::ReadFile(packageJsonFile, false));
+        const auto jsonMain = JSON::parse(qwr::file::ReadFile(packageJsonFile, false));
         qwr::QwrException::ExpectTrue(jsonMain.is_object(), "Corrupted `package.json`: not a JSON object");
 
         parsedSettings.packageId = jsonMain.at("id").get<std::string>();
@@ -52,7 +50,7 @@ void Parse_PackageFromPath(const std::filesystem::path& packageDir, config::Pars
     {
         throw qwr::QwrException(e);
     }
-    catch (const json::exception& e)
+    catch (const JSON::exception& e)
     {
         throw qwr::QwrException("Corrupted `package.json`: {}", e.what());
     }
@@ -61,14 +59,13 @@ void Parse_PackageFromPath(const std::filesystem::path& packageDir, config::Pars
 void Save_PackageData(const config::ParsedPanelSettings& parsedSettings)
 {
     namespace fs = std::filesystem;
-    using json = nlohmann::json;
 
     assert(parsedSettings.scriptPath);
     qwr::QwrException::ExpectTrue(!parsedSettings.scriptPath->empty(), "Corrupted settings: `scriptPath` is empty");
 
     try
     {
-        auto jsonMain = json::object();
+        auto jsonMain = JSON::object();
 
         assert(parsedSettings.packageId);
         qwr::QwrException::ExpectTrue(!parsedSettings.packageId->empty(), "Corrupted settings: `id` is empty");
@@ -111,7 +108,7 @@ void Save_PackageData(const config::ParsedPanelSettings& parsedSettings)
     {
         throw qwr::QwrException(e);
     }
-    catch (const json::exception& e)
+    catch (const JSON::exception& e)
     {
         throw qwr::QwrException("Corrupted settings: {}", e.what());
     }

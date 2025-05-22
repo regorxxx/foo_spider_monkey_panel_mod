@@ -486,9 +486,7 @@ JSObject* Fb::GetClipboardContentsWithOpt(size_t optArgCount, uint32_t hWnd)
 
 std::string Fb::GetDSPPresets()
 {
-    using json = nlohmann::json;
-
-    json j = json::array();
+    auto j = JSON::array();
     auto api = dsp_config_manager_v2::get();
 
     const auto selectedPreset = api->get_selected_preset();
@@ -565,9 +563,7 @@ JSObject* Fb::GetNowPlaying()
 
 std::string Fb::GetOutputDevices()
 {
-    using json = nlohmann::json;
-
-    json j = json::array();
+    auto j = JSON::array();
     auto api = output_manager_v2::get();
 
     outputCoreConfig_t config{};

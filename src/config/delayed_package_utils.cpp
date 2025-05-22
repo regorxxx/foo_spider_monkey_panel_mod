@@ -16,7 +16,6 @@
 #include <fstream>
 
 namespace fs = std::filesystem;
-using json = nlohmann::json;
 
 namespace
 {
@@ -189,7 +188,7 @@ void UpdatePackages()
             const auto restorationJsonOpt = LoadStringResource(IDR_RECOVERY_PACKAGE_JSON, "Script");
             assert(restorationJsonOpt);
 
-            auto j = json::parse(*restorationJsonOpt);
+            auto j = JSON::parse(*restorationJsonOpt);
             j["id"] = packageId;
 
             qwr::file::WriteFile(packageToUpdateDir / config::GetRelativePathToMainFile(), *restorationScriptOpt);

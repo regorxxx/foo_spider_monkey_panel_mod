@@ -41,16 +41,14 @@ constexpr const char kSettingsJsonConfigId[] = "settings";
 namespace
 {
 
-nlohmann::json SerializePropertiesToObject(const config::PanelProperties& properties)
+JSON SerializePropertiesToObject(const config::PanelProperties& properties)
 {
-    using json = nlohmann::json;
-
     try
     {
-        json jsonMain = json::object({ { "id", kPropJsonConfigId },
+        auto jsonMain = JSON::object({ { "id", kPropJsonConfigId },
                                         { "version", kPropJsonConfigVersion } });
 
-        json jsonValues = json::object();
+        auto jsonValues = JSON::object();
         for (const auto& [nameW, pValue]: properties.values)
         {
             const auto propertyName = qwr::unicode::ToU8(nameW);
@@ -64,16 +62,14 @@ nlohmann::json SerializePropertiesToObject(const config::PanelProperties& proper
 
         return jsonMain;
     }
-    catch (const json::exception& e)
+    catch (const JSON::exception& e)
     {
         throw qwr::QwrException(e.what());
     }
 }
 
-config::PanelProperties DeserializePropertiesFromObject(const nlohmann::json& jsonMain)
+config::PanelProperties DeserializePropertiesFromObject(const JSON& jsonMain)
 {
-    using json = nlohmann::json;
-
     try
     {
         config::PanelProperties properties;
@@ -130,7 +126,7 @@ config::PanelProperties DeserializePropertiesFromObject(const nlohmann::json& js
 
         return properties;
     }
-    catch (const json::exception& e)
+    catch (const JSON::exception& e)
     {
         throw qwr::QwrException(e.what());
     }
@@ -144,13 +140,12 @@ namespace smp::config::json
 PanelSettings LoadSettings(stream_reader& reader, abort_callback& abort)
 {
     namespace fs = std::filesystem;
-    using json = nlohmann::json;
 
     try
     {
         PanelSettings panelSettings;
 
-        const auto jsonMain = json::parse(reader.read_string(abort).get_ptr());
+        const auto jsonMain = JSON::parse(reader.read_string(abort).get_ptr());
         if (!jsonMain.is_object())
         {
             throw qwr::QwrException("Corrupted serialized settings: not a JSON object");
@@ -233,7 +228,7 @@ PanelSettings LoadSettings(stream_reader& reader, abort_callback& abort)
 
         return panelSettings;
     }
-    catch (const json::exception& e)
+    catch (const JSON::exception& e)
     {
         throw qwr::QwrException(e.what());
     }
@@ -250,16 +245,15 @@ PanelSettings LoadSettings(stream_reader& reader, abort_callback& abort)
 void SaveSettings(stream_writer& writer, abort_callback& abort, const PanelSettings& settings)
 {
     namespace fs = std::filesystem;
-    using json = nlohmann::json;
 
     try
     {
-        auto jsonMain = json::object();
+        auto jsonMain = JSON::object();
         jsonMain.push_back({ "id", kSettingsJsonConfigId });
         jsonMain.push_back({ "version", kSettingsJsonConfigVersion });
         jsonMain.push_back({ "panelId", settings.id });
 
-        json jsonPayload = json::object();
+        auto jsonPayload = JSON::object();
         const auto scriptType = std::visit([&jsonPayload](const auto& data) {
             using T = std::decay_t<decltype(data)>;
             if constexpr (std::is_same_v<T, smp::config::PanelSettings_InMemory>)
@@ -331,7 +325,7 @@ void SaveSettings(stream_writer& writer, abort_callback& abort, const PanelSetti
 
         writer.write_string(jsonMain.dump(2), abort);
     }
-    catch (const json::exception& e)
+    catch (const JSON::exception& e)
     {
         throw qwr::QwrException(e.what());
     }
@@ -371,13 +365,11 @@ void SaveProperties(stream_writer& writer, abort_callback& abort, const PanelPro
 
 PanelProperties DeserializeProperties(const std::string& str)
 {
-    using json = nlohmann::json;
-
     try
     {
-        return DeserializePropertiesFromObject(json::parse(str));
+        return DeserializePropertiesFromObject(JSON::parse(str));
     }
-    catch (const json::exception& e)
+    catch (const JSON::exception& e)
     {
         throw qwr::QwrException(e.what());
     }
@@ -385,13 +377,11 @@ PanelProperties DeserializeProperties(const std::string& str)
 
 std::string SerializeProperties(const PanelProperties& properties)
 {
-    using json = nlohmann::json;
-
     try
     {
         return SerializePropertiesToObject(properties).dump(2);
     }
-    catch (const json::exception& e)
+    catch (const JSON::exception& e)
     {
         throw qwr::QwrException(e.what());
     }
