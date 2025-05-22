@@ -2,6 +2,7 @@
 
 #include "fb_metadb_handle_list.h"
 
+#include <2K3/CustomSort.hpp>
 #include <fb2k/stats.h>
 #include <js_engine/js_to_native_invoker.h>
 #include <js_objects/fb_metadb_handle.h>
@@ -10,7 +11,6 @@
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 #include <utils/art_helpers.h>
-#include <utils/custom_sort.h>
 
 #include <qwr/abort_callback.h>
 #include <qwr/string_helpers.h>

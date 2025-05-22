@@ -454,6 +454,12 @@
     <ClCompile Include="callbacks\UISelectionCallback.cpp">
       <Filter>callbacks</Filter>
     </ClCompile>
+    <ClCompile Include="2K3\TagWriter.cpp">
+      <Filter>2K3</Filter>
+    </ClCompile>
+    <ClCompile Include="2K3\FileHelper.cpp">
+      <Filter>2K3</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="js_engine\js_engine.h">
@@ -940,6 +946,18 @@
     <ClInclude Include="utils\download_file.h">
       <Filter>utils</Filter>
     </ClInclude>
+    <ClInclude Include="2K3\CustomSort.hpp">
+      <Filter>2K3</Filter>
+    </ClInclude>
+    <ClInclude Include="2K3\TagWriter.hpp">
+      <Filter>2K3</Filter>
+    </ClInclude>
+    <ClInclude Include="2K3\FileInfoFilter.hpp">
+      <Filter>2K3</Filter>
+    </ClInclude>
+    <ClInclude Include="2K3\FileHelper.hpp">
+      <Filter>2K3</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="js_engine">
@@ -1001,6 +1019,9 @@
     </Filter>
     <Filter Include="callbacks">
       <UniqueIdentifier>{ccac01d2-1ea0-428a-b07b-df99942ee016}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2K3">
+      <UniqueIdentifier>{fbefef93-448c-410e-90b5-34841f47befd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

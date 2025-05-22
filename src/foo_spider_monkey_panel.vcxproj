@@ -74,6 +74,8 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="2K3\FileHelper.cpp" />
+    <ClCompile Include="2K3\TagWriter.cpp" />
     <ClCompile Include="callbacks\ConfigObjectNotify.cpp" />
     <ClCompile Include="callbacks\DSPConfigCallback.cpp" />
     <ClCompile Include="callbacks\LibraryCallback.cpp" />
@@ -234,6 +236,10 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     <ClCompile Include="utils\zip_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="2K3\CustomSort.hpp" />
+    <ClInclude Include="2K3\FileHelper.hpp" />
+    <ClInclude Include="2K3\FileInfoFilter.hpp" />
+    <ClInclude Include="2K3\TagWriter.hpp" />
     <ClInclude Include="component_defines.h" />
     <ClInclude Include="component_guids.h" />
     <ClInclude Include="component_paths.h" />

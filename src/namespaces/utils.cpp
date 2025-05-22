@@ -2,6 +2,7 @@
 
 #include "utils.h"
 
+#include <2K3/CustomSort.hpp>
 #include <config/package_utils.h>
 #include <js_engine/js_to_native_invoker.h>
 #include <js_objects/fb_metadb_handle.h>
@@ -15,7 +16,6 @@
 #include <ui/ui_input_box.h>
 #include <utils/art_helpers.h>
 #include <utils/colour_helpers.h>
-#include <utils/custom_sort.h>
 #include <utils/edit_text.h>
 #include <utils/download_file.h>
 #include <utils/gdi_error_helpers.h>

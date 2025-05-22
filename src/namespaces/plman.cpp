@@ -2,6 +2,7 @@
 
 #include "plman.h"
 
+#include <2K3/CustomSort.hpp>
 #include <fb2k/playlist_lock.h>
 #include <js_engine/js_to_native_invoker.h>
 #include <js_objects/fb_metadb_handle.h>
@@ -12,7 +13,6 @@
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 #include <js_utils/js_property_helper.h>
-#include <utils/custom_sort.h>
 #include <utils/location_processor.h>
 
 #include <qwr/abort_callback.h>
