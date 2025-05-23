@@ -1,6 +1,7 @@
 #include <stdafx.h>
 #include "download_file.h"
 
+#include <2K3/FileHelper.hpp>
 #include <events/event_dispatcher.h>
 #include <events/event_js_callback.h>
 
@@ -8,17 +9,6 @@ DownloadFileAsync::DownloadFileAsync(HWND wnd, std::string_view url, std::wstrin
 	: m_wnd(wnd)
 	, m_url(url)
 	, m_path(path) {}
-
-bool DownloadFileAsync::write(const void* data, size_t size)
-{
-	const auto fs_path = std::filesystem::path(m_path);
-	auto f = std::ofstream(fs_path, std::ios::binary);
-
-	if (!f.is_open())
-		return false;
-
-	return f.write((char*)data, size).good();
-}
 
 void DownloadFileAsync::run()
 {
@@ -40,7 +30,7 @@ void DownloadFileAsync::run()
 		pfc::array_t<uint8_t> arr;
 		response->read_till_eof(arr, aborter);
 
-		success = write(arr.get_ptr(), arr.get_size());
+		success = FileHelper(m_path).write(arr.get_ptr(), arr.get_size());
 		qwr::QwrException::ExpectTrue(success, L"Error saving downloaded file to: {}", m_path);
 	}
 	catch (const std::exception& e)

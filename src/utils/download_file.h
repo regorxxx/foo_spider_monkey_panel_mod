@@ -8,8 +8,6 @@ public:
 	void run() final;
 
 private:
-	bool write(const void* data, size_t size);
-
 	HWND m_wnd;
 	bool m_verify_image{};
 	std::string m_url;
