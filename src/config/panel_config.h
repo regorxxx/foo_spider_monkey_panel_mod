@@ -9,13 +9,6 @@
 namespace smp::config
 {
 
-enum class SerializationFormat : uint8_t
-{
-    Com,
-    Binary,
-    Json
-};
-
 enum class EdgeStyle : uint8_t
 {
     NoEdge = 0,
@@ -35,9 +28,6 @@ public:
 
     /// @throw qwr::QwrException
     [[nodiscard]] std::string ToJson() const;
-
-    /// @throw qwr::QwrException
-    [[nodiscard]] static PanelProperties Load(stream_reader& reader, abort_callback& abort, SerializationFormat format = SerializationFormat::Json);
 
     /// @throw qwr::QwrException
     void Save(stream_writer& writer, abort_callback& abort) const;

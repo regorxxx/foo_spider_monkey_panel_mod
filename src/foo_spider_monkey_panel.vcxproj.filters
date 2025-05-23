@@ -234,9 +234,6 @@
     <ClCompile Include="config\panel_config_binary.cpp">
       <Filter>config</Filter>
     </ClCompile>
-    <ClCompile Include="config\panel_config_com.cpp">
-      <Filter>config</Filter>
-    </ClCompile>
     <ClCompile Include="config\panel_config_json.cpp">
       <Filter>config</Filter>
     </ClCompile>
@@ -732,9 +729,6 @@
       <Filter>fb2k</Filter>
     </ClInclude>
     <ClInclude Include="component_defines.h" />
-    <ClInclude Include="config\panel_config_com.h">
-      <Filter>config</Filter>
-    </ClInclude>
     <ClInclude Include="config\panel_config_json.h">
       <Filter>config</Filter>
     </ClInclude>

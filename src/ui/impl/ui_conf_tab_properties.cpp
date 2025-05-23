@@ -188,7 +188,7 @@ LRESULT CConfigTabProperties::OnImportBnClicked(WORD, WORD, HWND)
     qwr::file::FileDialogOptions fdOpts{};
     fdOpts.savePathGuid = guid::dialog_path;
     fdOpts.filterSpec.assign({
-        { L"Property files", L"*.json;*.smp;*.wsp" },
+        { L"Property files", L"*.json" },
         { L"All files", L"*.*" },
     });
     fdOpts.defaultFilename = L"props";
@@ -199,62 +199,10 @@ LRESULT CConfigTabProperties::OnImportBnClicked(WORD, WORD, HWND)
     if (!optPath)
         return 0;
 
-    const auto path = fs::path(*optPath);
-
     try
     {
-        const auto extension = path.extension();
-
-        if (extension == ".json")
-        {
-            const auto str = qwr::file::ReadFile(path, CP_UTF8, false);
-            properties_ = PanelProperties::FromJson(str);
-        }
-        else
-        {
-            auto& abort = qwr::GlobalAbortCallback::GetInstance();
-            file_ptr io;
-            filesystem::g_open_read(io, path.u8string().c_str(), abort);
-
-            if (extension == ".smp")
-            {
-                properties_ = PanelProperties::Load(*io, abort, smp::config::SerializationFormat::Binary);
-            }
-            else if (extension == ".wsp")
-            {
-                properties_ = PanelProperties::Load(*io, abort, smp::config::SerializationFormat::Com);
-            }
-            else
-            { // let's brute-force it!
-                const auto tryParse = [&io, &abort](smp::config::SerializationFormat format) -> std::optional<config::PanelProperties> {
-                    try
-                    {
-                        return config::PanelProperties::Load(*io, abort, format);
-                    }
-                    catch (const qwr::QwrException&)
-                    {
-                        return std::nullopt;
-                    }
-                    };
-
-                bool success = false;
-                for (const auto format : { config::SerializationFormat::Json, config::SerializationFormat::Binary, config::SerializationFormat::Com })
-                {
-                    auto propOpt = tryParse(format);
-                    if (propOpt)
-                    {
-                        properties_ = *propOpt;
-                        success = true;
-                        break;
-                    }
-                }
-                if (!success)
-                {
-                    throw qwr::QwrException("Failed to parse panel properties: unknown format");
-                }
-            }
-        }
-
+        const auto str = qwr::file::ReadFile(*optPath, CP_UTF8, false);
+        properties_ = PanelProperties::FromJson(str);
         UpdateUiFromData();
     }
     catch (const qwr::QwrException& e)
@@ -267,7 +215,6 @@ LRESULT CConfigTabProperties::OnImportBnClicked(WORD, WORD, HWND)
     }
 
     parent_.OnDataChanged();
-
     return 0;
 }
 

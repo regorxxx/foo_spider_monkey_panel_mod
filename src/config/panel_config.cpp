@@ -3,7 +3,6 @@
 #include "panel_config.h"
 
 #include <config/panel_config_binary.h>
-#include <config/panel_config_com.h>
 #include <config/panel_config_json.h>
 #include <resources/resource.h>
 #include <utils/guid_helpers.h>
@@ -32,24 +31,6 @@ PanelProperties PanelProperties::FromJson(const std::string& jsonString)
 std::string PanelProperties::ToJson() const
 {
     return smp::config::json::SerializeProperties(*this);
-}
-
-PanelProperties PanelProperties::Load(stream_reader& reader, abort_callback& abort, SerializationFormat format)
-{
-    switch (format)
-    {
-    case smp::config::SerializationFormat::Com:
-        return smp::config::com::LoadProperties(reader, abort);
-    case smp::config::SerializationFormat::Binary:
-        return smp::config::binary::LoadProperties(reader, abort);
-    case smp::config::SerializationFormat::Json:
-        return smp::config::json::LoadProperties(reader, abort);
-    default:
-    {
-        assert(false);
-        throw qwr::QwrException("Internal error: unknown serialization format");
-    }
-    }
 }
 
 void PanelProperties::Save(stream_writer& writer, abort_callback& abort) const

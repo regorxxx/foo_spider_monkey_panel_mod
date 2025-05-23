@@ -95,7 +95,6 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     <ClCompile Include="config\package_utils.cpp" />
     <ClCompile Include="config\panel_config.cpp" />
     <ClCompile Include="config\panel_config_binary.cpp" />
-    <ClCompile Include="config\panel_config_com.cpp" />
     <ClCompile Include="config\panel_config_json.cpp" />
     <ClCompile Include="config\parsed_panel_config.cpp" />
     <ClCompile Include="initquit.cpp" />
@@ -260,7 +259,6 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     <ClInclude Include="config\package_utils.h" />
     <ClInclude Include="config\panel_config.h" />
     <ClInclude Include="config\panel_config_binary.h" />
-    <ClInclude Include="config\panel_config_com.h" />
     <ClInclude Include="config\panel_config_json.h" />
     <ClInclude Include="config\parsed_panel_config.h" />
     <ClInclude Include="convert\com.h" />
