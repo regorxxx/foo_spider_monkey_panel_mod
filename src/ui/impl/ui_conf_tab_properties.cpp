@@ -194,62 +194,64 @@ LRESULT CConfigTabProperties::OnImportBnClicked(WORD, WORD, HWND)
     fdOpts.defaultFilename = L"props";
     fdOpts.defaultExtension = L"json";
 
-    auto path = fs::path(qwr::file::FileDialog(L"Import from", false, fdOpts).value_or(std::wstring{}));
-    if (path.empty())
-    {
+    const auto optPath = qwr::file::FileDialog(L"Import from", false, fdOpts);
+
+    if (!optPath)
         return 0;
-    }
-    path = path.lexically_normal();
+
+    const auto path = fs::path(*optPath);
 
     try
     {
-        auto& abort = qwr::GlobalAbortCallback::GetInstance();
-        file_ptr io;
-        filesystem::g_open_read(io, path.u8string().c_str(), abort);
-
         const auto extension = path.extension();
+
         if (extension == ".json")
         {
-            pfc::string8 str;
-            io->read_string(str, abort);
-
-            properties_ = PanelProperties::FromJson(str.get_ptr());
-        }
-        else if (extension == ".smp")
-        {
-            properties_ = PanelProperties::Load(*io, abort, smp::config::SerializationFormat::Binary);
-        }
-        else if (extension == ".wsp")
-        {
-            properties_ = PanelProperties::Load(*io, abort, smp::config::SerializationFormat::Com);
+            const auto str = qwr::file::ReadFile(path, CP_UTF8, false);
+            properties_ = PanelProperties::FromJson(str);
         }
         else
-        { // let's brute-force it!
-            const auto tryParse = [&io, &abort](smp::config::SerializationFormat format) -> std::optional<config::PanelProperties> {
-                try
-                {
-                    return config::PanelProperties::Load(*io, abort, format);
-                }
-                catch (const qwr::QwrException&)
-                {
-                    return std::nullopt;
-                }
-            };
+        {
+            auto& abort = qwr::GlobalAbortCallback::GetInstance();
+            file_ptr io;
+            filesystem::g_open_read(io, path.u8string().c_str(), abort);
 
-            bool success = false;
-            for (const auto format: { config::SerializationFormat::Json, config::SerializationFormat::Binary, config::SerializationFormat::Com })
+            if (extension == ".smp")
             {
-                auto propOpt = tryParse(format);
-                if (propOpt)
-                {
-                    properties_ = *propOpt;
-                    success = true;
-                    break;
-                }
+                properties_ = PanelProperties::Load(*io, abort, smp::config::SerializationFormat::Binary);
             }
-            if (!success)
+            else if (extension == ".wsp")
             {
-                throw qwr::QwrException("Failed to parse panel properties: unknown format");
+                properties_ = PanelProperties::Load(*io, abort, smp::config::SerializationFormat::Com);
+            }
+            else
+            { // let's brute-force it!
+                const auto tryParse = [&io, &abort](smp::config::SerializationFormat format) -> std::optional<config::PanelProperties> {
+                    try
+                    {
+                        return config::PanelProperties::Load(*io, abort, format);
+                    }
+                    catch (const qwr::QwrException&)
+                    {
+                        return std::nullopt;
+                    }
+                    };
+
+                bool success = false;
+                for (const auto format : { config::SerializationFormat::Json, config::SerializationFormat::Binary, config::SerializationFormat::Com })
+                {
+                    auto propOpt = tryParse(format);
+                    if (propOpt)
+                    {
+                        properties_ = *propOpt;
+                        success = true;
+                        break;
+                    }
+                }
+                if (!success)
+                {
+                    throw qwr::QwrException("Failed to parse panel properties: unknown format");
+                }
             }
         }
 
@@ -280,24 +282,11 @@ LRESULT CConfigTabProperties::OnExportBnClicked(WORD, WORD, HWND)
     fdOpts.defaultFilename = L"props";
     fdOpts.defaultExtension = L"json";
 
-    auto path = fs::path(qwr::file::FileDialog(L"Save as", true, fdOpts).value_or(std::wstring{}));
-    if (path.empty())
-    {
-        return 0;
-    }
-    path = path.lexically_normal();
+    const auto optPath = qwr::file::FileDialog(L"Save as", true, fdOpts);
 
-    try
+    if (optPath)
     {
-        auto& abort = qwr::GlobalAbortCallback::GetInstance();
-        file_ptr io;
-        filesystem::g_open_write_new(io, path.u8string().c_str(), abort);
-
-        io->write_string(properties_.ToJson().c_str(), abort);
-    }
-    catch (const pfc::exception& e)
-    {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
+        qwr::file::WriteFile(*optPath, properties_.ToJson(), false);
     }
 
     return 0;
