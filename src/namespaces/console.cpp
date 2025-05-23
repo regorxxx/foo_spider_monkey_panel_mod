@@ -164,7 +164,7 @@ std::string ParseJsValue(JSContext* cx, JS::HandleValue jsValue, JS::MutableHand
                 }
             }
 
-            curObjects.emplaceBack(jsObject);
+            std::ignore = curObjects.emplaceBack(jsObject);
             qwr::final_action autoPop([&curObjects] { curObjects.popBack(); });
 
             bool is;
