@@ -4,6 +4,17 @@ requires at least `foobar2000` `2.0`.
 
 # Changelog
 
+## 1.6.2.25.05.23
+- Fix regression affecting JSON property exports.
+- Add `fb.CustomVolume` property. It can be used for displaying the volume from `UPnP` devices. It
+will return a value of `-1` when using a normal device and that also indicates that `fb.Volume` is
+writable. When a custom volume control is active, you can not use `fb.Volume` and must use
+`fb.VolumeUp()` / `fb.VolumeDown()` / `fb.VolumeMute()`.
+Add `window.DPI`. This value never changes while `foobar2000` is running. If you change `DPI`
+settings, you must restart the application.
+- Remove all `Smooth` samples and `JSPlaylist-mod`. They are in an appalling state
+and I refuse to distribute or be responsible for them.
+
 ## 1.6.2.25.05.20
 - Update to `Spider Monkey` `91.10.0esr`.
 - Fix `utils.Glob` so it works with `;` in folder names.
