@@ -9,7 +9,6 @@ public:
 
 private:
 	HWND m_wnd;
-	bool m_verify_image{};
 	std::string m_url;
 	std::wstring m_path;
 };
