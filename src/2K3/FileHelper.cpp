@@ -3,17 +3,14 @@
 
 namespace fs = std::filesystem;
 
-FileHelper::FileHelper(std::wstring_view path) : m_path(path.data()) {}
+FileHelper::FileHelper(const fs::path& path) : m_path(path) {}
 FileHelper::FileHelper(std::string_view path) : m_path(qwr::unicode::ToWide(path)) {}
 
 #pragma region static
-bool FileHelper::rename(std::wstring_view from, std::wstring_view to)
+bool FileHelper::rename(const fs::path& from, const fs::path& to)
 {
-	const auto fs_from = fs::path(from.data());
-	const auto fs_to = fs::path(to.data());
 	std::error_code ec;
-
-	fs::rename(fs_from, fs_to, ec);
+	fs::rename(from, to, ec);
 	return ec.value() == 0;
 }
 
@@ -36,28 +33,24 @@ HRESULT FileHelper::read(wil::com_ptr<IStream>& stream)
 	return S_OK;
 }
 
-bool FileHelper::copy_file(std::wstring_view to, bool overwrite)
+bool FileHelper::copy_file(const fs::path& to, bool overwrite)
 {
 	if (!is_file())
 		return false;
 
-	const auto fs_to = fs::path(to.data());
 	const auto options = create_options(overwrite);
 	std::error_code ec;
-
-	return fs::copy_file(m_path, fs_to, options, ec);
+	return fs::copy_file(m_path, to, options, ec);
 }
 
-bool FileHelper::copy_folder(std::wstring_view to, bool overwrite, bool recur)
+bool FileHelper::copy_folder(const fs::path& to, bool overwrite, bool recur)
 {
 	if (!is_folder())
 		return false;
 
-	const auto fs_to = fs::path(to.data());
 	const auto options = create_options(overwrite, recur);
 	std::error_code ec;
-
-	fs::copy(m_path, fs_to, options, ec);
+	fs::copy(m_path, to, options, ec);
 	return ec.value() == 0;
 }
 
