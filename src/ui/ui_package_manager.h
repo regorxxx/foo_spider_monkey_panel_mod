@@ -8,9 +8,6 @@
 
 #include <qwr/ui_ddx.h>
 
-#include <filesystem>
-#include <optional>
-
 namespace smp::ui
 {
 

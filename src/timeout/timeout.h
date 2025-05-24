@@ -1,9 +1,5 @@
 #pragma once
-
 #include <timeout/time_types.h>
-
-#include <chrono>
-#include <memory>
 
 namespace mozjs
 {

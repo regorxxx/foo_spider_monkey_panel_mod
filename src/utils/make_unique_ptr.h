@@ -1,4 +1,4 @@
-#include <memory>
+#pragma once
 
 namespace smp::utils
 {

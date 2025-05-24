@@ -4,8 +4,6 @@
 
 #include <utils/md5.h>
 
-#include <unordered_map>
-
 namespace
 {
 

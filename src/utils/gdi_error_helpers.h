@@ -2,8 +2,6 @@
 
 #include <utils/gdi_helpers.h>
 
-#include <optional>
-
 namespace qwr::error
 {
 

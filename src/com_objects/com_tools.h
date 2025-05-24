@@ -1,8 +1,5 @@
 #pragma once
-
 #include <com_objects/com_interface.h>
-
-#include <unordered_map>
 
 // TODO: cleanup
 

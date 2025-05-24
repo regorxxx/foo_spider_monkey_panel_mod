@@ -12,9 +12,6 @@ SMP_MJS_SUPPRESS_WARNINGS_PUSH
 #include <js/Wrapper.h>
 SMP_MJS_SUPPRESS_WARNINGS_POP
 
-#include <type_traits>
-#include <vector>
-
 namespace mozjs::internal
 {
 

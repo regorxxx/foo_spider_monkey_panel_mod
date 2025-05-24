@@ -7,8 +7,6 @@
 
 #include <component_paths.h>
 
-#include <map>
-
 using namespace smp;
 
 namespace

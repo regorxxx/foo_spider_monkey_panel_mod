@@ -1,12 +1,7 @@
 #include <stdafx.h>
-
 #include "text_helpers.h"
 
 #include <MLang.h>
-
-#include <cwctype>
-#include <optional>
-#include <span>
 
 namespace
 {

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <filesystem>
-
 struct mz_zip_archive;
 
 namespace smp

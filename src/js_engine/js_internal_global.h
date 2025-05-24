@@ -1,11 +1,5 @@
 #pragma once
-
 #include <js/GCHashTable.h>
-
-#include <filesystem>
-#include <memory>
-#include <string>
-#include <unordered_map>
 
 struct JSContext;
 

@@ -7,8 +7,6 @@
 #include <panel/user_message.h>
 #include <ui/ui_conf.h>
 
-#include <queue>
-
 namespace smp::com
 {
 class IDropTargetImpl;

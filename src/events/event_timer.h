@@ -3,8 +3,6 @@
 #include <events/event.h>
 #include <timeout/timer_interface_fwd.h>
 
-#include <memory>
-
 namespace smp
 {
 

@@ -7,8 +7,6 @@ SMP_MJS_SUPPRESS_WARNINGS_PUSH
 #include <js/proxy.h>
 SMP_MJS_SUPPRESS_WARNINGS_POP
 
-#include <memory>
-
 class JSObject;
 struct JSContext;
 struct JSClass;

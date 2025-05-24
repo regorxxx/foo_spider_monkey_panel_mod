@@ -1,9 +1,5 @@
 #pragma once
-
 #include <js_objects/object_base.h>
-
-#include <optional>
-#include <string>
 
 class JSObject;
 struct JSContext;

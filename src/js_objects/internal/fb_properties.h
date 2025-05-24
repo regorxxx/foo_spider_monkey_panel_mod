@@ -1,9 +1,5 @@
 #pragma once
 
-#include <map>
-#include <optional>
-#include <vector>
-
 class JSObject;
 struct JSContext;
 struct JSClass;

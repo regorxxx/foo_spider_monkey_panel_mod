@@ -10,10 +10,6 @@
 #include <qwr/file_helpers.h>
 #include <qwr/type_traits.h>
 
-#include <filesystem>
-#include <iomanip>
-#include <map>
-
 namespace fs = std::filesystem;
 
 namespace smp::ui

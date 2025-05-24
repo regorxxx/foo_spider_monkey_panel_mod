@@ -1,8 +1,5 @@
 #pragma once
 
-#include <optional>
-#include <variant>
-
 namespace mozjs
 {
 

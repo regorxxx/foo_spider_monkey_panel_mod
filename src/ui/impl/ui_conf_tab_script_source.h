@@ -7,8 +7,6 @@
 
 #include <qwr/ui_ddx.h>
 
-#include <array>
-
 namespace smp::ui
 {
 

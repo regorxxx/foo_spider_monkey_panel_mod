@@ -1,11 +1,6 @@
 #pragma once
-
 #include <events/event.h>
 #include <timeout/time_types.h>
-
-#include <chrono>
-#include <map>
-#include <unordered_map>
 
 // TODO: add nesting clamp (<https://searchfox.org/mozilla-central/source/dom/base/TimeoutManager.cpp>)
 

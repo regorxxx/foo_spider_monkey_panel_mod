@@ -7,8 +7,6 @@
 
 #include <qwr/file_helpers.h>
 
-#include <filesystem>
-
 namespace fs = std::filesystem;
 
 namespace

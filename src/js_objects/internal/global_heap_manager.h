@@ -1,9 +1,5 @@
 #pragma once
 
-#include <optional>
-#include <set>
-#include <shared_mutex>
-
 namespace mozjs
 {
 

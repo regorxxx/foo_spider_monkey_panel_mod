@@ -2,10 +2,6 @@
 
 #include <js_objects/object_base.h>
 
-#include <memory>
-#include <optional>
-#include <string>
-
 namespace mozjs
 {
 

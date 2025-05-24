@@ -2,10 +2,6 @@
 
 #include <com_objects/com_tools.h>
 
-#include <ShlObj.h>
-
-#include <atomic>
-
 _COM_SMARTPTR_TYPEDEF(IDragSourceHelper, IID_IDragSourceHelper);
 
 namespace smp::com

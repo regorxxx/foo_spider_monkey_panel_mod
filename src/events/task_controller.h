@@ -1,9 +1,5 @@
 #pragma once
-
 #include <events/event.h>
-
-#include <mutex>
-#include <set>
 
 namespace smp
 {

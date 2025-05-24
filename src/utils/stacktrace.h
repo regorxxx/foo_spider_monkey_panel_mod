@@ -1,4 +1,4 @@
-#include <span>
+#pragma once
 
 namespace smp
 {

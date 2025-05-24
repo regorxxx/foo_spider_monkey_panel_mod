@@ -4,8 +4,6 @@
 #include <resources/resource.h>
 #include <ui/scintilla/ui_sci_editor.h>
 
-#include <functional>
-
 // Forward declarations
 namespace smp::panel
 {

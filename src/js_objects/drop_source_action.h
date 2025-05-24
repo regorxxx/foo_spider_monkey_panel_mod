@@ -1,9 +1,6 @@
 #pragma once
-
 #include <js_objects/object_base.h>
 #include <panel/drag_action_params.h>
-
-#include <optional>
 
 class JSObject;
 struct JSContext;

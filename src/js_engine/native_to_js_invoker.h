@@ -5,8 +5,6 @@
 #include <js_utils/js_error_helper.h>
 #include <js_utils/scope_helper.h>
 
-#include <optional>
-
 namespace mozjs::internal
 {
 

@@ -10,10 +10,6 @@
 #include <qwr/fb2k_paths.h>
 #include <qwr/file_helpers.h>
 
-#include <filesystem>
-#include <optional>
-#include <vector>
-
 namespace fs = std::filesystem;
 
 namespace

@@ -2,9 +2,6 @@
 
 #include <utils/art_loading_options.h>
 
-#include <optional>
-#include <string>
-
 namespace smp::art
 {
 

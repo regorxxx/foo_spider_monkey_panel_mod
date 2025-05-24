@@ -1,12 +1,42 @@
 #pragma once
+#define _ATL_MODULES
 #define _WIN32_WINNT _WIN32_WINNT_WIN7
 #define WINVER _WIN32_WINNT_WIN7
 #define NOMINMAX
+
+// stl
+#include <algorithm>
+#include <array>
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
+#include <cwctype>
+#include <filesystem>
+#include <fstream>
+#include <functional>
+#include <map>
+#include <memory>
+#include <mutex>
+#include <numeric>
+#include <optional>
+#include <queue>
+#include <ranges>
+#include <set>
+#include <span>
+#include <string>
+#include <thread>
+#include <type_traits>
+#include <unordered_map>
+#include <variant>
+#include <vector>
 
 #include <WinSock2.h>
 #include <Windows.h>
 #include <windowsx.h>
 #include <GdiPlus.h>
+#include <Shlwapi.h>
+#include <wincodec.h>
+#include <windef.h>
 
 // COM objects
 #include <ActivScp.h>
@@ -14,6 +44,7 @@
 #include <MsHTML.h>
 #include <MsHtmHst.h>
 #include <ShlDisp.h>
+#include <ShlObj.h>
 #include <exdisp.h>
 #include <shobjidl_core.h>
 // Generates wrappers for COM listed above

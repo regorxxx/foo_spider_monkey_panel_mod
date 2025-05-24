@@ -1,10 +1,6 @@
 #pragma once
-
 #include <js_objects/object_base.h>
 #include <js_utils/js_heap_helper.h>
-
-#include <optional>
-#include <string>
 
 class JSObject;
 struct JSContext;

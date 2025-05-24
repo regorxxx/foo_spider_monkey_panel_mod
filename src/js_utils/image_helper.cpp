@@ -7,10 +7,6 @@
 #include <user_message.h>
 #include <panel_manager.h>
 
-#include <Shlwapi.h>
-
-#include <algorithm>
-
 namespace
 {
 

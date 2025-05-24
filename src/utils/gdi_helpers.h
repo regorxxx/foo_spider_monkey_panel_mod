@@ -1,9 +1,5 @@
 #pragma once
 
-#include <windef.h>
-
-#include <memory>
-
 namespace smp::gdi
 {
 

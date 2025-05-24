@@ -14,10 +14,6 @@
 
 #include <qwr/final_action.h>
 
-#include <cmath>
-#include <map>
-#include <span>
-
 using namespace smp;
 
 namespace

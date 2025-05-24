@@ -2,9 +2,6 @@
 
 #include <js_objects/object_base.h>
 
-#include <memory>
-#include <optional>
-
 class JSObject;
 struct JSContext;
 struct JSClass;

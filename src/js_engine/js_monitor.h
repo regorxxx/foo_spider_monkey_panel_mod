@@ -1,9 +1,5 @@
 #pragma once
 
-#include <functional>
-#include <map>
-#include <mutex>
-
 struct JSContext;
 
 namespace smp

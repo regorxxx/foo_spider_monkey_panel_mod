@@ -13,9 +13,6 @@
 #include <qwr/file_helpers.h>
 #include <qwr/string_helpers.h>
 
-#include <charconv>
-#include <optional>
-
 using namespace smp::ui::sci;
 
 namespace

@@ -8,10 +8,6 @@
 #include <ui/scintilla/ui_sci_goto.h>
 #include <ui/scintilla/wtlscintilla.h>
 
-#include <optional>
-#include <set>
-#include <span>
-
 namespace smp::config::sci
 {
 struct ScintillaProp;

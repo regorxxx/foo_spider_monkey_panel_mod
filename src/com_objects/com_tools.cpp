@@ -1,8 +1,5 @@
 #include <stdafx.h>
-
 #include "com_tools.h"
-
-#include <span>
 
 namespace smp::com::internal
 {

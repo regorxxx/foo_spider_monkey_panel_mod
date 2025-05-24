@@ -38,8 +38,6 @@ SMP_MJS_SUPPRESS_WARNINGS_PUSH
 #include <js/CompilationAndEvaluation.h>
 SMP_MJS_SUPPRESS_WARNINGS_POP
 
-#include <filesystem>
-
 namespace fs = std::filesystem;
 using namespace smp;
 

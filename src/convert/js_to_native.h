@@ -4,8 +4,6 @@
 
 #include <qwr/type_traits.h>
 
-#include <optional>
-
 namespace mozjs::convert::to_native
 {
 

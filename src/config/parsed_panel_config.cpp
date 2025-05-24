@@ -10,10 +10,6 @@
 #include <qwr/file_helpers.h>
 #include <qwr/type_traits.h>
 
-#include <filesystem>
-#include <optional>
-#include <vector>
-
 namespace fs = std::filesystem;
 
 namespace

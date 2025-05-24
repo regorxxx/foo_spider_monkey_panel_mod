@@ -2,10 +2,6 @@
 
 #include <js_utils/serialized_value.h>
 
-#include <memory>
-#include <optional>
-#include <unordered_map>
-
 namespace smp::config
 {
 

@@ -1,9 +1,6 @@
 #pragma once
-
 #include <convert/js_to_native.h>
 #include <convert/native_to_js.h>
-
-#include <optional>
 
 class JSFreeOp;
 struct JSContext;

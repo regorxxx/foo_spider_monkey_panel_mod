@@ -7,9 +7,6 @@
 #include <qwr/ui_ddx.h>
 #include <qwr/ui_option.h>
 
-#include <optional>
-#include <vector>
-
 namespace smp::panel
 {
 class js_panel_window;

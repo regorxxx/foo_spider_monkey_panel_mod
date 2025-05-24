@@ -2,11 +2,6 @@
 
 #include <timeout/time_types.h>
 
-#include <condition_variable>
-#include <memory>
-#include <mutex>
-#include <thread>
-
 namespace smp
 {
 

@@ -21,9 +21,6 @@
 #include <qwr/string_helpers.h>
 #include <qwr/winapi_error_helpers.h>
 
-#include <string>
-#include <vector>
-
 // TODO: cleanup the code
 
 using namespace smp;

@@ -15,8 +15,6 @@
 #include <qwr/type_traits.h>
 #include <qwr/winapi_error_helpers.h>
 
-#include <filesystem>
-
 namespace
 {
 

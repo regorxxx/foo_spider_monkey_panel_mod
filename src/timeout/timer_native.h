@@ -3,12 +3,6 @@
 #include <timeout/time_types.h>
 #include <timeout/timer_interface_fwd.h>
 
-#include <chrono>
-#include <condition_variable>
-#include <memory>
-#include <mutex>
-#include <thread>
-
 namespace smp
 {
 

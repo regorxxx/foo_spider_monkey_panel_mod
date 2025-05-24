@@ -6,8 +6,6 @@
 
 #include <ExDispid.h>
 
-#include <optional>
-
 namespace smp::ui
 {
 class CDialogHtml

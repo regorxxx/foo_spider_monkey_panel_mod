@@ -10,8 +10,6 @@
 #include <qwr/final_action.h>
 #include <qwr/winapi_error_helpers.h>
 
-#include <filesystem>
-
 namespace
 {
 

@@ -3,10 +3,6 @@
 #include <js_objects/object_base.h>
 #include <utils/gdi_helpers.h>
 
-#include <memory>
-#include <optional>
-#include <string>
-
 class JSObject;
 struct JSContext;
 struct JSClass;

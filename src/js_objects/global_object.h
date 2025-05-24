@@ -1,8 +1,5 @@
 #pragma once
 
-#include <optional>
-#include <unordered_set>
-
 namespace smp::panel
 {
 class js_panel_window;

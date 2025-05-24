@@ -1,11 +1,5 @@
 #pragma once
-
 #include <config/panel_config.h>
-
-#include <filesystem>
-#include <optional>
-#include <string>
-#include <vector>
 
 namespace smp::config
 {

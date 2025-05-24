@@ -7,10 +7,6 @@ SMP_MJS_SUPPRESS_WARNINGS_PUSH
 #include <js/Promise.h>
 SMP_MJS_SUPPRESS_WARNINGS_POP
 
-#include <functional>
-#include <map>
-#include <mutex>
-
 struct JSContext;
 
 namespace smp

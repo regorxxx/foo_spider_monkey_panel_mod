@@ -2,10 +2,6 @@
 
 #include <resources/resource.h>
 
-#include <filesystem>
-#include <mutex>
-#include <thread>
-
 namespace smp::ui
 {
 

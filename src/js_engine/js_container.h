@@ -1,11 +1,7 @@
 #pragma once
-
 #include <js_engine/native_to_js_invoker.h>
 
 #include <qwr/final_action.h>
-
-#include <filesystem>
-#include <optional>
 
 class HostTimerTask;
 

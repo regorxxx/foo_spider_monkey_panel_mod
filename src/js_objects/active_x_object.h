@@ -8,10 +8,6 @@ SMP_MJS_SUPPRESS_WARNINGS_POP
 
 #include <oleauto.h>
 
-#include <map>
-#include <optional>
-#include <span>
-
 namespace mozjs
 {
 

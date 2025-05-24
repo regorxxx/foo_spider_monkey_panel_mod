@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <vector>
-
 /* 
 
 k-means is a clustering algorithm designed to group data points into clusters of similar points,

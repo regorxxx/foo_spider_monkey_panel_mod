@@ -29,8 +29,6 @@
 #include <fcntl.h>
 #include <io.h>
 
-#include <filesystem>
-
 using namespace smp;
 
 namespace fs = std::filesystem;

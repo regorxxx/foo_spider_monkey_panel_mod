@@ -6,8 +6,6 @@
 
 #include <qwr/final_action.h>
 
-#include <filesystem>
-
 namespace fs = std::filesystem;
 
 namespace

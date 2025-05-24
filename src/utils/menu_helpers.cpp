@@ -4,9 +4,6 @@
 
 #include <utils/guid_helpers.h>
 
-#include <optional>
-#include <unordered_map>
-
 namespace
 {
 
