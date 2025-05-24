@@ -3,6 +3,23 @@
 #define WINVER _WIN32_WINNT_WIN7
 #define NOMINMAX
 
+#include <atomic>
+#include <cassert>
+#include <charconv>
+#include <cwctype>
+#include <filesystem>
+#include <memory>
+#include <mutex>
+#include <optional>
+#include <queue>
+#include <span>
+#include <stdexcept>
+#include <string>
+#include <thread>
+#include <tuple>
+#include <type_traits>
+#include <unordered_map>
+
 #include <WinSock2.h>
 #include <windows.h>
 

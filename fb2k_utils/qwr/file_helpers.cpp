@@ -9,9 +9,6 @@
 #include <qwr/text_helpers.h>
 #include <qwr/winapi_error_helpers.h>
 
-#include <filesystem>
-#include <span>
-
 using namespace qwr;
 using namespace qwr::file;
 namespace fs = std::filesystem;

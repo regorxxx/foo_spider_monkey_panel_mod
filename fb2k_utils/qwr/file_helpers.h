@@ -1,11 +1,5 @@
 #pragma once
-
 #include <shtypes.h>
-
-#include <filesystem>
-#include <optional>
-#include <span>
-#include <string>
 
 namespace qwr::file
 {

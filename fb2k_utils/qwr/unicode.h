@@ -1,8 +1,5 @@
 #pragma once
 
-#include <string>
-#include <string_view>
-
 namespace qwr::unicode
 {
 std::wstring ToWide(const char*) = delete;

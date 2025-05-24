@@ -1,8 +1,5 @@
 #include <stdafx.h>
-
 #include "fb2k_paths.h"
-
-#include <filesystem>
 
 namespace fs = std::filesystem;
 

@@ -1,11 +1,5 @@
 #pragma once
 
-#include <atomic>
-#include <cassert>
-#include <mutex>
-#include <queue>
-#include <thread>
-
 namespace qwr
 {
 

@@ -1,8 +1,5 @@
 #pragma once
-
 #include <qwr/unicode.h>
-
-#include <string>
 
 namespace qwr::pfc_x
 {

@@ -1,5 +1,4 @@
 #pragma once
-
 #include <qwr/ui_ddx.h>
 #include <qwr/ui_option.h>
 

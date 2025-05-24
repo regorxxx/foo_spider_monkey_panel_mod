@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "string_helpers.h"
 
 namespace qwr::string

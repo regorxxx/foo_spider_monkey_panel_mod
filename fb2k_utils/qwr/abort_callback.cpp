@@ -1,5 +1,4 @@
 #include <stdafx.h>
-
 #include "abort_callback.h"
 
 namespace
