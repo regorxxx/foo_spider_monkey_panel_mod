@@ -3,6 +3,7 @@
 #include "utils.h"
 
 #include <2K3/CustomSort.hpp>
+#include <2K3/DownloadFileAsync.hpp>
 #include <2K3/FileHelper.hpp>
 #include <config/package_utils.h>
 #include <js_engine/js_to_native_invoker.h>
@@ -18,7 +19,6 @@
 #include <utils/art_helpers.h>
 #include <utils/colour_helpers.h>
 #include <utils/edit_text.h>
-#include <utils/download_file.h>
 #include <utils/gdi_error_helpers.h>
 
 #include <qwr/file_helpers.h>

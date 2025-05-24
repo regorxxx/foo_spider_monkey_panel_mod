@@ -1,5 +1,5 @@
 #include <stdafx.h>
-#include "download_file.h"
+#include "DownloadFileAsync.hpp"
 
 #include <2K3/FileHelper.hpp>
 #include <events/event_dispatcher.h>

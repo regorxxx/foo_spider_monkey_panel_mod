@@ -415,9 +415,6 @@
     <ClCompile Include="namespaces\window.cpp">
       <Filter>namespaces</Filter>
     </ClCompile>
-    <ClCompile Include="utils\download_file.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
     <ClCompile Include="callbacks\ConfigObjectNotify.cpp">
       <Filter>callbacks</Filter>
     </ClCompile>
@@ -455,6 +452,9 @@
       <Filter>2K3</Filter>
     </ClCompile>
     <ClCompile Include="2K3\FileHelper.cpp">
+      <Filter>2K3</Filter>
+    </ClCompile>
+    <ClCompile Include="2K3\DownloadFileAsync.cpp">
       <Filter>2K3</Filter>
     </ClCompile>
   </ItemGroup>
@@ -937,9 +937,6 @@
     <ClInclude Include="namespaces\window.h">
       <Filter>namespaces</Filter>
     </ClInclude>
-    <ClInclude Include="utils\download_file.h">
-      <Filter>utils</Filter>
-    </ClInclude>
     <ClInclude Include="2K3\CustomSort.hpp">
       <Filter>2K3</Filter>
     </ClInclude>
@@ -950,6 +947,9 @@
       <Filter>2K3</Filter>
     </ClInclude>
     <ClInclude Include="2K3\FileHelper.hpp">
+      <Filter>2K3</Filter>
+    </ClInclude>
+    <ClInclude Include="2K3\DownloadFileAsync.hpp">
       <Filter>2K3</Filter>
     </ClInclude>
   </ItemGroup>
