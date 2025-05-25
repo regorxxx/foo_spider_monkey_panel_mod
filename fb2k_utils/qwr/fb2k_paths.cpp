@@ -10,7 +10,7 @@ fs::path Component()
 {
     pfc::string8_fast path;
     uGetModuleFileName(core_api::get_my_instance(), path);
-    const auto wpath = qwr::unicode::ToWide(path);
+    const auto wpath = qwr::ToWide(path);
 
     return fs::path(wpath).parent_path().lexically_normal();
 }
@@ -19,7 +19,7 @@ fs::path Foobar2000()
 {
     pfc::string8_fast path;
     uGetModuleFileName(nullptr, path);
-    const auto wpath = qwr::unicode::ToWide(path);
+    const auto wpath = qwr::ToWide(path);
 
     return fs::path(wpath).parent_path().lexically_normal();
 }
@@ -27,7 +27,7 @@ fs::path Foobar2000()
 fs::path Profile()
 {
     const auto path = filesystem::g_get_native_path(core_api::get_profile_path());
-    const auto wpath = qwr::unicode::ToWide(path);
+    const auto wpath = qwr::ToWide(path);
 
     return fs::path(wpath).lexically_normal();
 }

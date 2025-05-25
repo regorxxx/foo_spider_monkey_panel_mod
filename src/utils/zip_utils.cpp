@@ -78,7 +78,7 @@ void ZipPacker::AddFolder(const fs::path& srcFolder, const std::string& destFold
 {
     try
     {
-        const auto wdestFolderName = qwr::unicode::ToWide(destFolderName);
+        const auto wdestFolderName = qwr::ToWide(destFolderName);
 
         for (const auto& it: fs::recursive_directory_iterator(srcFolder))
         {
@@ -145,7 +145,7 @@ void UnpackZip(const fs::path& zipFile, const fs::path& dstFolder)
             CheckMZip(zRet, mzZip, "mz_zip_reader_file_stat");
 
             assert(zFileStat.m_filename);
-            const fs::path curPath = dstFolder / qwr::unicode::ToWide(std::string_view{ zFileStat.m_filename, strlen(zFileStat.m_filename) });
+            const fs::path curPath = dstFolder / qwr::ToWide(std::string_view{ zFileStat.m_filename, strlen(zFileStat.m_filename) });
             if (zFileStat.m_is_directory)
             {
                 if (!fs::exists(curPath))

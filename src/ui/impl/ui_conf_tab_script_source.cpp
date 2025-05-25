@@ -171,7 +171,7 @@ void CConfigTabScriptSource::OnScriptSrcChange(UINT /*uNotifyCode*/, int nID, CW
         {
             return (sampleData_.empty()
                          ? config::PanelSettings_Sample{}
-                         : config::PanelSettings_Sample{ qwr::unicode::ToU8(sampleData_[sampleIdx_].displayedName) });
+                         : config::PanelSettings_Sample{ qwr::ToU8(sampleData_[sampleIdx_].displayedName) });
         }
         case IDC_RADIO_SRC_MEMORY:
         {
@@ -291,7 +291,7 @@ std::optional<std::filesystem::path> CConfigTabScriptSource::OnBrowseFileImpl()
     if (!b)
         return std::nullopt;
 
-    return qwr::unicode::ToWide(path);
+    return qwr::ToWide(path);
 }
 
 void CConfigTabScriptSource::OnOpenPackageManager(UINT /*uNotifyCode*/, int /*nID*/, CWindow /*wndCtl*/)
@@ -384,7 +384,7 @@ void CConfigTabScriptSource::OnEditScriptWith(UINT uNotifyCode, int nID, CWindow
         auto path_func = [this](fb2k::stringRef path)
             {
                 const auto native = filesystem::g_get_native_path(path->c_str());
-                const auto wpath = qwr::unicode::ToWide(native);
+                const auto wpath = qwr::ToWide(native);
 
                 std::error_code ec;
                 qwr::QwrException::ExpectTrue(fs::is_regular_file(wpath, ec), "Invalid path");
@@ -449,7 +449,7 @@ void CConfigTabScriptSource::InitializeLocalOptions()
 
         if (it == sampleData_.cend())
         {
-            qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, fmt::format("Can't find sample `{}`. Your settings will be reset.", qwr::unicode::ToU8(sampleName)));
+            qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, fmt::format("Can't find sample `{}`. Your settings will be reset.", qwr::ToU8(sampleName)));
             UpdateOnSrcChange(settings_, smp::config::ParsedPanelSettings::GetDefault());
             return 0;
         }

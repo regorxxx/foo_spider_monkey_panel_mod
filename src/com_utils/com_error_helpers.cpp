@@ -33,8 +33,8 @@ void ReportActiveXError(HRESULT hresult, EXCEPINFO& exception, UINT& argerr)
 
         if (exception.bstrDescription)
         {
-            const auto errorDesc8 = qwr::unicode::ToU8(std::wstring_view{ exception.bstrDescription ? exception.bstrDescription : L"<none>" });
-            const auto errorSource8 = qwr::unicode::ToU8(std::wstring_view{ exception.bstrSource ? exception.bstrSource : L"<none>" });
+            const auto errorDesc8 = qwr::ToU8(std::wstring_view{ exception.bstrDescription ? exception.bstrDescription : L"<none>" });
+            const auto errorSource8 = qwr::ToU8(std::wstring_view{ exception.bstrSource ? exception.bstrSource : L"<none>" });
             throw qwr::QwrException("ActiveXObject:\n"
                                      "  code: {:#x}\n"
                                      "  description: {}\n"

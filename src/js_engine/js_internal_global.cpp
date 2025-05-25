@@ -103,7 +103,7 @@ JSScript* JsInternalGlobal::GetCachedScript(const std::filesystem::path& absolut
             throw qwr::QwrException("Failed to open file `{}`:\n"
                                      "  {}",
                                      cleanPath.u8string(),
-                                     qwr::unicode::ToU8_FromAcpToWide(e.what()));
+                                     qwr::ToU8_FromAcpToWide(e.what()));
         }
     }();
 

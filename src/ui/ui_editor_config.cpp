@@ -64,7 +64,7 @@ void CDialogEditorConfig::OnButtonExportBnClicked(WORD, WORD, HWND)
     auto path_func = [this](fb2k::stringRef path)
         {
             const auto native = filesystem::g_get_native_path(path->c_str());
-            const auto wpath = qwr::unicode::ToWide(native);
+            const auto wpath = qwr::ToWide(native);
             config::sci::props.export_to_file(wpath);
         };
 
@@ -76,7 +76,7 @@ void CDialogEditorConfig::OnButtonImportBnClicked(WORD, WORD, HWND)
     auto path_func = [this](fb2k::stringRef path)
         {
             const auto native = filesystem::g_get_native_path(path->c_str());
-            const auto wpath = qwr::unicode::ToWide(native);
+            const auto wpath = qwr::ToWide(native);
             config::sci::props.import_from_file(wpath);
             LoadProps();
         };
@@ -110,7 +110,7 @@ LRESULT CDialogEditorConfig::OnPropNMDblClk(LPNMHDR pnmh)
         }
 
         // Update list
-        propertiesListView_.SetItemText(pniv->iItem, 1, qwr::unicode::ToWide(newVal).c_str());
+        propertiesListView_.SetItemText(pniv->iItem, 1, qwr::ToWide(newVal).c_str());
         DoDataExchange();
     }
 
@@ -130,8 +130,8 @@ void CDialogEditorConfig::LoadProps(bool reset)
 
     for (auto&& [i, prop]: ranges::views::enumerate(prop_sets))
     {
-        propertiesListView_.AddItem(i, 0, qwr::unicode::ToWide(prop.key).c_str());
-        propertiesListView_.AddItem(i, 1, qwr::unicode::ToWide(prop.val).c_str());
+        propertiesListView_.AddItem(i, 0, qwr::ToWide(prop.key).c_str());
+        propertiesListView_.AddItem(i, 1, qwr::ToWide(prop.val).c_str());
     }
 }
 
@@ -145,7 +145,7 @@ std::string CDialogEditorConfig::GetItemTextStr(int nItem, int nSubItem)
     // size == wcslen(buffer.c_str())
     buffer.resize(size);
 
-    return qwr::unicode::ToU8(buffer);
+    return qwr::ToU8(buffer);
 }
 
 } // namespace smp::ui

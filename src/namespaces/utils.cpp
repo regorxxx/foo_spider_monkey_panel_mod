@@ -306,7 +306,7 @@ JS::Value Utils::FileTest(const std::wstring& path, const std::wstring& mode)
     }
     else
     {
-        throw qwr::QwrException("Invalid value of mode argument: '{}'", qwr::unicode::ToU8(mode));
+        throw qwr::QwrException("Invalid value of mode argument: '{}'", qwr::ToU8(mode));
     }
 }
 

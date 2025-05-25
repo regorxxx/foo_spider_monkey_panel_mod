@@ -111,11 +111,11 @@ void TextFile::read_wide(uint32_t codepage, std::wstring& content)
 
 		if (str.starts_with(UTF_8_BOM))
 		{
-			content = qwr::unicode::ToWide(str.substr(3));
+			content = qwr::ToWide(str.substr(3));
 		}
 		else if (codepage == CP_UTF8 || guess_codepage(str) == CP_UTF8)
 		{
-			content = qwr::unicode::ToWide(str);
+			content = qwr::ToWide(str);
 		}
 		else
 		{

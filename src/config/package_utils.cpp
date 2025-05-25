@@ -133,7 +133,7 @@ ParsedPanelSettings GetNewPackageSettings(const std::string& name)
         do
         {
             const auto guidStr = utils::GuidToStr(utils::GenerateGuid());
-            id = qwr::unicode::ToU8(guidStr);
+            id = qwr::ToU8(guidStr);
             packagePath = path::Packages_Profile() / id;
         } while (fs::exists(packagePath));
 

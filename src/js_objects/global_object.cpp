@@ -121,7 +121,7 @@ auto FindSuitableFileForInclude(const fs::path& path, const std::span<const fs::
         throw qwr::QwrException("Failed to open file `{}`:\n"
                                  "  {}",
                                  path.u8string(),
-                                 qwr::unicode::ToU8_FromAcpToWide(e.what()));
+                                 qwr::ToU8_FromAcpToWide(e.what()));
     }
 }
 
@@ -334,7 +334,7 @@ void JsGlobalObject::IncludeScript(const std::string& path, JS::HandleValue opti
         return paths;
     }();
 
-    const auto wpath = qwr::unicode::ToWide(path);
+    const auto wpath = qwr::ToWide(path);
     const auto fsPath = ::FindSuitableFileForInclude(fs::path(path), allSearchPaths);
 
     const auto parsedOptions = ParseIncludeOptions(options);

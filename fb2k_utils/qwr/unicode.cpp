@@ -3,7 +3,7 @@
 
 #include "unicode.h"
 
-namespace qwr::unicode
+namespace qwr
 {
 std::string ToU8(std::wstring_view src)
 {
@@ -41,4 +41,4 @@ std::wstring ToWide_FromAcp(std::string_view src)
 
     return strVal;
 }
-} // namespace qwr::unicode
+} // namespace qwr

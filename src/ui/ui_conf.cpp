@@ -320,7 +320,7 @@ void CDialogConf::OnCommitPanelName(UINT /*uNotifyCode*/, int /*nID*/, CWindow /
     DisablePanelNameControls();
     if (localSettings_.panelId.empty())
     {
-        localSettings_.panelId = qwr::unicode::ToU8(utils::GuidToStr(utils::GenerateGuid()));
+        localSettings_.panelId = qwr::ToU8(utils::GuidToStr(utils::GenerateGuid()));
 
         suppressDdxFromUi_ = true;
         auto ddxSuppress = wil::scope_exit([&] { suppressDdxFromUi_ = false; });

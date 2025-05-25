@@ -70,7 +70,7 @@ void CInputBox::AdjustPromptControlToFit()
 
         gdi::ObjectSelector autoFont(hDc, promptCtrl.GetFont());
 
-        const auto promptW = qwr::unicode::ToWide(prompt_);
+        const auto promptW = qwr::ToWide(prompt_);
         DrawText(hDc, const_cast<wchar_t*>(promptW.c_str()), -1, &newPromptRc, DT_CALCRECT | DT_NOPREFIX | DT_WORDBREAK);
     }
 

@@ -15,13 +15,13 @@ public:
 
     template <typename... Args>
     explicit QwrException(std::wstring_view errorMessage, Args&&... errorMessageFmtArgs)
-        : std::runtime_error(qwr::unicode::ToU8(
+        : std::runtime_error(qwr::ToU8(
             fmt::format(fmt::runtime(errorMessage), std::forward<Args>(errorMessageFmtArgs)...)))
     {
     }
 
     explicit QwrException(const std::filesystem::filesystem_error& e)
-        : std::runtime_error(qwr::unicode::ToU8_FromAcpToWide(e.what()))
+        : std::runtime_error(qwr::ToU8_FromAcpToWide(e.what()))
     {
     }
 

@@ -160,7 +160,7 @@ void UpdatePackages()
                                            "Failed to update package `{}`:\n"
                                            "{}",
                                            packageId,
-                                           qwr::unicode::ToU8_FromAcpToWide(e.what())));
+                                           qwr::ToU8_FromAcpToWide(e.what())));
             continue;
         }
 

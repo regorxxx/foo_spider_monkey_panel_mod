@@ -25,7 +25,7 @@ void Parse_InMemory(const config::PanelSettings_InMemory& settings, config::Pars
 
 void Parse_File(const config::PanelSettings_File& settings, config::ParsedPanelSettings& parsedSettings)
 {
-    parsedSettings.scriptPath = qwr::unicode::ToWide(settings.path);
+    parsedSettings.scriptPath = qwr::ToWide(settings.path);
 }
 
 void Parse_Sample(const config::PanelSettings_Sample& settings, config::ParsedPanelSettings& parsedSettings)

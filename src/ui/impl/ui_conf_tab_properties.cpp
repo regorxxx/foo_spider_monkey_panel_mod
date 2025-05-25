@@ -122,7 +122,7 @@ LRESULT CConfigTabProperties::OnPinItemChanged(LPNMHDR pnmh)
             else if constexpr (std::is_same_v<T, std::string>)
             {
                 var.ChangeType(VT_BSTR);
-                arg = qwr::unicode::ToU8(std::wstring_view{ var.bstrVal ? var.bstrVal : L"" });
+                arg = qwr::ToU8(std::wstring_view{ var.bstrVal ? var.bstrVal : L"" });
             }
             else
             {
@@ -183,7 +183,7 @@ LRESULT CConfigTabProperties::OnImportBnClicked(WORD, WORD, HWND)
     auto path_func = [this](fb2k::stringRef path)
         {
             const auto native = filesystem::g_get_native_path(path->c_str());
-            const auto wpath = qwr::unicode::ToWide(native);
+            const auto wpath = qwr::ToWide(native);
             const auto str = TextFile(wpath).read();
 
             try
@@ -212,7 +212,7 @@ LRESULT CConfigTabProperties::OnExportBnClicked(WORD, WORD, HWND)
     auto path_func = [this](fb2k::stringRef path)
         {
             const auto native = filesystem::g_get_native_path(path->c_str());
-            const auto wpath = qwr::unicode::ToWide(native);
+            const auto wpath = qwr::ToWide(native);
             TextFile(wpath).write(properties_.ToJson());
         };
 
@@ -255,7 +255,7 @@ void CConfigTabProperties::UpdateUiFromData()
             }
             else if constexpr (std::is_same_v<T, std::string>)
             {
-                return PropCreateSimple(name.c_str(), qwr::unicode::ToWide(arg).c_str());
+                return PropCreateSimple(name.c_str(), qwr::ToWide(arg).c_str());
             }
             else
             {

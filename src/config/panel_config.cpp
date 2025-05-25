@@ -63,7 +63,7 @@ void PanelSettings::ResetToDefault()
     edgeStyle = EdgeStyle::NoEdge;
     id = [] {
         const auto guidStr = utils::GuidToStr(utils::GenerateGuid());
-        return qwr::unicode::ToU8(guidStr);
+        return qwr::ToU8(guidStr);
     }();
 }
 

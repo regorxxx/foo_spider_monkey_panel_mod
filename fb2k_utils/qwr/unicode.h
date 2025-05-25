@@ -1,6 +1,6 @@
 #pragma once
 
-namespace qwr::unicode
+namespace qwr
 {
 std::wstring ToWide(const char*) = delete;
 std::wstring ToWide_FromAcp(const char*) = delete;
@@ -13,4 +13,4 @@ std::wstring ToWide(const pfc::string_base& src);
 
 std::string ToU8_FromAcpToWide(std::string_view src);
 std::wstring ToWide_FromAcp(std::string_view src);
-} // namespace qwr::unicode
+} // namespace qwr

@@ -20,7 +20,7 @@ std::filesystem::path GetFixedEditorPath()
     namespace fs = std::filesystem;
 
     const std::string tmp = fb2k::configStore::get()->getConfigString("smp.editor.path")->c_str();
-    const auto editorPath = fs::path(qwr::unicode::ToWide(tmp));
+    const auto editorPath = fs::path(qwr::ToWide(tmp));
 
     std::error_code ec;
     if (fs::is_regular_file(editorPath))

@@ -37,7 +37,7 @@ PanelSettings LoadSettings(stream_reader& reader, abort_callback& abort)
             reader.read_object_t(guid, abort);
 
             const auto guidStr = utils::GuidToStr(guid);
-            return qwr::unicode::ToU8(guidStr);
+            return qwr::ToU8(guidStr);
         }();
         reader.read_object(&panelSettings.edgeStyle, sizeof(panelSettings.edgeStyle), abort);
         panelSettings.properties = LoadProperties(reader, abort);
@@ -67,7 +67,7 @@ void SaveSettings(stream_writer& writer, abort_callback& abort, const PanelSetti
         writer.write_object_t(false, abort); // skip "delay load"
         {
             const auto guid = [&] {
-                const auto guidOpt = utils::StrToGuid(qwr::unicode::ToWide(settings.id));
+                const auto guidOpt = utils::StrToGuid(qwr::ToWide(settings.id));
                 if (guidOpt)
                 {
                     return *guidOpt;
@@ -151,7 +151,7 @@ PanelProperties LoadProperties(stream_reader& reader, abort_callback& abort)
             }
             }
 
-            properties.values.emplace(qwr::unicode::ToWide(u8PropName), std::make_shared<mozjs::SerializedJsValue>(serializedValue));
+            properties.values.emplace(qwr::ToWide(u8PropName), std::make_shared<mozjs::SerializedJsValue>(serializedValue));
         }
 
         return properties;
@@ -170,7 +170,7 @@ void SaveProperties(stream_writer& writer, abort_callback& abort, const PanelPro
 
         for (const auto& [name, pValue]: properties.values)
         {
-            writer.write_string(qwr::unicode::ToU8(name), abort);
+            writer.write_string(qwr::ToU8(name), abort);
 
             const auto& serializedValue = *pValue;
 

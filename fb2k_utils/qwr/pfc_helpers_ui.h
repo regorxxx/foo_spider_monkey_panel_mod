@@ -26,7 +26,7 @@ std::basic_string<T> uGetWindowText(HWND wnd)
     }
     else
     {
-        return qwr::unicode::ToU8(text);
+        return qwr::ToU8(text);
     }
 }
 

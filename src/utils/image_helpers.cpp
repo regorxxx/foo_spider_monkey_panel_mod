@@ -54,7 +54,7 @@ uint32_t LoadImageTask::GetTaskId() const
 
 void LoadImageTask::run()
 {
-    const std::string path = file_path_display(qwr::unicode::ToU8(imagePath_).c_str()).get_ptr();
+    const std::string path = file_path_display(qwr::ToU8(imagePath_).c_str()).get_ptr();
 
     EventDispatcher::Get().PutEvent(hNotifyWnd_,
                                      GenerateEvent_JsCallback(

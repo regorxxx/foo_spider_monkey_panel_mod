@@ -158,7 +158,7 @@ void PlaylistLockManager::InstallLock(size_t playlistIndex, uint32_t flags)
         throw qwr::QwrException("`Internal error: playlist_lock_install` failed");
     }
 
-    const auto lockId = qwr::unicode::ToU8(utils::GuidToStr(utils::GenerateGuid()));
+    const auto lockId = qwr::ToU8(utils::GuidToStr(utils::GenerateGuid()));
 
     pfc::array_t<uint8_t> lockIdBinary;
     lockIdBinary.set_data_fromptr(reinterpret_cast<const uint8_t*>(lockId.data()), lockId.size());

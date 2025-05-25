@@ -210,7 +210,7 @@ void CConfigTabPackage::OnNewScript(UINT uNotifyCode, int nID, CWindow wndCtl)
     }
     catch (const fs::filesystem_error& e)
     {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide(e.what()));
+        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::ToU8_FromAcpToWide(e.what()));
     }
 }
 
@@ -219,7 +219,7 @@ void CConfigTabPackage::OnAddFile(UINT uNotifyCode, int nID, CWindow wndCtl)
     auto path_func = [this](fb2k::stringRef path)
         {
             const auto native = filesystem::g_get_native_path(path->c_str());
-            const auto wpath = qwr::unicode::ToWide(native);
+            const auto wpath = qwr::ToWide(native);
             AddFile(wpath);
         };
 
@@ -240,7 +240,7 @@ void CConfigTabPackage::OnRemoveFile(UINT uNotifyCode, int nID, CWindow wndCtl)
     }
     catch (const fs::filesystem_error& e)
     {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide(e.what()));
+        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::ToU8_FromAcpToWide(e.what()));
     }
 
     files_.erase(files_.cbegin() + focusedFileIdx_);
@@ -265,7 +265,7 @@ void CConfigTabPackage::OnRenameFile(UINT uNotifyCode, int nID, CWindow wndCtl)
 
     try
     {
-        const auto wValue = qwr::unicode::ToWide(dlg.GetValue());
+        const auto wValue = qwr::ToWide(dlg.GetValue());
         const auto newFilePath = filepath.parent_path() / fs::path(wValue);
         fs::rename(filepath, newFilePath);
         filepath = newFilePath;
@@ -277,7 +277,7 @@ void CConfigTabPackage::OnRenameFile(UINT uNotifyCode, int nID, CWindow wndCtl)
     }
     catch (const fs::filesystem_error& e)
     {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide(e.what()));
+        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::ToU8_FromAcpToWide(e.what()));
     }
 }
 
@@ -310,7 +310,7 @@ void CConfigTabPackage::OnOpenContainingFolder(UINT uNotifyCode, int nID, CWindo
     }
     catch (const fs::filesystem_error& e)
     {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide(e.what()));
+        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::ToU8_FromAcpToWide(e.what()));
     }
     catch (const qwr::QwrException& e)
     {
@@ -346,7 +346,7 @@ void CConfigTabPackage::OnEditScript(UINT uNotifyCode, int nID, CWindow wndCtl)
     }
     catch (const fs::filesystem_error& e)
     {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide(e.what()));
+        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::ToU8_FromAcpToWide(e.what()));
     }
     catch (const qwr::QwrException& e)
     {
@@ -363,7 +363,7 @@ void CConfigTabPackage::OnEditScriptWith(UINT uNotifyCode, int nID, CWindow wndC
         auto path_func = [this](fb2k::stringRef path)
             {
                 const auto native = filesystem::g_get_native_path(path->c_str());
-                const auto wpath = qwr::unicode::ToWide(native);
+                const auto wpath = qwr::ToWide(native);
 
                 std::error_code ec;
                 qwr::QwrException::ExpectTrue(fs::is_regular_file(wpath, ec), "Invalid path");
@@ -496,7 +496,7 @@ void CConfigTabPackage::InitializeFilesListBox()
     }
     catch (const fs::filesystem_error& e)
     {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide(e.what()));
+        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::ToU8_FromAcpToWide(e.what()));
     }
 }
 
@@ -548,7 +548,7 @@ void CConfigTabPackage::UpdateListBoxFromData()
     }
     catch (const fs::filesystem_error& e)
     {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide(e.what()));
+        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::ToU8_FromAcpToWide(e.what()));
     }
 }
 
@@ -602,7 +602,7 @@ void CConfigTabPackage::AddFile(const std::filesystem::path& path)
     }
     catch (const fs::filesystem_error& e)
     {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide(e.what()));
+        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::ToU8_FromAcpToWide(e.what()));
     }
     catch (const qwr::QwrException& e)
     {

@@ -562,7 +562,7 @@ std::optional<DISPID> JsActiveXObject::GetDispId(const std::wstring& name, bool 
         {
             if (reportError)
             {
-                throw qwr::QwrException("Failed to get DISPID for `{}`", qwr::unicode::ToU8(name));
+                throw qwr::QwrException("Failed to get DISPID for `{}`", qwr::ToU8(name));
             }
             return std::nullopt;
         }

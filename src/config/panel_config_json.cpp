@@ -49,7 +49,7 @@ JSON SerializePropertiesToObject(const config::PanelProperties& properties)
         auto jsonValues = JSON::object();
         for (const auto& [nameW, pValue]: properties.values)
         {
-            const auto propertyName = qwr::unicode::ToU8(nameW);
+            const auto propertyName = qwr::ToU8(nameW);
             const auto& serializedValue = *pValue;
 
             std::visit([&jsonValues, &propertyName](auto&& arg) { jsonValues.push_back({ propertyName, arg }); },
@@ -119,7 +119,7 @@ config::PanelProperties DeserializePropertiesFromObject(const JSON& jsonMain)
                 continue;
             }
 
-            properties.values.emplace(qwr::unicode::ToWide(key), std::make_shared<mozjs::SerializedJsValue>(serializedValue));
+            properties.values.emplace(qwr::ToWide(key), std::make_shared<mozjs::SerializedJsValue>(serializedValue));
         }
 
         return properties;
@@ -173,7 +173,7 @@ PanelSettings LoadSettings(stream_reader& reader, abort_callback& abort)
         }
         case ScriptType::SimpleFile:
         {
-            const auto wpath = qwr::unicode::ToWide(jsonPayload.at("path").get<std::string>());
+            const auto wpath = qwr::ToWide(jsonPayload.at("path").get<std::string>());
             const auto fsPath = fs::path(wpath).lexically_normal();
             const auto fullPath = [&] {
                 switch (jsonPayload.at("locationType").get<LocationType>())
@@ -261,7 +261,7 @@ void SaveSettings(stream_writer& writer, abort_callback& abort, const PanelSetti
             }
             else if constexpr (std::is_same_v<T, smp::config::PanelSettings_File>)
             {
-                const auto [path, locationType] = [wpath = qwr::unicode::ToWide(data.path)] {
+                const auto [path, locationType] = [wpath = qwr::ToWide(data.path)] {
                     try
                     {
                         auto fsPath = fs::path(wpath).lexically_normal();

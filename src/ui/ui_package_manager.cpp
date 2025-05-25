@@ -197,7 +197,7 @@ void CDialogPackageManager::OnDeletePackage(UINT /*uNotifyCode*/, int /*nID*/, C
     }
     catch (const fs::filesystem_error& e)
     {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide(e.what()));
+        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::ToU8_FromAcpToWide(e.what()));
     }
     catch (const qwr::QwrException& e)
     {
@@ -217,7 +217,7 @@ void CDialogPackageManager::OnImportPackage(UINT /*uNotifyCode*/, int /*nID*/, C
     auto path_func = [this](fb2k::stringRef path)
         {
             const auto native = filesystem::g_get_native_path(path->c_str());
-            const auto wpath = qwr::unicode::ToWide(native);
+            const auto wpath = qwr::ToWide(native);
             const auto isRestartNeeded = ImportPackage(wpath);
 
             if (isRestartNeeded && ConfirmRebootOnPackageInUse())
@@ -237,7 +237,7 @@ void CDialogPackageManager::OnExportPackage(UINT /*uNotifyCode*/, int /*nID*/, C
     auto path_func = [this](fb2k::stringRef path)
         {
             const auto native = filesystem::g_get_native_path(path->c_str());
-            const auto wpath = qwr::unicode::ToWide(native);
+            const auto wpath = qwr::ToWide(native);
             const auto& currentPackageData = packages_[focusedPackageIdx_];
 
             try
@@ -248,7 +248,7 @@ void CDialogPackageManager::OnExportPackage(UINT /*uNotifyCode*/, int /*nID*/, C
             }
             catch (const fs::filesystem_error& e)
             {
-                qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide(e.what()));
+                qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::ToU8_FromAcpToWide(e.what()));
             }
             catch (const qwr::QwrException& e)
             {
@@ -279,7 +279,7 @@ void CDialogPackageManager::OnOpenFolder(UINT /*uNotifyCode*/, int /*nID*/, CWin
     }
     catch (const fs::filesystem_error& e)
     {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide(e.what()));
+        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::ToU8_FromAcpToWide(e.what()));
     }
     catch (const qwr::QwrException& e)
     {
@@ -411,10 +411,10 @@ void CDialogPackageManager::LoadPackages()
             }
             catch (const qwr::QwrException& e)
             {
-                PackageData packageData{ qwr::unicode::ToWide(fmt::format("{} (ERROR)", packageId)),
+                PackageData packageData{ qwr::ToWide(fmt::format("{} (ERROR)", packageId)),
                                          packageId,
                                          std::nullopt,
-                                         qwr::unicode::ToWide(fmt::format("Package parsing failed:\r\n{}", e.what())) };
+                                         qwr::ToWide(fmt::format("Package parsing failed:\r\n{}", e.what())) };
                 parsedPackages.emplace_back(packageData);
             }
 
@@ -425,7 +425,7 @@ void CDialogPackageManager::LoadPackages()
     }
     catch (const fs::filesystem_error& e)
     {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide(e.what()));
+        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::ToU8_FromAcpToWide(e.what()));
     }
 }
 
@@ -511,7 +511,7 @@ void CDialogPackageManager::UpdatedUiPackageInfo()
     else
     {
         const auto valueOrEmpty = [](const std::string& str) -> std::wstring {
-            return (str.empty() ? L"<empty>" : qwr::unicode::ToWide(str));
+            return (str.empty() ? L"<empty>" : qwr::ToWide(str));
         };
 
         const auto& parsedSettings = *packageData.parsedSettings;
@@ -563,7 +563,7 @@ CDialogPackageManager::PackageData CDialogPackageManager::GeneratePackageData(co
                                                    valueOrEmpty(parsedSettings.scriptAuthor),
                                                    valueOrEmpty(parsedSettings.scriptDescription));
 
-    return PackageData{ qwr::unicode::ToWide(displayedName),
+    return PackageData{ qwr::ToWide(displayedName),
                         *parsedSettings.packageId,
                         parsedSettings,
                         L"",
@@ -651,7 +651,7 @@ bool CDialogPackageManager::ImportPackage(const std::filesystem::path& path)
     }
     catch (const fs::filesystem_error& e)
     {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide(e.what()));
+        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::ToU8_FromAcpToWide(e.what()));
     }
     catch (const qwr::QwrException& e)
     {

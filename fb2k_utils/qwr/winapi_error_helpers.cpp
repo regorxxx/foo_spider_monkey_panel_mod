@@ -11,7 +11,7 @@ namespace
 
 std::string MessageFromErrorCode(DWORD errorCode)
 {
-    return qwr::unicode::ToU8_FromAcpToWide(std::system_category().message(errorCode));
+    return qwr::ToU8_FromAcpToWide(std::system_category().message(errorCode));
 }
 
 void ThrowParsedWinapiError(DWORD errorCode, std::string_view functionName)

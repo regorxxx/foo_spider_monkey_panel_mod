@@ -92,13 +92,13 @@ void ToValue(JSContext*, const float& inValue, JS::MutableHandleValue wrappedVal
 template <>
 void ToValue(JSContext* cx, const pfc::string8_fast& inValue, JS::MutableHandleValue wrappedValue)
 {
-    ToValue<std::wstring_view>(cx, qwr::unicode::ToWide(std::string_view{ inValue.c_str(), inValue.length() }), wrappedValue);
+    ToValue<std::wstring_view>(cx, qwr::ToWide(std::string_view{ inValue.c_str(), inValue.length() }), wrappedValue);
 }
 
 template <>
 void ToValue(JSContext* cx, const std::string& inValue, JS::MutableHandleValue wrappedValue)
 {
-    ToValue<std::wstring_view>(cx, qwr::unicode::ToWide(inValue), wrappedValue);
+    ToValue<std::wstring_view>(cx, qwr::ToWide(inValue), wrappedValue);
 }
 
 template <>

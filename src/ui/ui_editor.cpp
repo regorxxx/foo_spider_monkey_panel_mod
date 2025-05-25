@@ -165,7 +165,7 @@ LRESULT CEditor::OnFileImport(WORD, WORD, HWND)
     auto path_func = [this](fb2k::stringRef path)
         {
             const auto native = filesystem::g_get_native_path(path->c_str());
-            const auto wpath = qwr::unicode::ToWide(native);
+            const auto wpath = qwr::ToWide(native);
             const auto str = TextFile(wpath).read();
             sciEditor_.SetContent(str.c_str());
         };
@@ -185,7 +185,7 @@ LRESULT CEditor::OnFileExport(WORD, WORD, HWND)
             text.resize(strlen(text.data()));
 
             const auto native = filesystem::g_get_native_path(path->c_str());
-            const auto wpath = qwr::unicode::ToWide(native);
+            const auto wpath = qwr::ToWide(native);
             TextFile(wpath).write(text);
         };
 
