@@ -7,8 +7,8 @@
 
 #include <component_paths.h>
 
+#include <2K3/TextFile.hpp>
 #include <qwr/fb2k_paths.h>
-#include <qwr/file_helpers.h>
 
 namespace fs = std::filesystem;
 
@@ -31,7 +31,8 @@ void Parse_PackageFromPath(const std::filesystem::path& packageDir, config::Pars
         parsedSettings.scriptPath = (packageDir / config::GetRelativePathToMainFile());
         parsedSettings.isSample = (packageDir.parent_path() == path::Packages_Sample());
 
-        const auto jsonMain = JSON::parse(qwr::file::ReadFile(packageJsonFile, false));
+        const auto str = TextFile(packageJsonFile).read();
+        const auto jsonMain = JSON::parse(str);
         qwr::QwrException::ExpectTrue(jsonMain.is_object(), "Corrupted `package.json`: not a JSON object");
 
         parsedSettings.packageId = jsonMain.at("id").get<std::string>();
@@ -92,12 +93,12 @@ void Save_PackageData(const config::ParsedPanelSettings& parsedSettings)
         }
 
         const auto packageJsonFile = packagePath / L"package.json";
-        qwr::file::WriteFile(packageJsonFile, jsonMain.dump(2));
+        TextFile(packageJsonFile).write(jsonMain.dump(2));
 
         const auto mainScriptPath = packagePath / config::GetRelativePathToMainFile();
         if (!fs::exists(mainScriptPath))
         {
-            qwr::file::WriteFile(mainScriptPath, config::PanelSettings_InMemory::GetDefaultScript());
+            TextFile(mainScriptPath).write(config::PanelSettings_InMemory::GetDefaultScript());
         }
     }
     catch (const fs::filesystem_error& e)

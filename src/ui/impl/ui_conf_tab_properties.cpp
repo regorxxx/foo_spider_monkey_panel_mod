@@ -5,6 +5,7 @@
 #include <panel/js_panel_window.h>
 #include <ui/ui_conf.h>
 
+#include <2K3/TextFile.hpp>
 #include <qwr/abort_callback.h>
 #include <qwr/error_popup.h>
 #include <qwr/file_helpers.h>
@@ -197,7 +198,7 @@ LRESULT CConfigTabProperties::OnImportBnClicked(WORD, WORD, HWND)
 
     try
     {
-        const auto str = qwr::file::ReadFile(*optPath, CP_UTF8, false);
+        const auto str = TextFile(*optPath).read();
         properties_ = PanelProperties::FromJson(str);
         UpdateUiFromData();
     }
@@ -229,7 +230,7 @@ LRESULT CConfigTabProperties::OnExportBnClicked(WORD, WORD, HWND)
 
     if (optPath)
     {
-        qwr::file::WriteFile(*optPath, properties_.ToJson(), false);
+        TextFile(*optPath).write(properties_.ToJson());
     }
 
     return 0;

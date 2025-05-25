@@ -9,8 +9,8 @@
 #include <utils/logging.h>
 #include <utils/resource_helpers.h>
 
+#include <2K3/TextFile.hpp>
 #include <qwr/fb2k_paths.h>
-#include <qwr/file_helpers.h>
 #include <qwr/string_helpers.h>
 
 using namespace smp::ui::sci;
@@ -491,8 +491,7 @@ void CScriptEditorCtrl::ReadAPI()
     {
         try
         {
-            const auto path = std::string(file.data(), file.size());
-            const auto content = qwr::file::ReadFile(qwr::unicode::ToWide(path), CP_UTF8);
+            const auto content = TextFile(file).read();
             readApi(content);
         }
         catch (const qwr::QwrException& e)

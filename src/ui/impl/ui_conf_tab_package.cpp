@@ -8,6 +8,7 @@
 #include <utils/edit_text.h>
 #include <utils/path_helpers.h>
 
+#include <2K3/TextFile.hpp>
 #include <qwr/error_popup.h>
 #include <qwr/file_helpers.h>
 #include <qwr/final_action.h>
@@ -200,7 +201,7 @@ void CConfigTabPackage::OnNewScript(UINT uNotifyCode, int nID, CWindow wndCtl)
         }
 
         fs::create_directories(newFilenameOpt->parent_path());
-        qwr::file::WriteFile(*newFilenameOpt, "// empty");
+        TextFile(*newFilenameOpt).write("// empty");
 
         files_.emplace_back(*newFilenameOpt);
         focusedFile_ = *newFilenameOpt;

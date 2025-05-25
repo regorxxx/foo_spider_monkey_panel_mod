@@ -8,6 +8,7 @@
 
 #include <component_paths.h>
 
+#include <2K3/TextFile.hpp>
 #include <qwr/fb2k_paths.h>
 #include <qwr/file_helpers.h>
 #include <qwr/pfc_helpers_ui.h>
@@ -180,7 +181,7 @@ LRESULT CEditor::OnFileImport(WORD, WORD, HWND)
 
     try
     {
-        const auto text = qwr::file::ReadFile(*filename, CP_UTF8);
+        const auto text = TextFile(*filename).read();
         sciEditor_.SetContent(text.c_str());
     }
     catch (const qwr::QwrException& e)
@@ -214,8 +215,7 @@ LRESULT CEditor::OnFileExport(WORD, WORD, HWND)
     sciEditor_.GetText(text.data(), text.size());
     text.resize(strlen(text.data()));
 
-    (void)qwr::file::WriteFile(*filename, text);
-
+    TextFile(*filename).write(text);
     return 0;
 }
 

@@ -8,8 +8,8 @@
 
 #include <component_paths.h>
 
+#include <2K3/TextFile.hpp>
 #include <qwr/error_popup.h>
-#include <qwr/file_helpers.h>
 #include <qwr/final_action.h>
 
 namespace fs = std::filesystem;
@@ -188,8 +188,8 @@ void UpdatePackages()
             auto j = JSON::parse(*restorationJsonOpt);
             j["id"] = packageId;
 
-            qwr::file::WriteFile(packageToUpdateDir / config::GetRelativePathToMainFile(), *restorationScriptOpt);
-            qwr::file::WriteFile(packageToUpdateDir / "package.json", j.dump(2));
+            TextFile(packageToUpdateDir / config::GetRelativePathToMainFile()).write(*restorationScriptOpt);
+            TextFile(packageToUpdateDir / "package.json").write(j.dump(2));
 
             qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME,
                                        fmt::format("Critical error encountered when updating package `{}`!\n\n"

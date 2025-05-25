@@ -457,6 +457,9 @@
     <ClCompile Include="2K3\DownloadFileAsync.cpp">
       <Filter>2K3</Filter>
     </ClCompile>
+    <ClCompile Include="2K3\TextFile.cpp">
+      <Filter>2K3</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="js_engine\js_engine.h">
@@ -950,6 +953,9 @@
       <Filter>2K3</Filter>
     </ClInclude>
     <ClInclude Include="2K3\DownloadFileAsync.hpp">
+      <Filter>2K3</Filter>
+    </ClInclude>
+    <ClInclude Include="2K3\TextFile.hpp">
       <Filter>2K3</Filter>
     </ClInclude>
   </ItemGroup>

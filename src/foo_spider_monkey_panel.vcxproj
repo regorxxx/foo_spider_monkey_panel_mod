@@ -77,6 +77,7 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     <ClCompile Include="2K3\DownloadFileAsync.cpp" />
     <ClCompile Include="2K3\FileHelper.cpp" />
     <ClCompile Include="2K3\TagWriter.cpp" />
+    <ClCompile Include="2K3\TextFile.cpp" />
     <ClCompile Include="callbacks\ConfigObjectNotify.cpp" />
     <ClCompile Include="callbacks\DSPConfigCallback.cpp" />
     <ClCompile Include="callbacks\LibraryCallback.cpp" />
@@ -240,6 +241,7 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     <ClInclude Include="2K3\FileHelper.hpp" />
     <ClInclude Include="2K3\FileInfoFilter.hpp" />
     <ClInclude Include="2K3\TagWriter.hpp" />
+    <ClInclude Include="2K3\TextFile.hpp" />
     <ClInclude Include="component_defines.h" />
     <ClInclude Include="component_guids.h" />
     <ClInclude Include="component_paths.h" />

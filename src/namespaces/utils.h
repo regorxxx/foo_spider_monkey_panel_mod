@@ -65,7 +65,7 @@ public:
     bool PathWildcardMatch(const std::wstring& pattern, const std::wstring& str);
     std::wstring ReadINI(const std::wstring& filename, const std::wstring& section, const std::wstring& key, const std::wstring& defaultval = L"");
     std::wstring ReadINIWithOpt(size_t optArgCount, const std::wstring& filename, const std::wstring& section, const std::wstring& key, const std::wstring& defaultval);
-    std::wstring ReadTextFile(const std::wstring& filePath, uint32_t codepage = CP_ACP);
+    std::wstring ReadTextFile(const std::wstring& filePath, uint32_t codepage = CP_UTF8);
     std::wstring ReadTextFileWithOpt(size_t optArgCount, const std::wstring& filePath, uint32_t codepage);
     void SetClipboardText(const std::string& text);
     JS::Value ShowHtmlDialog(uint32_t hWnd, const std::wstring& htmlCode, JS::HandleValue options = JS::UndefinedHandleValue);

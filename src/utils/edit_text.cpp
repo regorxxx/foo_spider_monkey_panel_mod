@@ -6,7 +6,7 @@
 #include <ui/ui_edit_in_progress.h>
 #include <ui/ui_editor.h>
 
-#include <qwr/file_helpers.h>
+#include <2K3/TextFile.hpp>
 #include <qwr/final_action.h>
 #include <qwr/winapi_error_helpers.h>
 
@@ -37,19 +37,18 @@ void NotifyParentPanel(HWND hParent)
 
 void EditTextFileInternal(HWND hParent, const std::filesystem::path& file, bool isPanelScript)
 {
-    // TODO: handle BOM
-    auto text = qwr::file::ReadFile(file, CP_ACP, true);
-    {
-        modal::ConditionalModalScope scope(hParent, isPanelScript);
-        smp::ui::CEditor dlg(file.filename().u8string(), text, [&] {
-            qwr::file::WriteFile(file, text);
-            if (isPanelScript)
-            {
-                NotifyParentPanel(hParent);
-            }
-        });
-        dlg.DoModal(hParent);
-    }
+    auto text = TextFile(file).read();
+    auto scope = modal::ConditionalModalScope(hParent, isPanelScript);
+
+    smp::ui::CEditor dlg(file.filename().u8string(), text, [&] {
+        TextFile(file).write(text);
+        if (isPanelScript)
+        {
+            NotifyParentPanel(hParent);
+        }
+    });
+
+    dlg.DoModal(hParent);
 }
 
 bool EditTextFileExternal(HWND hParent, const std::filesystem::path& file, const std::filesystem::path& pathToEditor, bool isModal, bool isPanelScript)
@@ -125,7 +124,7 @@ void EditTextExternal(HWND hParent, std::string& text, const std::filesystem::pa
     // use .tmp.js for proper file association
     const auto fsJsTmpFilePath = fs::path(fsTmpFilePath).concat(L".js");
 
-    qwr::file::WriteFile(fsJsTmpFilePath, text);
+    TextFile(fsJsTmpFilePath).write(text);
     const qwr::final_action autoRemove2([&fsJsTmpFilePath] { 
         try
             {
@@ -140,7 +139,7 @@ void EditTextExternal(HWND hParent, std::string& text, const std::filesystem::pa
         return;
     }
 
-    text = qwr::file::ReadFile(fsJsTmpFilePath, CP_UTF8);
+    text = TextFile(fsJsTmpFilePath).read();
 }
 
 } // namespace

@@ -5,6 +5,7 @@
 #include <2K3/CustomSort.hpp>
 #include <2K3/DownloadFileAsync.hpp>
 #include <2K3/FileHelper.hpp>
+#include <2K3/TextFile.hpp>
 #include <config/package_utils.h>
 #include <js_engine/js_to_native_invoker.h>
 #include <js_objects/fb_metadb_handle.h>
@@ -21,7 +22,6 @@
 #include <utils/edit_text.h>
 #include <utils/gdi_error_helpers.h>
 
-#include <qwr/file_helpers.h>
 #include <qwr/winapi_error_helpers.h>
 
 // StringCchCopy, StringCchCopyN
@@ -242,9 +242,7 @@ uint32_t Utils::ColourPicker(uint32_t, uint32_t default_colour)
 
 uint32_t Utils::DetectCharset(const std::wstring& path) const
 {
-    const auto cleanedPath = fs::path(path).lexically_normal();
-
-    return static_cast<uint32_t>(qwr::file::DetectFileCharset(cleanedPath));
+    return TextFile(path).guess_codepage();
 }
 
 void Utils::DownloadFileAsync(const std::string& url, const std::wstring& path)
@@ -670,7 +668,9 @@ std::wstring Utils::ReadINIWithOpt(size_t optArgCount, const std::wstring& filen
 
 std::wstring Utils::ReadTextFile(const std::wstring& filePath, uint32_t codepage)
 {
-    return qwr::file::ReadFileW(filePath, codepage);
+    std::wstring content;
+    TextFile(filePath).read_wide(codepage, content);
+    return content;
 }
 
 std::wstring Utils::ReadTextFileWithOpt(size_t optArgCount, const std::wstring& filePath, uint32_t codepage)
@@ -762,17 +762,7 @@ bool Utils::WriteINI(const std::wstring& filename, const std::wstring& section, 
 
 bool Utils::WriteTextFile(const std::wstring& filename, const std::string& content, bool write_bom)
 {
-    qwr::QwrException::ExpectTrue(!filename.empty(), "Invalid filename");
-
-    try
-    {
-        qwr::file::WriteFile(filename, content, write_bom);
-        return true;
-    }
-    catch (const qwr::QwrException&)
-    {
-        return false;
-    }
+    return TextFile(filename).write(content, write_bom);
 }
 
 bool Utils::WriteTextFileWithOpt(size_t optArgCount, const std::wstring& filename, const std::string& content, bool write_bom)

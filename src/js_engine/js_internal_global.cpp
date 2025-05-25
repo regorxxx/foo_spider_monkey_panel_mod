@@ -5,7 +5,7 @@
 #include <js_engine/js_realm_inner.h>
 #include <js_utils/cached_utf8_paths_hack.h>
 
-#include <qwr/file_helpers.h>
+#include <2K3/TextFile.hpp>
 
 SMP_MJS_SUPPRESS_WARNINGS_PUSH
 #include <js/CompilationAndEvaluation.h>
@@ -116,7 +116,8 @@ JSScript* JsInternalGlobal::GetCachedScript(const std::filesystem::path& absolut
         }
     }
 
-    const std::wstring scriptCode = qwr::file::ReadFileW(cleanPath, CP_ACP, false);
+    std::wstring scriptCode;
+    TextFile(cleanPath).read_wide(CP_UTF8, scriptCode);
 
     JS::SourceText<char16_t> source;
     if (!source.init(pJsCtx_, reinterpret_cast<const char16_t*>(scriptCode.c_str()), scriptCode.length(), JS::SourceOwnership::Borrowed))

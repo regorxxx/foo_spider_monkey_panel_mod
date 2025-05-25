@@ -2,7 +2,7 @@
 
 #include "sci_prop_sets.h"
 
-#include <qwr/file_helpers.h>
+#include <2K3/TextFile.hpp>
 #include <qwr/string_helpers.h>
 
 namespace
@@ -116,26 +116,14 @@ void ScintillaPropsCfg::export_to_file(const wchar_t* filename)
         content += "\r\n";
     }
 
-    qwr::file::WriteFile(filename, content);
+    TextFile(filename).write(content);
 }
 
 void ScintillaPropsCfg::import_from_file(const std::filesystem::path& path)
 {
-    const std::string text = [&] {
-        try
-        {
-            return qwr::file::ReadFile(path, CP_UTF8);
-        }
-        catch (const qwr::QwrException&)
-        {
-            return std::string{};
-        }
-    }();
-
+    const auto text = TextFile(path).read();
     if (text.empty())
-    {
         return;
-    }
 
     ScintillaPropValues data_map;
     for (const auto& line: qwr::string::SplitByLines(text))
