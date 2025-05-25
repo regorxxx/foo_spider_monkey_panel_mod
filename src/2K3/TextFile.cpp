@@ -4,7 +4,6 @@
 #include <MLang.h>
 
 TextFile::TextFile(const std::filesystem::path& path) : m_path(path) {}
-TextFile::TextFile(std::string_view path) : m_path(qwr::unicode::ToWide(path)) {}
 
 #pragma region static
 uint32_t TextFile::guess_codepage(std::string_view content)

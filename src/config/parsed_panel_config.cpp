@@ -7,7 +7,6 @@
 #include <component_paths.h>
 
 #include <qwr/fb2k_paths.h>
-#include <qwr/file_helpers.h>
 #include <qwr/type_traits.h>
 
 namespace fs = std::filesystem;
@@ -26,15 +25,7 @@ void Parse_InMemory(const config::PanelSettings_InMemory& settings, config::Pars
 
 void Parse_File(const config::PanelSettings_File& settings, config::ParsedPanelSettings& parsedSettings)
 {
-    try
-    {
-        const auto wpath = qwr::unicode::ToWide(settings.path);
-        parsedSettings.scriptPath = fs::path(wpath);
-    }
-    catch (const fs::filesystem_error& e)
-    {
-        throw qwr::QwrException(e);
-    }
+    parsedSettings.scriptPath = qwr::unicode::ToWide(settings.path);
 }
 
 void Parse_Sample(const config::PanelSettings_Sample& settings, config::ParsedPanelSettings& parsedSettings)

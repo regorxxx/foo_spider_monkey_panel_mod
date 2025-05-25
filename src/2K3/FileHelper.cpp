@@ -4,7 +4,6 @@
 namespace fs = std::filesystem;
 
 FileHelper::FileHelper(const fs::path& path) : m_path(path) {}
-FileHelper::FileHelper(std::string_view path) : m_path(qwr::unicode::ToWide(path)) {}
 
 #pragma region static
 bool FileHelper::rename(const fs::path& from, const fs::path& to)

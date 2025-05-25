@@ -5,10 +5,10 @@
 #include <panel/js_panel_window.h>
 #include <ui/ui_conf.h>
 
+#include <2K3/FileDialog.hpp>
 #include <2K3/TextFile.hpp>
 #include <qwr/abort_callback.h>
 #include <qwr/error_popup.h>
-#include <qwr/file_helpers.h>
 #include <qwr/type_traits.h>
 
 namespace fs = std::filesystem;
@@ -180,59 +180,43 @@ LRESULT CConfigTabProperties::OnDelBnClicked(WORD, WORD, HWND)
 
 LRESULT CConfigTabProperties::OnImportBnClicked(WORD, WORD, HWND)
 {
-    using namespace smp::config;
+    auto path_func = [this](fb2k::stringRef path)
+        {
+            const auto native = filesystem::g_get_native_path(path->c_str());
+            const auto wpath = qwr::unicode::ToWide(native);
+            const auto str = TextFile(wpath).read();
 
-    qwr::file::FileDialogOptions fdOpts{};
-    fdOpts.savePathGuid = guid::dialog_path;
-    fdOpts.filterSpec.assign({
-        { L"Property files", L"*.json" },
-        { L"All files", L"*.*" },
-    });
-    fdOpts.defaultFilename = L"props";
-    fdOpts.defaultExtension = L"json";
+            try
+            {
+                properties_ = smp::config::PanelProperties::FromJson(str);
+                UpdateUiFromData();
+            }
+            catch (const qwr::QwrException& e)
+            {
+                qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
+            }
+            catch (const pfc::exception& e)
+            {
+                qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
+            }
 
-    const auto optPath = qwr::file::FileDialog(L"Import from", false, fdOpts);
+            parent_.OnDataChanged();
+        };
 
-    if (!optPath)
-        return 0;
-
-    try
-    {
-        const auto str = TextFile(*optPath).read();
-        properties_ = PanelProperties::FromJson(str);
-        UpdateUiFromData();
-    }
-    catch (const qwr::QwrException& e)
-    {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
-    }
-    catch (const pfc::exception& e)
-    {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
-    }
-
-    parent_.OnDataChanged();
+    FileDialog::open(m_hWnd, "Import from", "Property files|*.json|All files|*.*", path_func);
     return 0;
 }
 
 LRESULT CConfigTabProperties::OnExportBnClicked(WORD, WORD, HWND)
 {
-    qwr::file::FileDialogOptions fdOpts{};
-    fdOpts.savePathGuid = guid::dialog_path;
-    fdOpts.filterSpec.assign({
-        { L"Property files", L"*.json" },
-        { L"All files", L"*.*" },
-    });
-    fdOpts.defaultFilename = L"props";
-    fdOpts.defaultExtension = L"json";
+    auto path_func = [this](fb2k::stringRef path)
+        {
+            const auto native = filesystem::g_get_native_path(path->c_str());
+            const auto wpath = qwr::unicode::ToWide(native);
+            TextFile(wpath).write(properties_.ToJson());
+        };
 
-    const auto optPath = qwr::file::FileDialog(L"Save as", true, fdOpts);
-
-    if (optPath)
-    {
-        TextFile(*optPath).write(properties_.ToJson());
-    }
-
+    FileDialog::save(m_hWnd, "Import from", "Property files|*.json|All files|*.*", "json", path_func);
     return 0;
 }
 

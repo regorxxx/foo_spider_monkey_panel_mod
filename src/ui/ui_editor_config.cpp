@@ -2,23 +2,11 @@
 
 #include "ui_editor_config.h"
 
+#include <2K3/FileDialog.hpp>
 #include <ui/scintilla/sci_config.h>
 #include <ui/ui_name_value_edit.h>
 
-#include <qwr/file_helpers.h>
-
 namespace fs = std::filesystem;
-
-namespace
-{
-
-constexpr auto k_DialogExtFilter = std::to_array<COMDLG_FILTERSPEC>(
-    {
-        { L"Configuration files", L"*.cfg" },
-        { L"All files", L"*.*" },
-    });
-
-} // namespace
 
 namespace smp::ui
 {
@@ -73,38 +61,27 @@ void CDialogEditorConfig::OnButtonReset(WORD wNotifyCode, WORD wID, HWND hWndCtl
 
 void CDialogEditorConfig::OnButtonExportBnClicked(WORD, WORD, HWND)
 {
-    qwr::file::FileDialogOptions fdOpts{};
-    fdOpts.savePathGuid = guid::dialog_path;
-    fdOpts.filterSpec.assign(k_DialogExtFilter.begin(), k_DialogExtFilter.end());
-    fdOpts.defaultExtension = L"cfg";
+    auto path_func = [this](fb2k::stringRef path)
+        {
+            const auto native = filesystem::g_get_native_path(path->c_str());
+            const auto wpath = qwr::unicode::ToWide(native);
+            config::sci::props.export_to_file(wpath);
+        };
 
-    const auto path_opt = qwr::file::FileDialog(L"Save as", true, fdOpts);
-    if (!path_opt || path_opt->empty())
-    {
-        return;
-    }
-
-    const auto path = path_opt->lexically_normal();
-    config::sci::props.export_to_file(path.c_str());
+    FileDialog::save(m_hWnd, "Save as", "Configuration files|*.cfg|All files|*.*", "cfg", path_func);
 }
 
 void CDialogEditorConfig::OnButtonImportBnClicked(WORD, WORD, HWND)
 {
-    qwr::file::FileDialogOptions fdOpts{};
-    fdOpts.savePathGuid = guid::dialog_path;
-    fdOpts.filterSpec.assign(k_DialogExtFilter.begin(), k_DialogExtFilter.end());
-    fdOpts.defaultExtension = L"cfg";
+    auto path_func = [this](fb2k::stringRef path)
+        {
+            const auto native = filesystem::g_get_native_path(path->c_str());
+            const auto wpath = qwr::unicode::ToWide(native);
+            config::sci::props.import_from_file(wpath);
+            LoadProps();
+        };
 
-    const auto path_opt = qwr::file::FileDialog(L"Import from", false, fdOpts);
-    if (!path_opt || path_opt->empty())
-    {
-        return;
-    }
-
-    const auto path = path_opt->lexically_normal();
-    config::sci::props.import_from_file(path);
-
-    LoadProps();
+    FileDialog::open(m_hWnd, "Import from", "Configuration files|*.cfg|All files|*.*", path_func);
 }
 
 LRESULT CDialogEditorConfig::OnPropNMDblClk(LPNMHDR pnmh)

@@ -32,7 +32,7 @@ public:
     void set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) override;
 
     void reset();
-    void export_to_file(const wchar_t* filename);
+    void export_to_file(const std::filesystem::path& filename);
     void import_from_file(const std::filesystem::path& path);
 
 private:

@@ -237,6 +237,7 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
   <ItemGroup>
     <ClInclude Include="2K3\CustomSort.hpp" />
     <ClInclude Include="2K3\DownloadFileAsync.hpp" />
+    <ClInclude Include="2K3\FileDialog.hpp" />
     <ClInclude Include="2K3\FileHelper.hpp" />
     <ClInclude Include="2K3\FileInfoFilter.hpp" />
     <ClInclude Include="2K3\TagWriter.hpp" />

@@ -8,9 +8,9 @@
 
 #include <component_paths.h>
 
+#include <2K3/FileDialog.hpp>
 #include <qwr/error_popup.h>
 #include <qwr/fb2k_paths.h>
-#include <qwr/file_helpers.h>
 #include <qwr/type_traits.h>
 #include <qwr/winapi_error_helpers.h>
 
@@ -276,22 +276,22 @@ void CConfigTabScriptSource::OnBrowseFile(UINT /*uNotifyCode*/, int /*nID*/, CWi
 
 std::optional<std::filesystem::path> CConfigTabScriptSource::OnBrowseFileImpl()
 {
-    qwr::file::FileDialogOptions fdOpts{};
-    fdOpts.savePathGuid = guid::dialog_path;
-    fdOpts.filterSpec.assign({
-        { L"JavaScript files", L"*.js" },
-        { L"Text files", L"*.txt" },
-        { L"All files", L"*.*" },
-    });
-    fdOpts.defaultExtension = L"js";
+    pfc::string8 path;
+    const auto b = uGetOpenFileName(
+        m_hWnd,
+        "JavaScript files|*.js|Text files|*.txt|All files|*.*",
+        0,
+        "js",
+        "Open script file",
+        nullptr,
+        path,
+        false
+    );
 
-    const auto pathOpt = qwr::file::FileDialog(L"Open script file", false, fdOpts);
-    if (!pathOpt || pathOpt->empty())
-    {
+    if (!b)
         return std::nullopt;
-    }
 
-    return pathOpt;
+    return qwr::unicode::ToWide(path);
 }
 
 void CConfigTabScriptSource::OnOpenPackageManager(UINT /*uNotifyCode*/, int /*nID*/, CWindow /*wndCtl*/)
@@ -381,22 +381,17 @@ void CConfigTabScriptSource::OnEditScriptWith(UINT uNotifyCode, int nID, CWindow
     {
     case ID_EDIT_WITH_EXTERNAL:
     {
-        // TODO: add ability to choose editor (e.g. like default context menu `Open With`)
+        auto path_func = [this](fb2k::stringRef path)
+            {
+                const auto native = filesystem::g_get_native_path(path->c_str());
+                const auto wpath = qwr::unicode::ToWide(native);
 
-        qwr::file::FileDialogOptions fdOpts{};
-        fdOpts.filterSpec.assign({ { L"Executable files", L"*.exe" } });
-        fdOpts.defaultExtension = L"exe";
+                std::error_code ec;
+                qwr::QwrException::ExpectTrue(fs::is_regular_file(wpath, ec), "Invalid path");
+                fb2k::configStore::get()->setConfigString("smp.editor.path", native);
+            };
 
-        const auto editorPathOpt = qwr::file::FileDialog(L"Choose text editor", false, fdOpts);
-        if (editorPathOpt)
-        {
-            std::error_code ec;
-            const fs::path editorPath = *editorPathOpt;
-            qwr::QwrException::ExpectTrue(fs::is_regular_file(editorPath, ec), "Invalid path");
-
-            const pfc::string8 tmp = qwr::unicode::ToU8(editorPath.native()).c_str();
-            fb2k::configStore::get()->setConfigString("smp.editor.path", tmp);
-        }
+        FileDialog::open(m_hWnd, "Choose text editor", "Executable files|*.exe", path_func);
         break;
     }
     case ID_EDIT_WITH_INTERNAL:

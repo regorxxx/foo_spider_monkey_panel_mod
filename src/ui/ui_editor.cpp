@@ -8,19 +8,13 @@
 
 #include <component_paths.h>
 
+#include <2K3/FileDialog.hpp>
 #include <2K3/TextFile.hpp>
 #include <qwr/fb2k_paths.h>
-#include <qwr/file_helpers.h>
 #include <qwr/pfc_helpers_ui.h>
 
 namespace
 {
-
-constexpr auto k_DialogExtFilter = std::to_array<COMDLG_FILTERSPEC>({
-    { L"JavaScript files", L"*.js" },
-    { L"Text files", L"*.txt" },
-    { L"All files", L"*.*" },
-});
 
 WINDOWPLACEMENT g_WindowPlacement{};
 
@@ -168,54 +162,34 @@ LRESULT CEditor::OnFileSave(WORD, WORD, HWND)
 
 LRESULT CEditor::OnFileImport(WORD, WORD, HWND)
 {
-    qwr::file::FileDialogOptions fdOpts{};
-    fdOpts.savePathGuid = guid::dialog_path;
-    fdOpts.filterSpec.assign(k_DialogExtFilter.begin(), k_DialogExtFilter.end());
-    fdOpts.defaultExtension = L"js";
+    auto path_func = [this](fb2k::stringRef path)
+        {
+            const auto native = filesystem::g_get_native_path(path->c_str());
+            const auto wpath = qwr::unicode::ToWide(native);
+            const auto str = TextFile(wpath).read();
+            sciEditor_.SetContent(str.c_str());
+        };
 
-    const auto filename = qwr::file::FileDialog(L"Import File", false, fdOpts);
-    if (!filename || filename->empty())
-    {
-        return 0;
-    }
-
-    try
-    {
-        const auto text = TextFile(*filename).read();
-        sciEditor_.SetContent(text.c_str());
-    }
-    catch (const qwr::QwrException& e)
-    {
-        const auto errorMsg = fmt::format("Failed to read file: {}", e.what());
-        popup_message_v3::get()->messageBox(*this,
-                                           errorMsg.c_str(),
-                                           caption_.c_str(),
-                                           MB_ICONWARNING | MB_SETFOREGROUND);
-    }
-
+    FileDialog::open(m_hWnd, "Import file", "JavaScript files|*.js|Text files|*.txt|All files|*.*", path_func);
     return 0;
 }
 
 LRESULT CEditor::OnFileExport(WORD, WORD, HWND)
 {
-    qwr::file::FileDialogOptions fdOpts{};
-    fdOpts.savePathGuid = guid::dialog_path;
-    fdOpts.filterSpec.assign(k_DialogExtFilter.begin(), k_DialogExtFilter.end());
-    fdOpts.defaultExtension = L"js";
+    auto path_func = [this](fb2k::stringRef path)
+        {
+            std::string text;
+            text.resize(sciEditor_.GetTextLength() + 1);
 
-    const auto filename = qwr::file::FileDialog(L"Export File", true, fdOpts);
-    if (!filename || filename->empty())
-    {
-        return 0;
-    }
+            sciEditor_.GetText(text.data(), text.size());
+            text.resize(strlen(text.data()));
 
-    std::string text;
-    text.resize(sciEditor_.GetTextLength() + 1);
+            const auto native = filesystem::g_get_native_path(path->c_str());
+            const auto wpath = qwr::unicode::ToWide(native);
+            TextFile(wpath).write(text);
+        };
 
-    sciEditor_.GetText(text.data(), text.size());
-    text.resize(strlen(text.data()));
-
-    TextFile(*filename).write(text);
+    FileDialog::save(m_hWnd, "Export file", "JavaScript files|*.js|Text files|*.txt|All files|*.*", "js", path_func);
     return 0;
 }
 

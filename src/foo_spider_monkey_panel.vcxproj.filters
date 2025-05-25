@@ -952,6 +952,9 @@
     <ClInclude Include="2K3\TextFile.hpp">
       <Filter>2K3</Filter>
     </ClInclude>
+    <ClInclude Include="2K3\FileDialog.hpp">
+      <Filter>2K3</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="js_engine">

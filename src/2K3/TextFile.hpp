@@ -4,7 +4,6 @@ class TextFile
 {
 public:
 	TextFile(const std::filesystem::path& path);
-	TextFile(std::string_view path);
 
 	bool write(std::string_view content, bool write_bom = false);
 	std::string read();

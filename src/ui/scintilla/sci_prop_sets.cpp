@@ -105,7 +105,7 @@ void ScintillaPropsCfg::reset()
     }
 }
 
-void ScintillaPropsCfg::export_to_file(const wchar_t* filename)
+void ScintillaPropsCfg::export_to_file(const std::filesystem::path& filename)
 {
     std::string content;
 

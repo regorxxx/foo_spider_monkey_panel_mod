@@ -8,9 +8,9 @@
 
 #include <component_paths.h>
 
+#include <2K3/FileDialog.hpp>
 #include <qwr/error_popup.h>
 #include <qwr/fb2k_paths.h>
-#include <qwr/file_helpers.h>
 #include <qwr/winapi_error_helpers.h>
 
 namespace fs = std::filesystem;
@@ -214,23 +214,19 @@ void CDialogPackageManager::OnDeletePackage(UINT /*uNotifyCode*/, int /*nID*/, C
 
 void CDialogPackageManager::OnImportPackage(UINT /*uNotifyCode*/, int /*nID*/, CWindow /*wndCtl*/)
 {
-    qwr::file::FileDialogOptions fdOpts{};
-    fdOpts.savePathGuid = guid::dialog_path;
-    fdOpts.filterSpec.assign({
-        { L"Zip archives", L"*.zip" },
-    });
+    auto path_func = [this](fb2k::stringRef path)
+        {
+            const auto native = filesystem::g_get_native_path(path->c_str());
+            const auto wpath = qwr::unicode::ToWide(native);
+            const auto isRestartNeeded = ImportPackage(wpath);
 
-    const auto pathOpt = qwr::file::FileDialog(L"Import package", false, fdOpts);
-    if (!pathOpt)
-    {
-        return;
-    }
+            if (isRestartNeeded && ConfirmRebootOnPackageInUse())
+            {
+                standard_commands::main_restart();
+            }
+        };
 
-    const auto isRestartNeeded = ImportPackage(*pathOpt);
-    if (isRestartNeeded && ConfirmRebootOnPackageInUse())
-    {
-        standard_commands::main_restart();
-    }
+    FileDialog::open(m_hWnd, "Import package", "Zip archives|*.zip", path_func);
 }
 
 void CDialogPackageManager::OnExportPackage(UINT /*uNotifyCode*/, int /*nID*/, CWindow /*wndCtl*/)
@@ -238,47 +234,29 @@ void CDialogPackageManager::OnExportPackage(UINT /*uNotifyCode*/, int /*nID*/, C
     assert(focusedPackageIdx_ >= 0 && static_cast<size_t>(focusedPackageIdx_) < packages_.size());
     assert(packages_[focusedPackageIdx_].parsedSettings);
 
-    const auto& currentPackageData = packages_[focusedPackageIdx_];
-
-    qwr::file::FileDialogOptions fdOpts{};
-    fdOpts.savePathGuid = guid::dialog_path;
-    fdOpts.filterSpec.assign({
-        { L"Zip archives", L"*.zip" },
-    });
-
-    auto archiveName = currentPackageData.displayedName;
-    for (auto& ch: archiveName)
-    {
-        const auto ct = PathGetCharType(ch);
-        if (!(ct & GCT_LFNCHAR))
+    auto path_func = [this](fb2k::stringRef path)
         {
-            ch = L'_';
-        }
-    }
+            const auto native = filesystem::g_get_native_path(path->c_str());
+            const auto wpath = qwr::unicode::ToWide(native);
+            const auto& currentPackageData = packages_[focusedPackageIdx_];
 
-    fdOpts.defaultFilename = archiveName;
-    fdOpts.defaultExtension = L"zip";
+            try
+            {
+                auto zp = ZipPacker(wpath);
+                zp.AddFolder(config::GetPackagePath(*currentPackageData.parsedSettings));
+                zp.Finish();
+            }
+            catch (const fs::filesystem_error& e)
+            {
+                qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide(e.what()));
+            }
+            catch (const qwr::QwrException& e)
+            {
+                qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
+            }
+        };
 
-    const auto pathOpt = qwr::file::FileDialog(L"Save package as", true, fdOpts);
-    if (!pathOpt)
-    {
-        return;
-    }
-
-    try
-    {
-        ZipPacker zp{ fs::path(*pathOpt) };
-        zp.AddFolder(config::GetPackagePath(*currentPackageData.parsedSettings));
-        zp.Finish();
-    }
-    catch (const fs::filesystem_error& e)
-    {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, qwr::unicode::ToU8_FromAcpToWide(e.what()));
-    }
-    catch (const qwr::QwrException& e)
-    {
-        qwr::ReportErrorWithPopup(SMP_UNDERSCORE_NAME, e.what());
-    }
+    FileDialog::save(m_hWnd, "Save package as", "Zip archives|*.zip", "zip", path_func);
 }
 
 void CDialogPackageManager::OnOpenFolder(UINT /*uNotifyCode*/, int /*nID*/, CWindow /*wndCtl*/)

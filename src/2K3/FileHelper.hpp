@@ -4,7 +4,6 @@ class FileHelper
 {
 public:
 	FileHelper(const std::filesystem::path& path);
-	FileHelper(std::string_view path);
 
 	static bool rename(const std::filesystem::path& from, const std::filesystem::path& to);
 	static uint32_t get_stream_size(IStream* stream);

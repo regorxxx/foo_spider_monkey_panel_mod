@@ -14,7 +14,6 @@
     <ClCompile Include="qwr\abort_callback.cpp" />
     <ClCompile Include="qwr\error_popup.cpp" />
     <ClCompile Include="qwr\fb2k_paths.cpp" />
-    <ClCompile Include="qwr\file_helpers.cpp" />
     <ClCompile Include="qwr\hook_handler.cpp" />
     <ClCompile Include="qwr\string_helpers.cpp" />
     <ClCompile Include="qwr\text_helpers.cpp" />
@@ -31,7 +30,6 @@
     <ClInclude Include="qwr\abort_callback.h" />
     <ClInclude Include="qwr\error_popup.h" />
     <ClInclude Include="qwr\fb2k_paths.h" />
-    <ClInclude Include="qwr\file_helpers.h" />
     <ClInclude Include="qwr\hook_handler.h" />
     <ClInclude Include="qwr\pfc_helpers_cnt.h" />
     <ClInclude Include="qwr\pfc_helpers_ui.h" />
