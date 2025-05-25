@@ -15,7 +15,6 @@
 #include <js_utils/js_property_helper.h>
 #include <utils/location_processor.h>
 
-#include <qwr/abort_callback.h>
 #include <qwr/string_helpers.h>
 
 using namespace smp;
@@ -322,25 +321,22 @@ uint32_t Plman::CreatePlaylist(uint32_t playlistIndex, const std::string& name)
 
 uint32_t Plman::DuplicatePlaylist(uint32_t from, const std::string& name)
 {
-    auto api = playlist_manager_v4::get();
-
+    auto api = playlist_manager::get();
     qwr::QwrException::ExpectTrue(from < api->get_playlist_count(), "Index is out of bounds");
 
-    metadb_handle_list contents;
-    api->playlist_get_all_items(from, contents);
+    pfc::string8 new_name(name.c_str());
 
-    pfc::string8_fast uname = name.c_str();
-    if (uname.is_empty())
+    if (new_name.is_empty())
     {
-        (void)api->playlist_get_name(from, uname);
+        api->playlist_get_name(from, new_name);
     }
 
-    stream_reader_dummy dummy_reader;
-    auto& abort = qwr::GlobalAbortCallback::GetInstance();
-    const uint32_t upos = api->create_playlist_ex(uname.c_str(), uname.length(), from + 1, contents, &dummy_reader, abort);
+    metadb_handle_list items;
+    api->playlist_get_all_items(from, items);
 
-    assert(pfc_infinite != upos);
-    return upos;
+    const auto pos = api->create_playlist(new_name, new_name.get_length(), ++from);
+    api->playlist_insert_items(pos, size_t{}, items, pfc::bit_array_false());
+    return pos;
 }
 
 uint32_t Plman::DuplicatePlaylistWithOpt(size_t optArgCount, uint32_t from, const std::string& name)
