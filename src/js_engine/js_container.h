@@ -1,8 +1,6 @@
 #pragma once
 #include <js_engine/native_to_js_invoker.h>
 
-#include <qwr/final_action.h>
-
 class HostTimerTask;
 
 namespace smp::panel
@@ -71,7 +69,7 @@ public:
         auto selfSaver = shared_from_this();
 
         OnJsActionStart();
-        qwr::final_action autoAction([&] { OnJsActionEnd(); });
+        auto autoAction = wil::scope_exit([&] { OnJsActionEnd(); });
 
         return mozjs::InvokeJsCallback<ReturnType>(pJsCtx_, jsGlobal_, functionName, std::forward<ArgTypes>(args)...);
     }

@@ -11,7 +11,6 @@
 #include <2K3/TextFile.hpp>
 #include <qwr/error_popup.h>
 #include <qwr/file_helpers.h>
-#include <qwr/final_action.h>
 #include <qwr/winapi_error_helpers.h>
 
 namespace fs = std::filesystem;
@@ -447,7 +446,7 @@ void CConfigTabPackage::DoFullDdxToUi()
 
     // avoid triggering loopback ddx
     suppressDdxFromUi_ = true;
-    const qwr::final_action autoSuppress([&] { suppressDdxFromUi_ = false; });
+    auto autoSuppress = wil::scope_exit([&] { suppressDdxFromUi_ = false; });
 
     for (auto& ddx: ddx_)
     {

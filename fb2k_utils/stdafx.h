@@ -43,7 +43,8 @@
 // range v3
 #include <range/v3/all.hpp>
 
-#include <string>
+// wil
+#include <wil/resource.h>
 
 // Additional PFC wrappers
 #include <qwr/pfc_helpers_cnt.h>

@@ -7,7 +7,6 @@
 #include <js_utils/js_object_helper.h>
 #include <utils/gdi_error_helpers.h>
 
-#include <qwr/final_action.h>
 #include <qwr/winapi_error_helpers.h>
 
 // TODO: add font caching
@@ -136,14 +135,14 @@ JSObject* JsGdiFont::Constructor(JSContext* cx, const std::wstring& fontName, ui
         DEFAULT_PITCH | FF_DONTCARE,
         fontName.c_str());
     qwr::error::CheckWinApi(!!hFont, "CreateFont");
-    qwr::final_action autoFont([hFont]() {
+    auto autoFont = wil::scope_exit([hFont]() {
         DeleteObject(hFont);
     });
 
     JS::RootedObject jsObject(cx, JsGdiFont::CreateJs(cx, std::move(pGdiFont), hFont, true));
     assert(jsObject);
 
-    autoFont.cancel();
+    autoFont.release();
     return jsObject;
 }
 

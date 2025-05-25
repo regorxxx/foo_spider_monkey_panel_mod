@@ -7,7 +7,6 @@
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 
-#include <qwr/final_action.h>
 #include <qwr/winapi_error_helpers.h>
 
 using namespace smp;
@@ -114,7 +113,7 @@ void JsThemeManager::DrawThemeBackground(JsGdiGraphics* gr,
     assert(graphics);
 
     HDC dc = graphics->GetHDC();
-    qwr::final_action autoHdcReleaser([graphics, dc]() { graphics->ReleaseHDC(dc); });
+    auto autoHdcReleaser = wil::scope_exit([graphics, dc]() { graphics->ReleaseHDC(dc); });
 
     const RECT rc{ x, y, static_cast<LONG>(x + w), static_cast<LONG>(y + h) };
     const RECT clip_rc{ clip_x, clip_y, static_cast<LONG>(clip_x + clip_y), static_cast<LONG>(clip_w + clip_h) };

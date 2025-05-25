@@ -10,8 +10,6 @@
 #include <panel/js_panel_window.h>
 #include <timeout/timeout_executor.h>
 
-#include <qwr/final_action.h>
-
 using namespace smp;
 
 namespace
@@ -152,7 +150,7 @@ void TimeoutManager::RunTimeout(const TimeStamp& now, const TimeStamp& targetDea
     TimeStamp start = nowSnapshot;
 
     uint32_t firingId = CreateFiringId();
-    auto guard = qwr::final_action([&] { DestroyFiringId(firingId); });
+    auto guard = wil::scope_exit([&] { DestroyFiringId(firingId); });
 
     // A native timer has gone off. See which of our timeouts need
     // servicing

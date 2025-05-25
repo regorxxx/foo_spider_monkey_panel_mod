@@ -6,8 +6,6 @@
 
 #include <panel/user_message.h>
 
-#include <qwr/final_action.h>
-
 namespace smp
 {
 
@@ -114,7 +112,7 @@ bool TaskController::ExecuteNextTask()
 
     { // allow other tasks to be queued
         ul.unlock();
-        qwr::final_action autoLock([&] {
+        auto autoLock = wil::scope_exit([&] {
             ul.lock();
         });
 

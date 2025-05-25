@@ -12,8 +12,6 @@
 #include <utils/kmeans.h>
 #include <utils/stackblur.h>
 
-#include <qwr/final_action.h>
-
 using namespace smp;
 
 namespace
@@ -229,7 +227,7 @@ void JsGdiBitmap::ApplyMask(JsGdiBitmap* mask)
     Gdiplus::Status gdiRet = pBitmapMask->LockBits(&rect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &maskBmpData);
     qwr::error::CheckGdi(gdiRet, "mask::LockBits");
 
-    qwr::final_action autoMaskBits([pBitmapMask, &maskBmpData] {
+    auto autoMaskBits = wil::scope_exit([pBitmapMask, &maskBmpData] {
         pBitmapMask->UnlockBits(&maskBmpData);
     });
 
@@ -237,7 +235,7 @@ void JsGdiBitmap::ApplyMask(JsGdiBitmap* mask)
     gdiRet = pGdi_->LockBits(&rect, Gdiplus::ImageLockModeRead | Gdiplus::ImageLockModeWrite, PixelFormat32bppARGB, &dstBmpData);
     qwr::error::CheckGdi(gdiRet, "dst::LockBits");
 
-    qwr::final_action autoDstBits([&pGdi = pGdi_, &dstBmpData] {
+    auto autoDstBits = wil::scope_exit([&pGdi = pGdi_, &dstBmpData] {
         pGdi->UnlockBits(&dstBmpData);
     });
 

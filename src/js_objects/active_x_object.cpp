@@ -17,7 +17,6 @@
 #include <js_utils/js_object_helper.h>
 #include <js_utils/js_prototype_helpers.h>
 
-#include <qwr/final_action.h>
 #include <qwr/string_helpers.h>
 #include <qwr/winapi_error_helpers.h>
 
@@ -900,7 +899,7 @@ void JsActiveXObject::ParseTypeInfoRecursive(JSContext* cx, ITypeInfo* pTypeInfo
     HRESULT hr = pTypeInfo->GetTypeAttr(&pAttr);
     qwr::error::CheckHR(hr, "GetTypeAttr");
 
-    qwr::final_action autoTypeAttr([pTypeInfo, pAttr] {
+    auto autoTypeAttr = wil::scope_exit([pTypeInfo, pAttr] {
         pTypeInfo->ReleaseTypeAttr(pAttr);
     });
 
@@ -918,7 +917,7 @@ void JsActiveXObject::ParseTypeInfoRecursive(JSContext* cx, ITypeInfo* pTypeInfo
             hr = pTypeInfo->GetRefTypeInfo(hRef, &pTypeInfoCur);
             if (SUCCEEDED(hr) && pTypeInfoCur)
             {
-                qwr::final_action autoTypeInfo([pTypeInfoCur] {
+                auto autoTypeInfo = wil::scope_exit([pTypeInfoCur] {
                     pTypeInfoCur->Release();
                 });
 

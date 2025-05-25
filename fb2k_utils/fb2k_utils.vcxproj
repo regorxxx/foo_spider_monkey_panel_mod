@@ -32,7 +32,6 @@
     <ClInclude Include="qwr\error_popup.h" />
     <ClInclude Include="qwr\fb2k_paths.h" />
     <ClInclude Include="qwr\file_helpers.h" />
-    <ClInclude Include="qwr\final_action.h" />
     <ClInclude Include="qwr\hook_handler.h" />
     <ClInclude Include="qwr\pfc_helpers_cnt.h" />
     <ClInclude Include="qwr\pfc_helpers_ui.h" />

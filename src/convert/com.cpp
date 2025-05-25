@@ -14,7 +14,6 @@
 #include <panel/user_message.h>
 
 #include <qwr/error_popup.h>
-#include <qwr/final_action.h>
 #include <qwr/winapi_error_helpers.h>
 
 SMP_MJS_SUPPRESS_WARNINGS_PUSH
@@ -521,7 +520,7 @@ void JsArrayToVariantArray(JSContext* cx, JS::HandleObject obj, int elementVaria
     SAFEARRAY* safeArray = SafeArrayCreateVector(elementVariantType, 0, len);
     qwr::QwrException::ExpectTrue(safeArray, "SafeArrayCreateVector failed");
 
-    qwr::final_action autoSa([safeArray]() {
+    auto autoSa = wil::scope_exit([safeArray]() {
         SafeArrayDestroy(safeArray);
     });
 
@@ -533,7 +532,7 @@ void JsArrayToVariantArray(JSContext* cx, JS::HandleObject obj, int elementVaria
             HRESULT hr = SafeArrayAccessData(safeArray, reinterpret_cast<void**>(&varArray));
             qwr::error::CheckHR(hr, "SafeArrayAccessData");
 
-            qwr::final_action autoSaData([safeArray]() {
+            auto autoSaData = wil::scope_exit([safeArray]() {
                 SafeArrayUnaccessData(safeArray);
             });
 
@@ -554,7 +553,7 @@ void JsArrayToVariantArray(JSContext* cx, JS::HandleObject obj, int elementVaria
             HRESULT hr = SafeArrayAccessData(safeArray, reinterpret_cast<void**>(&dataArray));
             qwr::error::CheckHR(hr, "SafeArrayAccessData");
 
-            qwr::final_action autoSaData([safeArray]() {
+            auto autoSaData = wil::scope_exit([safeArray]() {
                 SafeArrayUnaccessData(safeArray);
             });
 
@@ -578,7 +577,7 @@ void JsArrayToVariantArray(JSContext* cx, JS::HandleObject obj, int elementVaria
     var.vt = VT_ARRAY | elementVariantType;
     var.parray = safeArray;
 
-    autoSa.cancel(); // cancel array destruction
+    autoSa.release();
 }
 
 } // namespace mozjs::convert::com

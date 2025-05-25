@@ -13,8 +13,6 @@
 #include <js_utils/scope_helper.h>
 #include <panel/js_panel_window.h>
 
-#include <qwr/final_action.h>
-
 SMP_MJS_SUPPRESS_WARNINGS_PUSH
 #include <js/CompilationAndEvaluation.h>
 #include <js/SourceText.h>
@@ -67,7 +65,7 @@ bool JsContainer::Initialize()
     {
         jsGlobal_.init(pJsCtx_, JsGlobalObject::CreateNative(pJsCtx_, *this));
         assert(jsGlobal_);
-        qwr::final_action autoGlobal([&jsGlobal = jsGlobal_] {
+        auto autoGlobal = wil::scope_exit([&jsGlobal = jsGlobal_] {
             jsGlobal.reset();
         });
 
@@ -78,7 +76,7 @@ bool JsContainer::Initialize()
         pNativeRealm_ = static_cast<JsRealmInner*>(JS::GetRealmPrivate(js::GetContextRealm(pJsCtx_)));
         assert(pNativeRealm_);
 
-        autoGlobal.cancel();
+        autoGlobal.release();
     }
     catch (...)
     {
@@ -171,7 +169,7 @@ bool JsContainer::ExecuteScript(const std::string& scriptCode)
 
     auto selfSaver = shared_from_this();
     isParsingScript_ = true;
-    const auto autoParseState = qwr::final_action([&] { isParsingScript_ = false; });
+    const auto autoParseState = wil::scope_exit([&] { isParsingScript_ = false; });
 
     JSAutoRealm ac(pJsCtx_, jsGlobal_);
     try
@@ -186,7 +184,7 @@ bool JsContainer::ExecuteScript(const std::string& scriptCode)
         opts.setFileAndLine("", 1);
 
         OnJsActionStart();
-        qwr::final_action autoAction([&] { OnJsActionEnd(); });
+        auto autoAction = wil::scope_exit([&] { OnJsActionEnd(); });
 
         JS::RootedValue dummyRval(pJsCtx_);
         if (!JS::Evaluate(pJsCtx_, opts, source, &dummyRval))
@@ -211,13 +209,13 @@ bool JsContainer::ExecuteScriptFile(const std::filesystem::path& scriptPath)
 
     auto selfSaver = shared_from_this();
     isParsingScript_ = true;
-    auto autoParseState = qwr::final_action([&] { isParsingScript_ = false; });
+    auto autoParseState = wil::scope_exit([&] { isParsingScript_ = false; });
 
     JSAutoRealm ac(pJsCtx_, jsGlobal_);
     try
     {
         OnJsActionStart();
-        qwr::final_action autoAction([&] { OnJsActionEnd(); });
+        auto autoAction = wil::scope_exit([&] { OnJsActionEnd(); });
 
         assert(pNativeGlobal_);
         pNativeGlobal_->IncludeScript(scriptPath.u8string());
@@ -333,7 +331,7 @@ bool JsContainer::InvokeJsAsyncTask(JsAsyncTask& jsTask)
     JsAutoRealmWithErrorReport autoScope(pJsCtx_, jsGlobal_);
 
     OnJsActionStart();
-    qwr::final_action autoAction([&] { OnJsActionEnd(); });
+    auto autoAction = wil::scope_exit([&] { OnJsActionEnd(); });
 
     return jsTask.InvokeJs();
 }

@@ -11,7 +11,6 @@
 #include <qwr/error_popup.h>
 #include <qwr/fb2k_paths.h>
 #include <qwr/file_helpers.h>
-#include <qwr/final_action.h>
 #include <qwr/winapi_error_helpers.h>
 
 namespace fs = std::filesystem;
@@ -516,7 +515,7 @@ void CDialogPackageManager::UpdatedUiPackageInfo()
 
     CHARFORMAT savedCharFormat{};
     packageInfoEdit_.GetSelectionCharFormat(savedCharFormat);
-    const qwr::final_action autoFormat([&] { packageInfoEdit_.SetSelectionCharFormat(savedCharFormat); });
+    auto autoFormat = wil::scope_exit([&] { packageInfoEdit_.SetSelectionCharFormat(savedCharFormat); });
 
     if (!packageData.parsedSettings)
     {
@@ -602,7 +601,7 @@ bool CDialogPackageManager::ImportPackage(const std::filesystem::path& path)
         const auto tmpPath = path::TempFolder_PackageUnpack();
         fs::remove_all(tmpPath);
         fs::create_directories(tmpPath);
-        qwr::final_action autoTmp([&] {
+        auto autoTmp = wil::scope_exit([&] {
             try
             {
                 fs::remove_all(tmpPath);

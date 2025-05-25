@@ -13,7 +13,6 @@
 #include <utils/gdi_error_helpers.h>
 #include <utils/text_helpers.h>
 
-#include <qwr/final_action.h>
 #include <qwr/winapi_error_helpers.h>
 
 using namespace smp;
@@ -140,7 +139,7 @@ uint32_t JsGdiGraphics::CalcTextHeight(const std::wstring& str, JsGdiFont* font)
     qwr::QwrException::ExpectTrue(font, "font argument is null");
 
     const auto hDc = pGdi_->GetHDC();
-    qwr::final_action autoHdcReleaser([hDc, pGdi = pGdi_] { pGdi->ReleaseHDC(hDc); });
+    auto autoHdcReleaser = wil::scope_exit([hDc, pGdi = pGdi_] { pGdi->ReleaseHDC(hDc); });
     gdi::ObjectSelector autoFont(hDc, font->GetHFont());
 
     return smp::utils::GetTextHeight(hDc, str);
@@ -152,7 +151,7 @@ uint32_t JsGdiGraphics::CalcTextWidth(const std::wstring& str, JsGdiFont* font, 
     qwr::QwrException::ExpectTrue(font, "font argument is null");
 
     const auto hDc = pGdi_->GetHDC();
-    qwr::final_action autoHdcReleaser([hDc, pGdi = pGdi_] { pGdi->ReleaseHDC(hDc); });
+    auto autoHdcReleaser = wil::scope_exit([hDc, pGdi = pGdi_] { pGdi->ReleaseHDC(hDc); });
     gdi::ObjectSelector autoFont(hDc, font->GetHFont());
 
     return smp::utils::GetTextWidth(hDc, str, use_exact);
@@ -354,7 +353,7 @@ JSObject* JsGdiGraphics::EstimateLineWrap(const std::wstring& str, JsGdiFont* fo
     std::vector<smp::utils::WrappedTextLine> result;
     {
         const auto hDc = pGdi_->GetHDC();
-        qwr::final_action autoHdcReleaser([hDc, pGdi = pGdi_] { pGdi->ReleaseHDC(hDc); });
+        auto autoHdcReleaser = wil::scope_exit([hDc, pGdi = pGdi_] { pGdi->ReleaseHDC(hDc); });
         gdi::ObjectSelector autoFont(hDc, font->GetHFont());
 
         result = smp::utils::WrapText(hDc, str, max_width);
@@ -467,7 +466,7 @@ void JsGdiGraphics::GdiAlphaBlend(JsGdiRawBitmap* bitmap,
     assert(srcDc);
 
     const auto hDc = pGdi_->GetHDC();
-    qwr::final_action autoHdcReleaser([pGdi = pGdi_, hDc]() { pGdi->ReleaseHDC(hDc); });
+    auto autoHdcReleaser = wil::scope_exit([pGdi = pGdi_, hDc]() { pGdi->ReleaseHDC(hDc); });
 
     BOOL bRet = ::GdiAlphaBlend(hDc, dstX, dstY, dstW, dstH, srcDc, srcX, srcY, srcW, srcH, BLENDFUNCTION{ AC_SRC_OVER, 0, alpha, AC_SRC_ALPHA });
     qwr::error::CheckWinApi(bRet, "GdiAlphaBlend");
@@ -500,7 +499,7 @@ void JsGdiGraphics::GdiDrawBitmap(JsGdiRawBitmap* bitmap,
     assert(srcDc);
 
     HDC hDc = pGdi_->GetHDC();
-    qwr::final_action autoHdcReleaser([pGdi = pGdi_, hDc]() { pGdi->ReleaseHDC(hDc); });
+    auto autoHdcReleaser = wil::scope_exit([pGdi = pGdi_, hDc]() { pGdi->ReleaseHDC(hDc); });
 
     BOOL bRet;
     if (dstW == srcW && dstH == srcH)
@@ -527,7 +526,7 @@ void JsGdiGraphics::GdiDrawText(const std::wstring& str, JsGdiFont* font, uint32
     qwr::QwrException::ExpectTrue(font, "font argument is null");
 
     const auto hDc = pGdi_->GetHDC();
-    qwr::final_action autoHdcReleaser([pGdi = pGdi_, hDc] { pGdi->ReleaseHDC(hDc); });
+    auto autoHdcReleaser = wil::scope_exit([pGdi = pGdi_, hDc] { pGdi->ReleaseHDC(hDc); });
     gdi::ObjectSelector autoFont(hDc, font->GetHFont());
 
     RECT rc{ x, y, static_cast<LONG>(x + w), static_cast<LONG>(y + h) };

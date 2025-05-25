@@ -140,7 +140,7 @@ void JsEngine::MaybeRunJobs()
 
     jobsStartTime_ = timeGetTime();
     areJobsInProgress_ = true;
-    const auto autoJobs = qwr::final_action([&] {
+    auto autoJobs = wil::scope_exit([&] {
         areJobsInProgress_ = false;
     });
 

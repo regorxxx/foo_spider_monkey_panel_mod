@@ -5,8 +5,6 @@
 #include <js_engine/js_to_native_invoker.h>
 #include <js_utils/js_object_helper.h>
 
-#include <qwr/final_action.h>
-
 using namespace smp;
 
 namespace
@@ -123,7 +121,7 @@ std::string ParseJsValue(JSContext* cx, JS::HandleValue jsValue, JS::MutableHand
     std::string output;
 
     ++logDepth;
-    qwr::final_action autoDecrement([&logDepth] { --logDepth; });
+    auto autoDecrement = wil::scope_exit([&logDepth] { --logDepth; });
 
     if (!jsValue.isObject())
     {
@@ -165,7 +163,7 @@ std::string ParseJsValue(JSContext* cx, JS::HandleValue jsValue, JS::MutableHand
             }
 
             std::ignore = curObjects.emplaceBack(jsObject);
-            qwr::final_action autoPop([&curObjects] { curObjects.popBack(); });
+            auto autoPop = wil::scope_exit([&curObjects] { curObjects.popBack(); });
 
             bool is;
             if (!JS::IsArrayObject(cx, jsObject, &is))

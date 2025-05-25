@@ -8,7 +8,6 @@
 #include <js_utils/cached_utf8_paths_hack.h>
 #include <js_utils/js_property_helper.h>
 
-#include <qwr/final_action.h>
 #include <qwr/string_helpers.h>
 
 using namespace smp;
@@ -111,7 +110,7 @@ bool PrependTextToJsStringException(JSContext* cx, JS::HandleValue excn, const s
 
 bool PrependTextToJsObjectException(JSContext* cx, JS::HandleValue excn, const std::string& text)
 {
-    qwr::final_action autoClearOnError{ [cx] { JS_ClearPendingException(cx); } };
+    auto autoClearOnError = wil::scope_exit([cx] { JS_ClearPendingException(cx); });
 
     JS::RootedObject excnObject(cx, &excn.toObject());
     JS_ClearPendingException(cx); ///< need this for js::ErrorReport::init
@@ -172,7 +171,7 @@ bool PrependTextToJsObjectException(JSContext* cx, JS::HandleValue excn, const s
         return false;
     }
 
-    autoClearOnError.cancel();
+    autoClearOnError.release();
     JS_SetPendingException(cx, newExcn);
     return true;
 }
@@ -239,8 +238,9 @@ std::string JsErrorToText(JSContext* cx)
     (void)JS_GetPendingException(cx, &excn);
     JS_ClearPendingException(cx); ///< need this for js::ErrorReport::init
 
-    qwr::final_action autoErrorClear([cx]() { // There should be no exceptions on function exit
-        JS_ClearPendingException(cx);
+    auto autoErrorClear = wil::scope_exit([cx]()
+        { // There should be no exceptions on function exit
+            JS_ClearPendingException(cx);
         });
 
     std::string errorText;
@@ -439,9 +439,10 @@ void SuppressException(JSContext* cx)
 
 void PrependTextToJsError(JSContext* cx, const std::string& text)
 {
-    qwr::final_action autoJsReport([cx, text] {
-        JS_ReportErrorUTF8(cx, "%s", text.c_str());
-    });
+    auto autoJsReport = wil::scope_exit([cx, text]
+        {
+            JS_ReportErrorUTF8(cx, "%s", text.c_str());
+        });
 
     if (!JS_IsExceptionPending(cx))
     {
@@ -456,7 +457,7 @@ void PrependTextToJsError(JSContext* cx, const std::string& text)
     {
         if (PrependTextToJsStringException(cx, excn, text))
         {
-            autoJsReport.cancel();
+            autoJsReport.release();
         }
         return;
     }
@@ -464,7 +465,7 @@ void PrependTextToJsError(JSContext* cx, const std::string& text)
     {
         if (PrependTextToJsObjectException(cx, excn, text))
         {
-            autoJsReport.cancel();
+            autoJsReport.release();
         }
         return;
     }

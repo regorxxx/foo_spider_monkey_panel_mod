@@ -32,7 +32,6 @@
 
 #include <qwr/fb2k_paths.h>
 #include <qwr/file_helpers.h>
-#include <qwr/final_action.h>
 
 SMP_MJS_SUPPRESS_WARNINGS_PUSH
 #include <js/CompilationAndEvaluation.h>

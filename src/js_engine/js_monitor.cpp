@@ -11,7 +11,6 @@
 #include <panel/modal_blocking_scope.h>
 #include <ui/ui_slow_script.h>
 
-#include <qwr/final_action.h>
 #include <qwr/thread_helpers.h>
 
 using namespace smp;
@@ -121,7 +120,7 @@ bool JsMonitor::OnInterrupt()
         }
         isInInterrupt_ = true;
     }
-    qwr::final_action autoBool([&] {
+    auto autoBool = wil::scope_exit([&] {
         std::unique_lock<std::mutex> lock(watcherDataMutex_);
         isInInterrupt_ = false;
     });

@@ -7,7 +7,6 @@
 #include <ui/ui_editor.h>
 
 #include <2K3/TextFile.hpp>
-#include <qwr/final_action.h>
 #include <qwr/winapi_error_helpers.h>
 
 namespace
@@ -112,27 +111,25 @@ void EditTextExternal(HWND hParent, std::string& text, const std::filesystem::pa
 
         return fs::path(tmpFilePath) / filename;
     }();
-    const qwr::final_action autoRemove([&fsTmpFilePath] {
+    auto autoRemove = wil::scope_exit([&fsTmpFilePath] {
         try
-            {
+        {
             fs::remove(fsTmpFilePath);
-            }
-            catch (const fs::filesystem_error&)
-            {
-            } });
+        }
+        catch (const fs::filesystem_error&) {}
+    });
 
     // use .tmp.js for proper file association
     const auto fsJsTmpFilePath = fs::path(fsTmpFilePath).concat(L".js");
 
     TextFile(fsJsTmpFilePath).write(text);
-    const qwr::final_action autoRemove2([&fsJsTmpFilePath] { 
+    auto autoRemove2 = wil::scope_exit([&fsJsTmpFilePath] {
         try
-            {
+        {
             fs::remove(fsJsTmpFilePath);
-            }
-            catch (const fs::filesystem_error&)
-            {
-            } });
+        }
+        catch (const fs::filesystem_error&) {}
+    });
 
     if (!EditTextFileExternal(hParent, fsJsTmpFilePath, pathToEditor, true, isPanelScript))
     {

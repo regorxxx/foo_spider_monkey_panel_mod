@@ -2,7 +2,6 @@
 
 #include "thread_pool.h"
 
-#include <qwr/final_action.h>
 #include <qwr/thread_helpers.h>
 
 namespace qwr
@@ -58,7 +57,7 @@ void ThreadPool::AddThread()
 void ThreadPool::ThreadProc()
 {
     ++idleThreadCount_;
-    const auto idleCounter = qwr::final_action([&idleThreadsCount = idleThreadCount_]() {
+    auto scope = wil::scope_exit([&idleThreadsCount = idleThreadCount_]() {
         --idleThreadsCount;
     });
 

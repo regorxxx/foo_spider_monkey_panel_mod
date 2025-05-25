@@ -27,7 +27,6 @@
 
 #include <qwr/error_popup.h>
 #include <qwr/fb2k_paths.h>
-#include <qwr/final_action.h>
 #include <qwr/winapi_error_helpers.h>
 
 namespace
@@ -220,7 +219,7 @@ LRESULT js_panel_window::OnMessage(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
     static uint32_t msgNestedCounter = 0;
     ++msgNestedCounter;
-    const qwr::final_action autoComObjectDeleter([&] {
+    auto autoComObjectDeleter = wil::scope_exit([&] {
         // delete only on exit as to avoid delaying processing of the current message due to reentrancy
         --msgNestedCounter;
         if (!msgNestedCounter)
@@ -514,7 +513,7 @@ void js_panel_window::OnProcessingEventFinish()
 std::optional<LRESULT> js_panel_window::ProcessEvent()
 {
     OnProcessingEventStart();
-    qwr::final_action onEventProcessed([&] {
+    auto onEventProcessed = wil::scope_exit([&] {
         OnProcessingEventFinish();
     });
 
@@ -542,7 +541,7 @@ std::optional<LRESULT> js_panel_window::ProcessEvent()
 void js_panel_window::ProcessEventManually(Runnable& runnable)
 {
     OnProcessingEventStart();
-    qwr::final_action onEventProcessed([&] {
+    auto onEventProcessed = wil::scope_exit([&] {
         OnProcessingEventFinish();
     });
 

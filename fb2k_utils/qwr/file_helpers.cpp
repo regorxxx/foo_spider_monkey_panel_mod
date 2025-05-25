@@ -4,7 +4,6 @@
 
 #include <qwr/abort_callback.h>
 #include <qwr/fb2k_paths.h>
-#include <qwr/final_action.h>
 #include <qwr/string_helpers.h>
 #include <qwr/text_helpers.h>
 #include <qwr/winapi_error_helpers.h>
@@ -83,7 +82,7 @@ std::optional<fs::path> FileDialog(const std::wstring& title,
         hr = psiResult->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
         qwr::error::CheckHR(hr, "GetDisplayName");
 
-        qwr::final_action autoFilePath([pszFilePath] {
+        auto scope = wil::scope_exit([pszFilePath] {
             if (pszFilePath)
             {
                 CoTaskMemFree(pszFilePath);

@@ -6,7 +6,6 @@
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 
-#include <qwr/final_action.h>
 #include <qwr/winapi_error_helpers.h>
 
 using namespace smp;
@@ -83,7 +82,7 @@ JsFbTooltip::JsFbTooltip(JSContext* cx, HWND hParentWnd)
     , tipBuffer_(TEXT(SMP_NAME))
     , pFont_(smp::gdi::CreateUniquePtr<HFONT>(nullptr))
 {
-    qwr::final_action autoHwnd([&] {
+    auto autoHwnd = wil::scope_exit([&] {
         if (tooltipManual_.IsWindow())
         {
             if (pToolinfoManual_)
@@ -109,7 +108,7 @@ JsFbTooltip::JsFbTooltip(JSContext* cx, HWND hParentWnd)
 
     tooltipManual_.Activate(FALSE);
 
-    autoHwnd.cancel();
+    autoHwnd.release();
 }
 
 std::unique_ptr<JsFbTooltip>

@@ -9,7 +9,6 @@
 #include <js_utils/js_property_helper.h>
 
 #include <qwr/fb2k_paths.h>
-#include <qwr/final_action.h>
 #include <qwr/hook_handler.h>
 #include <qwr/winapi_error_helpers.h>
 
@@ -34,7 +33,7 @@ CDialogHtml::~CDialogHtml()
 
 LRESULT CDialogHtml::OnInitDialog(HWND, LPARAM)
 {
-    qwr::final_action autoExit([&] {
+    auto autoExit = wil::scope_exit([&] {
         EndDialog(-1);
     });
 
@@ -96,7 +95,7 @@ LRESULT CDialogHtml::OnInitDialog(HWND, LPARAM)
             qwr::error::CheckHR(hr, "put_designMode");
 
             SAFEARRAY* pSaStrings = SafeArrayCreateVector(VT_VARIANT, 0, 1);
-            qwr::final_action autoPsa([pSaStrings]() {
+            auto autoPsa = wil::scope_exit([pSaStrings]() {
                 SafeArrayDestroy(pSaStrings);
             });
 
@@ -133,7 +132,7 @@ LRESULT CDialogHtml::OnInitDialog(HWND, LPARAM)
             GetMsgProc(code, wParam, lParam, hIE, pThis);
         });
 
-    autoExit.cancel();
+    autoExit.release();
     return FALSE; // don't set focus to default control
 }
 

@@ -2,7 +2,6 @@
 
 #include "com_error_helpers.h"
 
-#include <qwr/final_action.h>
 #include <qwr/string_helpers.h>
 #include <qwr/winapi_error_helpers.h>
 
@@ -19,7 +18,7 @@ void ReportActiveXError(HRESULT hresult, EXCEPINFO& exception, UINT& argerr)
     }
     case DISP_E_EXCEPTION:
     {
-        const qwr::final_action autoCleaner([&exception] {
+        auto autoCleaner = wil::scope_exit([&exception] {
             SysFreeString(exception.bstrSource);
             SysFreeString(exception.bstrDescription);
             SysFreeString(exception.bstrHelpFile);

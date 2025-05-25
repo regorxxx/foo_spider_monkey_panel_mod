@@ -5,8 +5,6 @@
 #include <events/task_controller.h>
 #include <panel/user_message.h>
 
-#include <qwr/final_action.h>
-
 namespace smp
 {
 

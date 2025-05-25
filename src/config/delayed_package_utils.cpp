@@ -10,7 +10,6 @@
 
 #include <2K3/TextFile.hpp>
 #include <qwr/error_popup.h>
-#include <qwr/final_action.h>
 
 namespace fs = std::filesystem;
 
@@ -132,7 +131,7 @@ void UpdatePackages()
             continue;
         }
 
-        qwr::final_action autoTmp([&] {
+        auto autoTmp = wil::scope_exit([&] {
             try
             {
                 ForceRemoveDir(newPackageDir);

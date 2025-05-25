@@ -11,7 +11,6 @@
 #include <qwr/error_popup.h>
 #include <qwr/fb2k_paths.h>
 #include <qwr/file_helpers.h>
-#include <qwr/final_action.h>
 #include <qwr/type_traits.h>
 #include <qwr/winapi_error_helpers.h>
 
@@ -240,7 +239,7 @@ void CConfigTabScriptSource::OnDdxValueChange(int nID)
 {
     // avoid triggering loopback ddx
     suppressUiDdx_ = true;
-    const qwr::final_action autoSuppress([&] { suppressUiDdx_ = false; });
+    auto autoSuppress = wil::scope_exit([&] { suppressUiDdx_ = false; });
 
     auto it = std::find_if(ddx_.begin(), ddx_.end(), [nID](auto& val) {
         return val->IsMatchingId(nID);
@@ -497,7 +496,7 @@ void CConfigTabScriptSource::DoFullDdxToUi()
 
     // avoid triggering loopback ddx
     suppressUiDdx_ = true;
-    const qwr::final_action autoSuppress([&] { suppressUiDdx_ = false; });
+    auto autoSuppress = wil::scope_exit([&] { suppressUiDdx_ = false; });
 
     for (auto& ddx: ddx_)
     {

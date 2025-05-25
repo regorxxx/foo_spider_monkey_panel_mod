@@ -9,8 +9,6 @@
 #include <utils/guid_helpers.h>
 #include <utils/thread_pool_instance.h>
 
-#include <qwr/final_action.h>
-
 namespace
 {
 
@@ -168,7 +166,7 @@ std::unique_ptr<Gdiplus::Bitmap> LoadImageWithWIC(IStream* pStream)
 
     {
         // unlock bits before returning
-        qwr::final_action autoDstBits([&pGdiBitmap, &bmpdata] { pGdiBitmap->UnlockBits(&bmpdata); });
+        auto autoDstBits = wil::scope_exit([&pGdiBitmap, &bmpdata] { pGdiBitmap->UnlockBits(&bmpdata); });
 
         if FAILED(pSource->CopyPixels(nullptr, bmpdata.Stride, bmpdata.Stride * bmpdata.Height, static_cast<uint8_t*>(bmpdata.Scan0)))
             return nullptr;

@@ -3,8 +3,6 @@
 #include <com_objects/com_tools.h>
 #include <com_objects/drop_target_impl.h>
 
-#include <qwr/final_action.h>
-
 namespace smp::com
 {
 
@@ -22,7 +20,7 @@ public:
         assert(hDropWnd == reinterpret_cast<HWND>(wParam));
 
         auto pDataObj = reinterpret_cast<IDataObject*>(lParam);
-        const auto autoDrop = qwr::final_action([pDataObj] {
+        const auto autoDrop = wil::scope_exit([pDataObj] {
             pDataObj->Release();
         });
 
@@ -32,7 +30,7 @@ public:
         {
             return 0;
         }
-        const auto autoStgm = qwr::final_action([&stgm] {
+        const auto autoStgm = wil::scope_exit([&stgm] {
             ReleaseStgMedium(&stgm);
         });
 

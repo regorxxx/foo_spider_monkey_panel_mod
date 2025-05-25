@@ -8,8 +8,6 @@
 #include <js_utils/js_object_helper.h>
 #include <js_utils/js_property_helper.h>
 
-#include <qwr/final_action.h>
-
 namespace
 {
 
@@ -84,7 +82,7 @@ size_t JsFbMetadbHandleList_Iterator::GetInternalSize(JsFbMetadbHandleList& /*ha
 JSObject* JsFbMetadbHandleList_Iterator::Next()
 {
     const bool isAtEnd = (curPosition_ >= handleList_.get_Count());
-    const auto autoIncrement = qwr::final_action([&] {
+    auto autoIncrement = wil::scope_exit([&] {
         if (!isAtEnd)
         {
             ++curPosition_;

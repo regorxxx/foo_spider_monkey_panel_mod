@@ -5,8 +5,6 @@
 #include <com_objects/internal/drag_image.h>
 #include <utils/gdi_helpers.h>
 
-#include <qwr/final_action.h>
-
 namespace
 {
 
@@ -110,7 +108,7 @@ HRESULT SetDropText(IDataObject* pdtobj, DROPIMAGETYPE dit, const wchar_t* msg, 
 bool RenderDragImage(HWND hWnd, size_t itemCount, bool isThemed, bool showText, Gdiplus::Bitmap* pCustomImage, SHDRAGIMAGE& dragImage)
 {
     const HTHEME m_dd_theme = (IsThemeActive() && IsAppThemed() ? OpenThemeData(hWnd, VSCLASS_DRAGDROP) : nullptr);
-    qwr::final_action autoTheme([m_dd_theme] {
+    auto scope = wil::scope_exit([m_dd_theme] {
         if (m_dd_theme)
         {
             CloseThemeData(m_dd_theme);
