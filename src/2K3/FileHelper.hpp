@@ -16,8 +16,11 @@ public:
 	bool is_folder();
 	bool remove();
 	bool write(const void* data, size_t size);
+	std::unique_ptr<Gdiplus::Bitmap> load_image();
 	uint64_t file_size();
 	uint64_t last_modified();
+
+	static constexpr uint32_t kMaxStreamSize = 64 * 1024 * 1024;
 
 private:
 	std::filesystem::copy_options create_options(bool overwrite, bool recur = false);

@@ -18,7 +18,6 @@
 #include <panel/modal_blocking_scope.h>
 #include <timeout/timeout_manager.h>
 #include <ui/ui_conf.h>
-#include <utils/art_helpers.h>
 #include <utils/gdi_helpers.h>
 #include <utils/image_helpers.h>
 #include <utils/logging.h>

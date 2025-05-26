@@ -7,7 +7,6 @@
 
 #include <2K3/FileDialog.hpp>
 #include <2K3/TextFile.hpp>
-#include <qwr/abort_callback.h>
 #include <qwr/error_popup.h>
 #include <qwr/type_traits.h>
 

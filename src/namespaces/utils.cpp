@@ -2,9 +2,11 @@
 
 #include "utils.h"
 
+#include <2K3/AlbumArtStatic.hpp>
 #include <2K3/CustomSort.hpp>
 #include <2K3/DownloadFileAsync.hpp>
 #include <2K3/FileHelper.hpp>
+#include <2K3/GetAlbumArtAsync.hpp>
 #include <2K3/TextFile.hpp>
 #include <config/package_utils.h>
 #include <js_engine/js_to_native_invoker.h>
@@ -17,7 +19,6 @@
 #include <js_utils/js_property_helper.h>
 #include <ui/ui_html.h>
 #include <ui/ui_input_box.h>
-#include <utils/art_helpers.h>
 #include <utils/colour_helpers.h>
 #include <utils/edit_text.h>
 #include <utils/gdi_error_helpers.h>
@@ -320,15 +321,15 @@ std::string Utils::FormatFileSize(uint64_t p) const
     return std::string(pfc::format_file_size_short(p));
 }
 
-void Utils::GetAlbumArtAsync(uint32_t hWnd, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
+void Utils::GetAlbumArtAsync(uint32_t, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
 {
-    (void)hWnd;
-    const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);
-    qwr::QwrException::ExpectTrue(hPanel, "Method called before fb2k was initialized completely");
-
+    const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+    qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
     qwr::QwrException::ExpectTrue(handle, "handle argument is null");
+    qwr::QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
 
-    smp::art::GetAlbumArtAsync(hPanel, handle->GetHandle(), smp::art::LoadingOptions{ art_id, need_stub, only_embed, no_load });
+    auto task = fb2k::service_new<::GetAlbumArtAsync>(wnd, handle->GetHandle(), art_id, need_stub, only_embed);
+    fb2k::cpuThreadPool::get()->runSingle(task);
 }
 
 void Utils::GetAlbumArtAsyncWithOpt(size_t optArgCount, uint32_t hWnd, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
@@ -350,14 +351,14 @@ void Utils::GetAlbumArtAsyncWithOpt(size_t optArgCount, uint32_t hWnd, JsFbMetad
     }
 }
 
-JSObject* Utils::GetAlbumArtAsyncV2(uint32_t hWnd, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
+JSObject* Utils::GetAlbumArtAsyncV2(uint32_t /*window_id*/, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
 {
-    (void)hWnd;
-    const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);
-    qwr::QwrException::ExpectTrue(hPanel, "Method called before fb2k was initialized completely");
+    const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+    qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
     qwr::QwrException::ExpectTrue(handle, "handle argument is null");
+    qwr::QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
 
-    return mozjs::art::GetAlbumArtPromise(pJsCtx_, hPanel, handle->GetHandle(), smp::art::LoadingOptions{ art_id, need_stub, only_embed, no_load });
+    return mozjs::art::GetAlbumArtPromise(pJsCtx_, wnd, handle->GetHandle(), art_id, need_stub, only_embed);
 }
 
 JSObject* Utils::GetAlbumArtAsyncV2WithOpt(size_t optArgCount, uint32_t hWnd, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub, bool only_embed, bool no_load)
@@ -381,13 +382,14 @@ JSObject* Utils::GetAlbumArtAsyncV2WithOpt(size_t optArgCount, uint32_t hWnd, Js
 
 JSObject* Utils::GetAlbumArtEmbedded(const std::string& rawpath, uint32_t art_id)
 {
-    std::unique_ptr<Gdiplus::Bitmap> artImage(smp::art::GetBitmapFromEmbeddedData(rawpath, art_id));
-    if (!artImage)
-    { // Not an error: no art found
-        return nullptr;
-    }
+    qwr::QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
 
-    return JsGdiBitmap::CreateJs(pJsCtx_, std::move(artImage));
+    auto data = AlbumArtStatic::get_embedded(rawpath, art_id);
+    auto bitmap = AlbumArtStatic::to_bitmap(data);
+    if (!bitmap)
+        return nullptr;
+
+    return JsGdiBitmap::CreateJs(pJsCtx_, std::move(bitmap));
 }
 
 JSObject* Utils::GetAlbumArtEmbeddedWithOpt(size_t optArgCount, const std::string& rawpath, uint32_t art_id)
@@ -406,14 +408,15 @@ JSObject* Utils::GetAlbumArtEmbeddedWithOpt(size_t optArgCount, const std::strin
 JSObject* Utils::GetAlbumArtV2(JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub)
 {
     qwr::QwrException::ExpectTrue(handle, "handle argument is null");
+    qwr::QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
 
-    std::unique_ptr<Gdiplus::Bitmap> artImage(smp::art::GetBitmapFromMetadb(handle->GetHandle(), smp::art::LoadingOptions{ art_id, need_stub, false, false }, nullptr));
-    if (!artImage)
-    { // Not an error: no art found
+    std::string dummy_path;
+    auto data = AlbumArtStatic::get(handle->GetHandle(), art_id, need_stub, false, dummy_path);
+    auto bitmap = AlbumArtStatic::to_bitmap(data);
+    if (!bitmap)
         return nullptr;
-    }
 
-    return JsGdiBitmap::CreateJs(pJsCtx_, std::move(artImage));
+    return JsGdiBitmap::CreateJs(pJsCtx_, std::move(bitmap));
 }
 
 JSObject* Utils::GetAlbumArtV2WithOpt(size_t optArgCount, JsFbMetadbHandle* handle, uint32_t art_id, bool need_stub)

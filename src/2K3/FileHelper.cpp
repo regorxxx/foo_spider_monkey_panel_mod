@@ -1,6 +1,9 @@
 #include <stdafx.h>
 #include "FileHelper.hpp"
 
+#include <utils/gdi_helpers.h>
+#include <utils/image_helpers.h>
+
 namespace fs = std::filesystem;
 
 FileHelper::FileHelper(const fs::path& path) : m_path(path) {}
@@ -26,9 +29,8 @@ uint32_t FileHelper::get_stream_size(IStream* stream)
 
 HRESULT FileHelper::read(wil::com_ptr<IStream>& stream)
 {
-	static constexpr uint32_t max_image_size = 1024 * 1024 * 64; // 64MB
 	RETURN_IF_FAILED(SHCreateStreamOnFileEx(m_path.c_str(), STGM_READ | STGM_SHARE_DENY_WRITE, GENERIC_READ, FALSE, nullptr, &stream));
-	RETURN_HR_IF(E_INVALIDARG, get_stream_size(stream.get()) > max_image_size);
+	RETURN_HR_IF(E_INVALIDARG, get_stream_size(stream.get()) > kMaxStreamSize);
 	return S_OK;
 }
 
@@ -106,6 +108,19 @@ fs::copy_options FileHelper::create_options(bool overwrite, bool recur)
 	}
 
 	return options;
+}
+
+std::unique_ptr<Gdiplus::Bitmap> FileHelper::load_image()
+{
+	wil::com_ptr<IStream> stream;
+	if FAILED(read(stream))
+		return nullptr;
+
+	auto bitmap = std::make_unique<Gdiplus::Bitmap>(stream.get(), TRUE);
+	if (smp::gdi::IsGdiPlusObjectValid(bitmap))
+		return bitmap;
+
+	return smp::image::LoadImageWithWIC(stream.get());
 }
 
 uint64_t FileHelper::file_size()

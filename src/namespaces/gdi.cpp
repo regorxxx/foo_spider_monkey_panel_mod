@@ -2,6 +2,8 @@
 
 #include "gdi.h"
 
+#include <2K3/FileHelper.hpp>
+#include <2K3/LoadImageAsync.hpp>
 #include <js_engine/js_to_native_invoker.h>
 #include <js_objects/gdi_bitmap.h>
 #include <js_objects/gdi_font.h>
@@ -11,7 +13,6 @@
 #include <js_utils/js_object_helper.h>
 #include <utils/gdi_error_helpers.h>
 #include <utils/gdi_helpers.h>
-#include <utils/image_helpers.h>
 
 #include <qwr/winapi_error_helpers.h>
 
@@ -116,31 +117,31 @@ JSObject* Gdi::FontWithOpt(size_t optArgCount, const std::wstring& fontName, uin
 
 JSObject* Gdi::Image(const std::wstring& path)
 {
-    std::unique_ptr<Gdiplus::Bitmap> img = smp::image::LoadImage(path);
-    if (!img)
-    {
+    auto bitmap = FileHelper(path).load_image();
+    if (!bitmap)
         return nullptr;
-    }
 
-    return JsGdiBitmap::CreateJs(pJsCtx_, std::move(img));
+    return JsGdiBitmap::CreateJs(pJsCtx_, std::move(bitmap));
 }
 
-std::uint32_t Gdi::LoadImageAsync(uint32_t hWnd, const std::wstring& path)
+std::uint32_t Gdi::LoadImageAsync(uint32_t /*window_id*/, const std::wstring& path)
 {
-    (void)hWnd;
-    const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);
-    qwr::QwrException::ExpectTrue(hPanel, "Method called before fb2k was initialized completely");
+    const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+    qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
-    return smp::image::LoadImageAsync(hPanel, path);
+    static uint32_t s_task_id{};
+
+    auto task = fb2k::service_new<::LoadImageAsync>(wnd, path, ++s_task_id);
+    fb2k::cpuThreadPool::get()->runSingle(task);
+    return s_task_id;
 }
 
-JSObject* Gdi::LoadImageAsyncV2(uint32_t hWnd, const std::wstring& path)
+JSObject* Gdi::LoadImageAsyncV2(uint32_t /*window_id*/, const std::wstring& path)
 {
-    (void)hWnd;
-    const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);
-    qwr::QwrException::ExpectTrue(hPanel, "Method called before fb2k was initialized completely");
+    const auto wnd = GetPanelHwndForCurrentGlobal(pJsCtx_);
+    qwr::QwrException::ExpectTrue(wnd, "Method called before fb2k was initialized completely");
 
-    return mozjs::image::GetImagePromise(pJsCtx_, hPanel, path);
+    return mozjs::image::GetImagePromise(pJsCtx_, wnd, path);
 }
 
 } // namespace mozjs

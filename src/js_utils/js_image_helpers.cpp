@@ -1,7 +1,6 @@
 #include <stdafx.h>
 
-#include "js_art_helpers.h"
-
+#include <2K3/FileHelper.hpp>
 #include <convert/native_to_js.h>
 #include <events/event_dispatcher.h>
 #include <events/event_js_task.h>
@@ -12,7 +11,6 @@
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
 #include <utils/gdi_helpers.h>
-#include <utils/image_helpers.h>
 #include <utils/thread_pool_instance.h>
 
 #include <qwr/string_helpers.h>
@@ -21,21 +19,16 @@ SMP_MJS_SUPPRESS_WARNINGS_PUSH
 #include <js/Promise.h>
 SMP_MJS_SUPPRESS_WARNINGS_POP
 
-// TODO: remove duplicate code from art_helpers
-
 using namespace smp;
+using namespace mozjs;
 
 namespace
 {
 
-using namespace mozjs;
-
-class JsImageTask
-    : public JsAsyncTaskImpl<JS::HandleValue>
+class JsImageTask : public JsAsyncTaskImpl<JS::HandleValue>
 {
 public:
-    JsImageTask(JSContext* cx,
-                 JS::HandleValue jsPromise);
+    JsImageTask(JSContext* cx, JS::HandleValue jsPromise);
     ~JsImageTask() override = default;
 
     void SetData(std::unique_ptr<Gdiplus::Bitmap> image);
@@ -50,10 +43,11 @@ private:
 class ImageFetchTask
 {
 public:
-    ImageFetchTask(JSContext* cx,
-                    JS::HandleObject jsPromise,
-                    HWND hNotifyWnd,
-                    const std::wstring& imagePath);
+    ImageFetchTask(
+        JSContext* cx,
+        JS::HandleObject jsPromise,
+        HWND hNotifyWnd,
+        const std::wstring& imagePath);
 
     /// @details Executed off main thread
     ~ImageFetchTask() = default;
@@ -71,15 +65,11 @@ private:
     std::shared_ptr<JsImageTask> jsTask_;
 };
 
-} // namespace
-
-namespace
-{
-
-ImageFetchTask::ImageFetchTask(JSContext* cx,
-                                JS::HandleObject jsPromise,
-                                HWND hNotifyWnd,
-                                const std::wstring& imagePath)
+ImageFetchTask::ImageFetchTask(
+    JSContext* cx,
+    JS::HandleObject jsPromise,
+    HWND hNotifyWnd,
+    const std::wstring& imagePath)
     : hNotifyWnd_(hNotifyWnd)
     , imagePath_(imagePath)
 {
@@ -96,13 +86,15 @@ void ImageFetchTask::operator()()
         return;
     }
 
-    auto bitmap = smp::image::LoadImage(imagePath_);
+    auto bitmap = FileHelper(imagePath_).load_image();
 
     jsTask_->SetData(std::move(bitmap));
 
-    EventDispatcher::Get().PutEvent(hNotifyWnd_,
-                                     std::make_unique<Event_JsTask>(
-                                         EventId::kInternalLoadImagePromiseDone, jsTask_));
+    EventDispatcher::Get().PutEvent(
+        hNotifyWnd_,
+        std::make_unique<Event_JsTask>(
+        EventId::kInternalLoadImagePromiseDone, jsTask_)
+    );
 }
 
 JsImageTask::JsImageTask(JSContext* cx,

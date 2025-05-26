@@ -2,7 +2,7 @@
 
 #include "fb.h"
 
-#include <2K3/FileHelper.hpp>
+#include <2K3/AlbumArtStatic.hpp>
 #include <com_objects/drop_source_impl.h>
 #include <events/event_dispatcher.h>
 #include <events/event_js_callback.h>
@@ -25,7 +25,6 @@
 #include <js_utils/js_property_helper.h>
 #include <panel/modal_blocking_scope.h>
 #include <panel/user_message.h>
-#include <utils/art_helpers.h>
 #include <utils/menu_helpers.h>
 
 #include <qwr/fb2k_paths.h>
@@ -354,8 +353,8 @@ uint32_t Fb::DoDragDrop(uint32_t hWnd, JsFbMetadbHandleList* handles, uint32_t o
     (void)hWnd;
     const HWND hPanel = GetPanelHwndForCurrentGlobal(pJsCtx_);
     qwr::QwrException::ExpectTrue(hPanel, "Method called before fb2k was initialized completely");
-
     qwr::QwrException::ExpectTrue(handles, "handles argument is null");
+
     const metadb_handle_list& handleList = handles->GetHandleList();
     const size_t handleCount = handleList.get_count();
 
@@ -368,12 +367,6 @@ uint32_t Fb::DoDragDrop(uint32_t hWnd, JsFbMetadbHandleList* handles, uint32_t o
         if (!metadb.is_valid() || pfc_infinite == handleList.find_item(metadb))
         {
             metadb = handleList[handleCount - 1];
-        }
-
-        autoImage = smp::art::GetBitmapFromMetadbOrEmbed(metadb, smp::art::LoadingOptions{ 0, false, false, false }, nullptr);
-        if (autoImage)
-        {
-            parsedOptions.pCustomImage = autoImage.get();
         }
     }
 
@@ -855,23 +848,8 @@ void Fb::ShowLibrarySearchUI(const std::string& query)
 
 void Fb::ShowPictureViewer(const std::wstring& image_path)
 {
-    wil::com_ptr<IStream> stream;
-    if FAILED(FileHelper(image_path).read(stream))
-        return;
-
-    STATSTG stats{};
-    if FAILED(stream->Stat(&stats, STATFLAG_DEFAULT))
-        return;
-
-    const auto size = stats.cbSize.LowPart;
-    auto data = fb2k::service_new<album_art_data_impl>();
-    data->set_size(size);
-    ULONG bytes_read{};
-
-    if SUCCEEDED(stream->Read(data->get_ptr(), size, &bytes_read))
-    {
-        fb2k::imageViewer::get()->show(core_api::get_main_window(), data);
-    }
+    auto data = AlbumArtStatic::to_data(image_path);
+    AlbumArtStatic::show_viewer(data);
 }
 
 void Fb::ShowPopupMessage(const std::string& msg, const std::string& title)

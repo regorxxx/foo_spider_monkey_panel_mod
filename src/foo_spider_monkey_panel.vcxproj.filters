@@ -151,9 +151,6 @@
     <ClCompile Include="utils\image_helpers.cpp">
       <Filter>utils</Filter>
     </ClCompile>
-    <ClCompile Include="utils\art_helpers.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
     <ClCompile Include="js_utils\js_art_helpers.cpp">
       <Filter>js_utils</Filter>
     </ClCompile>
@@ -388,9 +385,6 @@
     <ClCompile Include="utils\logging.cpp">
       <Filter>utils</Filter>
     </ClCompile>
-    <ClCompile Include="utils\art_loading_options.cpp">
-      <Filter>utils</Filter>
-    </ClCompile>
     <ClCompile Include="js_objects\fb_audio_chunk.cpp">
       <Filter>js_objects</Filter>
     </ClCompile>
@@ -455,6 +449,12 @@
       <Filter>2K3</Filter>
     </ClCompile>
     <ClCompile Include="2K3\TextFile.cpp">
+      <Filter>2K3</Filter>
+    </ClCompile>
+    <ClCompile Include="2K3\AlbumArtStatic.cpp">
+      <Filter>2K3</Filter>
+    </ClCompile>
+    <ClCompile Include="2K3\Attach.cpp">
       <Filter>2K3</Filter>
     </ClCompile>
   </ItemGroup>
@@ -631,9 +631,6 @@
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="utils\image_helpers.h">
-      <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="utils\art_helpers.h">
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="js_utils\js_art_helpers.h">
@@ -910,9 +907,6 @@
     <ClInclude Include="utils\logging.h">
       <Filter>utils</Filter>
     </ClInclude>
-    <ClInclude Include="utils\art_loading_options.h">
-      <Filter>utils</Filter>
-    </ClInclude>
     <ClInclude Include="js_objects\fb_audio_chunk.h">
       <Filter>js_objects</Filter>
     </ClInclude>
@@ -953,6 +947,18 @@
       <Filter>2K3</Filter>
     </ClInclude>
     <ClInclude Include="2K3\FileDialog.hpp">
+      <Filter>2K3</Filter>
+    </ClInclude>
+    <ClInclude Include="2K3\AlbumArtStatic.hpp">
+      <Filter>2K3</Filter>
+    </ClInclude>
+    <ClInclude Include="2K3\Attach.hpp">
+      <Filter>2K3</Filter>
+    </ClInclude>
+    <ClInclude Include="2K3\GetAlbumArtAsync.hpp">
+      <Filter>2K3</Filter>
+    </ClInclude>
+    <ClInclude Include="2K3\LoadImageAsync.hpp">
       <Filter>2K3</Filter>
     </ClInclude>
   </ItemGroup>

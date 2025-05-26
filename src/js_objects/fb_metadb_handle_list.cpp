@@ -2,6 +2,7 @@
 
 #include "fb_metadb_handle_list.h"
 
+#include <2K3/Attach.hpp>
 #include <2K3/CustomSort.hpp>
 #include <2K3/TagWriter.hpp>
 #include <fb2k/stats.h>
@@ -11,9 +12,7 @@
 #include <js_objects/fb_title_format.h>
 #include <js_utils/js_error_helper.h>
 #include <js_utils/js_object_helper.h>
-#include <utils/art_helpers.h>
 
-#include <qwr/abort_callback.h>
 #include <qwr/string_helpers.h>
 
 SMP_MJS_SUPPRESS_WARNINGS_PUSH
@@ -319,46 +318,10 @@ void JsFbMetadbHandleList::AddRange(JsFbMetadbHandleList* handles)
     metadbHandleList_.add_items(handles->GetHandleList());
 }
 
-void JsFbMetadbHandleList::AttachImage(const std::string& image_path, uint32_t art_id)
+void JsFbMetadbHandleList::AttachImage(const std::wstring& image_path, uint32_t art_id)
 {
-    t_size count = metadbHandleList_.get_count();
-    if (!count)
-    { // Nothing to do here
-        return;
-    }
-
-    const GUID& what = art::GetGuidForArtId(art_id);
-    auto& abort = qwr::GlobalAbortCallback::GetInstance();
-    album_art_data_ptr data;
-
-    try
-    {
-        pfc::string8_fast canPath;
-        filesystem::g_get_canonical_path(image_path.c_str(), canPath);
-
-        file::ptr file;
-
-        if (!filesystem::g_is_remote_or_unrecognized(canPath))
-        {
-            filesystem::g_open(file, canPath, filesystem::open_mode_read, abort);
-        }
-        if (file.is_valid())
-        {
-            auto tmp = fb2k::service_new<album_art_data_impl>();
-            tmp->from_stream(file.get_ptr(), t_size(file->get_size_ex(abort)), abort);
-            data = tmp;
-        }
-    }
-    catch (const pfc::exception&)
-    {
-        return;
-    }
-
-    if (data.is_valid())
-    {
-        auto cb = fb2k::service_new<art::EmbedThread>(art::EmbedThread::EmbedAction::embed, data, metadbHandleList_, what);
-        threaded_process::get()->run_modeless(cb, threaded_process::flag_silent, core_api::get_main_window(), "Embedding images...");
-    }
+    qwr::QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
+    Attach::from_path(metadbHandleList_, art_id, image_path);
 }
 
 int32_t JsFbMetadbHandleList::BSearch(JsFbMetadbHandle* handle)
@@ -555,27 +518,13 @@ void JsFbMetadbHandleList::RemoveAll()
 
 void JsFbMetadbHandleList::RemoveAttachedImage(uint32_t art_id)
 {
-    t_size count = metadbHandleList_.get_count();
-    if (!count)
-    { // Nothing to do here
-        return;
-    }
-
-    const GUID& what = art::GetGuidForArtId(art_id);
-    auto cb = fb2k::service_new<art::EmbedThread>(art::EmbedThread::EmbedAction::remove, album_art_data_ptr(), metadbHandleList_, what);
-    threaded_process::get()->run_modeless(cb, threaded_process::flag_silent, core_api::get_main_window(), "Removing images...");
+    qwr::QwrException::ExpectTrue(AlbumArtStatic::check_type_id(art_id), "Invalid art_id");
+    Attach::remove_id(metadbHandleList_, art_id);
 }
 
 void JsFbMetadbHandleList::RemoveAttachedImages()
 {
-    t_size count = metadbHandleList_.get_count();
-    if (!count)
-    { // Nothing to do here
-        return;
-    }
-
-    auto cb = fb2k::service_new<art::EmbedThread>(art::EmbedThread::EmbedAction::removeAll, album_art_data_ptr(), metadbHandleList_, pfc::guid_null);
-    threaded_process::get()->run_modeless(cb, threaded_process::flag_silent, core_api::get_main_window(), "Removing images...");
+    Attach::remove_all(metadbHandleList_);
 }
 
 void JsFbMetadbHandleList::RemoveById(uint32_t index)

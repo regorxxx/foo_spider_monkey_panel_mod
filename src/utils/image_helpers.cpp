@@ -1,77 +1,11 @@
 #include <stdafx.h>
 
-#include "image_helpers.h"
-
-#include <2K3/FileHelper.hpp>
-#include <events/event_dispatcher.h>
-#include <events/event_js_callback.h>
-#include <utils/gdi_helpers.h>
-#include <utils/guid_helpers.h>
-#include <utils/thread_pool_instance.h>
-
-namespace
-{
-
-using namespace smp;
-
-class LoadImageTask
-{
-public:
-    LoadImageTask(HWND hNotifyWnd, uint32_t taskId, const std::wstring& imagePath);
-
-    LoadImageTask(const LoadImageTask&) = delete;
-    LoadImageTask& operator=(const LoadImageTask&) = delete;
-
-    void operator()();
-
-    [[nodiscard]] uint32_t GetTaskId() const;
-
-private:
-    void run();
-
-private:
-    HWND hNotifyWnd_;
-    uint32_t taskId_{};
-    std::wstring imagePath_;
-};
-
-LoadImageTask::LoadImageTask(HWND hNotifyWnd, uint32_t taskId, const std::wstring& imagePath)
-    : hNotifyWnd_(hNotifyWnd)
-    , taskId_(taskId)
-    , imagePath_(imagePath)
-{
-}
-
-void LoadImageTask::operator()()
-{
-    return run();
-}
-
-uint32_t LoadImageTask::GetTaskId() const
-{
-    return taskId_;
-}
-
-void LoadImageTask::run()
-{
-    const std::string path = file_path_display(qwr::ToU8(imagePath_).c_str()).get_ptr();
-
-    EventDispatcher::Get().PutEvent(hNotifyWnd_,
-                                     GenerateEvent_JsCallback(
-                                         EventId::kInternalLoadImageDone,
-                                         taskId_,
-                                         image::LoadImage(imagePath_),
-                                         path));
-}
-
-} // namespace
-
 namespace smp::image
 {
 
-std::tuple<uint32_t, uint32_t>
-GetResizedImageSize(const std::tuple<uint32_t, uint32_t>& currentDimension,
-                     const std::tuple<uint32_t, uint32_t>& maxDimensions) noexcept
+std::tuple<uint32_t, uint32_t> GetResizedImageSize(
+    const std::tuple<uint32_t, uint32_t>& currentDimension,
+    const std::tuple<uint32_t, uint32_t>& maxDimensions) noexcept
 {
     const auto& [maxWidth, maxHeight] = maxDimensions;
     const auto& [imgWidth, imgHeight] = currentDimension;
@@ -100,34 +34,6 @@ GetResizedImageSize(const std::tuple<uint32_t, uint32_t>& currentDimension,
     }
 
     return std::make_tuple(newWidth, newHeight);
-}
-
-uint32_t LoadImageAsync(HWND hWnd, const std::wstring& imagePath)
-{
-    // This is performed on the main thread only, so it's all good
-    static uint32_t g_taskId = 0;
-    if (g_taskId == std::numeric_limits<uint32_t>::max())
-    {
-        g_taskId = 0;
-    }
-
-    auto task = std::make_shared<LoadImageTask>(hWnd, g_taskId++, imagePath);
-    smp::GetThreadPoolInstance().AddTask([task] { std::invoke(*task); });
-
-    return task->GetTaskId();
-}
-
-std::unique_ptr<Gdiplus::Bitmap> LoadImage(const std::wstring& imagePath)
-{
-    wil::com_ptr<IStream> stream;
-    if FAILED(FileHelper(imagePath).read(stream))
-        return nullptr;
-
-    auto pImg = std::make_unique<Gdiplus::Bitmap>(stream.get(), TRUE);
-    if (gdi::IsGdiPlusObjectValid(pImg))
-        return pImg;
-
-    return LoadImageWithWIC(stream.get());
 }
 
 std::unique_ptr<Gdiplus::Bitmap> LoadImageWithWIC(IStream* pStream)

@@ -7,8 +7,6 @@
 #include <js_engine/js_engine.h>
 
 #include <utils/thread_pool_instance.h>
-
-#include <qwr/abort_callback.h>
 #include <qwr/error_popup.h>
 
 #include <Scintilla.h>
@@ -70,7 +68,6 @@ namespace
     {
         mozjs::JsEngine::GetInstance().PrepareForExit();
         smp::EventDispatcher::Get().NotifyAllAboutExit();
-        qwr::GlobalAbortCallback::GetInstance().Abort();
         smp::GetThreadPoolInstance().Finalize();
         Scintilla_ReleaseResources();
         FreeLibrary(rich_edit_ctrl);

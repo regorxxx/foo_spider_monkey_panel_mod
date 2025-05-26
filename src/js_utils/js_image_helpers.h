@@ -1,8 +1,5 @@
 #pragma once
 
-class JSObject;
-struct JSContext;
-
 namespace mozjs::image
 {
 

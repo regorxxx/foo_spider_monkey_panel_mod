@@ -100,6 +100,7 @@ using JSON = nlohmann::json;
 // foobar2000 SDK
 #pragma warning(push, 0)
 #include <foobar2000/SDK/foobar2000.h>
+#include <foobar2000/helpers/file_list_helper.h>
 #include <pfc/string-conv-lite.h>
 #pragma warning(pop) 
 
