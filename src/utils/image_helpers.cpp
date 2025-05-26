@@ -1,4 +1,6 @@
 #include <stdafx.h>
+#include "image_helpers.h"
+#include <utils/gdi_helpers.h>
 
 namespace smp::image
 {
@@ -36,49 +38,56 @@ std::tuple<uint32_t, uint32_t> GetResizedImageSize(
     return std::make_tuple(newWidth, newHeight);
 }
 
-std::unique_ptr<Gdiplus::Bitmap> LoadImageWithWIC(IStream* pStream)
+std::unique_ptr<Gdiplus::Bitmap> LoadWithWIC(IStream* stream)
 {
-    auto pFactory = wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
-    if (!pFactory)
+    auto factory = wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
+    if (!factory)
         return nullptr;
 
-    wil::com_ptr<IWICBitmapDecoder> pDecoder;
-    wil::com_ptr<IWICBitmapFrameDecode> pFrame;
-    wil::com_ptr<IWICBitmapSource> pSource;
+    wil::com_ptr<IWICBitmapDecoder> decoder;
+    wil::com_ptr<IWICBitmapFrameDecode> frame;
+    wil::com_ptr<IWICBitmapSource> source;
 
-    if FAILED(pFactory->CreateDecoderFromStream(pStream, nullptr, WICDecodeMetadataCacheOnDemand, &pDecoder))
+    if FAILED(factory->CreateDecoderFromStream(stream, nullptr, WICDecodeMetadataCacheOnDemand, &decoder))
         return nullptr;
 
-    if FAILED(pDecoder->GetFrame(0, &pFrame))
+    if FAILED(decoder->GetFrame(0, &frame))
         return nullptr;
 
-    if FAILED(WICConvertBitmapSource(GUID_WICPixelFormat32bppPBGRA, pFrame.get(), &pSource))
+    if FAILED(WICConvertBitmapSource(GUID_WICPixelFormat32bppPBGRA, frame.get(), &source))
         return nullptr;
 
     uint32_t w{}, h{};
-    if FAILED(pSource->GetSize(&w, &h))
+    if FAILED(source->GetSize(&w, &h))
         return nullptr;
 
     static constexpr auto gdiFormat = PixelFormat32bppPARGB;
-    auto pGdiBitmap = std::make_unique<Gdiplus::Bitmap>(w, h, gdiFormat);
-    if (!pGdiBitmap || Gdiplus::Status::Ok != pGdiBitmap->GetLastStatus())
-        return nullptr;
+    auto bitmap = std::make_unique<Gdiplus::Bitmap>(w, h, gdiFormat);
 
     Gdiplus::Rect rect{ 0, 0, static_cast<INT>(w), static_cast<INT>(h) };
     Gdiplus::BitmapData bmpdata{};
-    auto gdiStatus = pGdiBitmap->LockBits(&rect, Gdiplus::ImageLockModeRead | Gdiplus::ImageLockModeWrite, gdiFormat, &bmpdata);
+    auto gdiStatus = bitmap->LockBits(&rect, Gdiplus::ImageLockModeRead | Gdiplus::ImageLockModeWrite, gdiFormat, &bmpdata);
     if (gdiStatus != Gdiplus::Ok)
         return nullptr;
 
     {
         // unlock bits before returning
-        auto autoDstBits = wil::scope_exit([&pGdiBitmap, &bmpdata] { pGdiBitmap->UnlockBits(&bmpdata); });
+        auto autoDstBits = wil::scope_exit([&bitmap, &bmpdata] { bitmap->UnlockBits(&bmpdata); });
 
-        if FAILED(pSource->CopyPixels(nullptr, bmpdata.Stride, bmpdata.Stride * bmpdata.Height, static_cast<uint8_t*>(bmpdata.Scan0)))
+        if FAILED(source->CopyPixels(nullptr, bmpdata.Stride, bmpdata.Stride * bmpdata.Height, static_cast<uint8_t*>(bmpdata.Scan0)))
             return nullptr;
     }
 
-    return pGdiBitmap;
+    return bitmap;
+}
+
+std::unique_ptr<Gdiplus::Bitmap> Load(IStream* stream)
+{
+    auto bitmap = std::make_unique<Gdiplus::Bitmap>(stream, TRUE);
+    if (smp::gdi::IsGdiPlusObjectValid(bitmap))
+        return bitmap;
+
+    return LoadWithWIC(stream);
 }
 
 } // namespace smp::image

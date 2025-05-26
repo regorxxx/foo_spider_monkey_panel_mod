@@ -2,7 +2,6 @@
 #include "AlbumArtStatic.hpp"
 #include "FileHelper.hpp"
 
-#include <utils/gdi_helpers.h>
 #include <utils/image_helpers.h>
 
 HRESULT AlbumArtStatic::to_istream(const album_art_data_ptr& data, wil::com_ptr<IStream>& stream)
@@ -129,11 +128,7 @@ std::unique_ptr<Gdiplus::Bitmap> AlbumArtStatic::to_bitmap(const album_art_data_
 	if FAILED(to_istream(data, stream))
 		return nullptr;
 
-	auto pImg = std::make_unique<Gdiplus::Bitmap>(stream.get(), TRUE);
-	if (smp::gdi::IsGdiPlusObjectValid(pImg))
-		return pImg;
-
-	return smp::image::LoadImageWithWIC(stream.get());
+	return smp::image::Load(stream.get());
 }
 
 void AlbumArtStatic::show_viewer(const album_art_data_ptr& data)
