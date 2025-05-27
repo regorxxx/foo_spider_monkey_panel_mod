@@ -218,7 +218,7 @@ bool JsContainer::ExecuteScriptFile(const std::filesystem::path& scriptPath)
         auto autoAction = wil::scope_exit([&] { OnJsActionEnd(); });
 
         assert(pNativeGlobal_);
-        pNativeGlobal_->IncludeScript(scriptPath.u8string());
+        pNativeGlobal_->IncludeScript(scriptPath);
         return true;
     }
     catch (...)

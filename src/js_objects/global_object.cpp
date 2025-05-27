@@ -315,7 +315,7 @@ void JsGlobalObject::ClearTimeout(uint32_t timeoutId)
     pWindow_->ClearInterval(timeoutId);
 }
 
-void JsGlobalObject::IncludeScript(const std::string& path, JS::HandleValue options)
+void JsGlobalObject::IncludeScript(const std::wstring& path, JS::HandleValue options)
 {
     const auto allSearchPaths = [&] {
         std::vector<fs::path> paths;
@@ -334,18 +334,15 @@ void JsGlobalObject::IncludeScript(const std::string& path, JS::HandleValue opti
         return paths;
     }();
 
-    const auto wpath = qwr::ToWide(path);
-    const auto fsPath = ::FindSuitableFileForInclude(fs::path(path), allSearchPaths);
 
+    const auto fsPath = ::FindSuitableFileForInclude(path, allSearchPaths);
     const auto parsedOptions = ParseIncludeOptions(options);
-
-    const auto u8Path = fsPath.u8string();
-    if (!parsedOptions.alwaysEvaluate && includedFiles_.contains(u8Path))
+    if (!parsedOptions.alwaysEvaluate && includedFiles_.contains(fsPath.native()))
     {
         return;
     }
 
-    includedFiles_.emplace(u8Path);
+    includedFiles_.emplace(fsPath.native());
 
     JS::RootedScript jsScript(pJsCtx_, JsEngine::GetInstance().GetInternalGlobal().GetCachedScript(fsPath));
     assert(jsScript);
@@ -357,7 +354,7 @@ void JsGlobalObject::IncludeScript(const std::string& path, JS::HandleValue opti
     }
 }
 
-void JsGlobalObject::IncludeScriptWithOpt(size_t optArgCount, const std::string& path, JS::HandleValue options)
+void JsGlobalObject::IncludeScriptWithOpt(size_t optArgCount, const std::wstring& path, JS::HandleValue options)
 {
     switch (optArgCount)
     {

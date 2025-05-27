@@ -41,8 +41,8 @@ public: // methods
     void ClearInterval(uint32_t intervalId);
     void ClearTimeout(uint32_t timeoutId);
 
-    void IncludeScript(const std::string& path, JS::HandleValue options = JS::UndefinedHandleValue);
-    void IncludeScriptWithOpt(size_t optArgCount, const std::string& path, JS::HandleValue options);
+    void IncludeScript(const std::wstring& path, JS::HandleValue options = JS::UndefinedHandleValue);
+    void IncludeScriptWithOpt(size_t optArgCount, const std::wstring& path, JS::HandleValue options);
     uint32_t SetInterval(JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs = JS::HandleValueArray{ JS::UndefinedHandleValue });
     uint32_t SetIntervalWithOpt(size_t optArgCount, JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs);
     uint32_t SetTimeout(JS::HandleValue func, uint32_t delay, JS::HandleValueArray funcArgs);
@@ -88,8 +88,7 @@ private:
 
     Window* pWindow_ = nullptr;
 
-    std::unordered_set<std::string> includedFiles_;
-
+    std::unordered_set<std::wstring> includedFiles_;
     std::unique_ptr<GlobalHeapManager> heapManager_;
 };
 
