@@ -1,6 +1,5 @@
 #pragma once
-
-struct mz_zip_archive;
+#include <miniz.h>
 
 namespace smp
 {

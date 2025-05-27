@@ -1,6 +1,5 @@
 #include <stdafx.h>
 #include "zip_utils.h"
-#include <miniz/miniz.h>
 
 
 namespace fs = std::filesystem;

@@ -14,7 +14,7 @@
     <ClCompile Include="miniz.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="miniz\miniz.h" />
+    <ClInclude Include="miniz.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
