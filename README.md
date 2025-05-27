@@ -4,6 +4,11 @@ requires at least `foobar2000` `2.0`.
 
 # Changelog
 
+## 1.6.2.25.05.27
+- Fix includes and package imports for paths containing non-ascii chars.
+- Lots of internal refactoring around image, album art and text file
+handling. Please report any issues if you find them.
+
 ## 1.6.2.25.05.23
 - Fix regression affecting JSON property exports.
 
