@@ -1,23 +1,18 @@
 #pragma once
-
 #include <resources/resource.h>
+
+#include <libPPUI/CListControlOwnerData.h>
 
 namespace smp::ui
 {
 
-class CDialogEditorConfig
-    : public CDialogImpl<CDialogEditorConfig>
-    , public CWinDataExchange<CDialogEditorConfig>
+class CDialogEditorConfig : public CDialogImpl<CDialogEditorConfig>, private IListControlOwnerDataSource
 {
 public:
     enum
     {
         IDD = IDD_DIALOG_EDITOR_CONFIG
     };
-
-    BEGIN_DDX_MAP(CDialogEditorConfig)
-        DDX_CONTROL_HANDLE(IDC_LIST_EDITOR_PROP, propertiesListView_)
-    END_DDX_MAP()
 
     BEGIN_MSG_MAP(CDialogEditorConfig)
         MSG_WM_INITDIALOG(OnInitDialog)
@@ -26,10 +21,6 @@ public:
         COMMAND_HANDLER_EX(IDC_BUTTON_RESET, BN_CLICKED, OnButtonReset)
         COMMAND_HANDLER_EX(IDC_BUTTON_EXPORT, BN_CLICKED, OnButtonExportBnClicked)
         COMMAND_HANDLER_EX(IDC_BUTTON_IMPORT, BN_CLICKED, OnButtonImportBnClicked)
-#pragma warning(push)
-#pragma warning(disable : 26454) // Arithmetic overflow
-        NOTIFY_HANDLER_EX(IDC_LIST_EDITOR_PROP, NM_DBLCLK, OnPropNMDblClk)
-#pragma warning(pop)
     END_MSG_MAP()
 
     CDialogEditorConfig();
@@ -40,13 +31,15 @@ private:
     void OnButtonReset(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     void OnButtonExportBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
     void OnButtonImportBnClicked(WORD wNotifyCode, WORD wID, HWND hWndCtl);
-    LRESULT OnPropNMDblClk(LPNMHDR pnmh);
-
-    void LoadProps(bool reset = false);
-    std::string GetItemTextStr(int nItem, int nSubItem);
 
 private:
-    CListViewCtrl propertiesListView_;
+    bool listIsColumnEditable(ctx_t, size_t column) final;
+    size_t listGetItemCount(ctx_t) final;
+    pfc::string8 listGetSubItemText(ctx_t, size_t row, size_t column) final;
+    void listSetEditField(ctx_t, size_t row, size_t column, const char* value) final;
+    void listSubItemClicked(ctx_t, size_t row, size_t column) final;
+
+    CListControlOwnerData m_list;
 };
 
 } // namespace smp::ui

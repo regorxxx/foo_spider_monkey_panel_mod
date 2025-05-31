@@ -2,7 +2,6 @@
 
 #include "ui_sci_editor.h"
 
-#include <ui/scintilla/sci_config.h>
 #include <ui/scintilla/sci_prop_sets.h>
 #include <ui/scintilla/ui_sci_goto.h>
 #include <utils/colour_helpers.h>
@@ -574,7 +573,7 @@ void CScriptEditorCtrl::SetJScript()
 
 void CScriptEditorCtrl::ReloadScintillaSettings()
 {
-    for (const auto& prop: config::sci::props.val())
+    for (const auto& prop: config::sci::props.m_data)
     {
         SetProperty(prop.key.c_str(), prop.val.c_str());
     }

@@ -59,7 +59,6 @@
 #include <atldlgs.h>
 #include <atlfind.h>
 #include <atlframe.h>
-#include <atltheme.h>
 #include <atltypes.h>
 #include <atlwin.h>
 

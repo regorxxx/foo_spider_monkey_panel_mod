@@ -243,9 +243,6 @@
     <ClCompile Include="utils\edit_text.cpp">
       <Filter>utils</Filter>
     </ClCompile>
-    <ClCompile Include="ui\scintilla\sci_config.cpp">
-      <Filter>ui\scintilla</Filter>
-    </ClCompile>
     <ClCompile Include="panel\edit_script.cpp">
       <Filter>panel</Filter>
     </ClCompile>
@@ -767,9 +764,6 @@
     </ClInclude>
     <ClInclude Include="utils\edit_text.h">
       <Filter>utils</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\scintilla\sci_config.h">
-      <Filter>ui\scintilla</Filter>
     </ClInclude>
     <ClInclude Include="panel\edit_script.h">
       <Filter>panel</Filter>

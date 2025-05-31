@@ -208,7 +208,6 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     <ClCompile Include="ui\impl\ui_conf_tab_package.cpp" />
     <ClCompile Include="ui\impl\ui_conf_tab_properties.cpp" />
     <ClCompile Include="ui\impl\ui_conf_tab_script_source.cpp" />
-    <ClCompile Include="ui\scintilla\sci_config.cpp" />
     <ClCompile Include="ui\scintilla\sci_prop_sets.cpp" />
     <ClCompile Include="ui\scintilla\ui_sci_editor.cpp" />
     <ClCompile Include="ui\scintilla\ui_sci_find_replace.cpp" />
@@ -394,7 +393,6 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     <ClInclude Include="ui\impl\ui_conf_tab_properties.h" />
     <ClInclude Include="ui\impl\ui_conf_tab_script_source.h" />
     <ClInclude Include="ui\impl\ui_itab.h" />
-    <ClInclude Include="ui\scintilla\sci_config.h" />
     <ClInclude Include="ui\scintilla\sci_prop_sets.h" />
     <ClInclude Include="ui\scintilla\ui_sci_editor.h" />
     <ClInclude Include="ui\scintilla\ui_sci_find_replace.h" />
