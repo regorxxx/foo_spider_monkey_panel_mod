@@ -149,7 +149,7 @@ LRESULT CEditInProgress::OnCloseCmd(WORD, WORD wID, HWND)
             editorThread_.join();
         }
 
-        EndDialog(wID == IDOK ? IDOK : IDCANCEL);
+        EndDialog(wID);
     }
     else
     { // requested by user

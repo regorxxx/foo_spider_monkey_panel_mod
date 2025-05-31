@@ -8,7 +8,6 @@
 #define IDR_SCINTILLA_JS_API               103
 #define IDD_DIALOG_GOTO                    104
 #define IDD_DIALOG_EDITOR_CONFIG           107
-#define IDD_DIALOG_NAME_VALUE              108
 #define IDD_DIALOG_CONF_TAB_PROPERTIES     109
 #define IDD_DIALOG_HTML                    111
 #define IDD_DIALOG_EDITOR                  112
@@ -34,8 +33,6 @@
 #define IDC_LIST_EDITOR_PROP               1050
 #define IDC_BUTTON_IMPORT                  1051
 #define IDC_BUTTON_EXPORT                  1052
-#define IDC_EDIT_NAME                      1060
-#define IDC_EDIT_VALUE                     1061
 #define IDD_DIALOG_INPUT                   1062
 #define IDC_INPUT_PROMPT                   1063
 #define IDC_INPUT_VALUE                    1064

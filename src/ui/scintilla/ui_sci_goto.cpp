@@ -5,7 +5,6 @@
 #include <ui/scintilla/ui_sci_editor.h>
 
 #include <qwr/hook_handler.h>
-#include <qwr/pfc_helpers_ui.h>
 #include <qwr/string_helpers.h>
 
 namespace
@@ -53,8 +52,8 @@ LRESULT CDialogGoto::OnCloseCmd(WORD, WORD wID, HWND)
 {
     if (wID == IDOK)
     {
-        const auto text = qwr::pfc_x::uGetWindowText<char>(GetDlgItem(IDC_EDIT_LINENUMBER));
-        const auto numRet = qwr::string::GetNumber<unsigned>(static_cast<std::string_view>(text));
+        const auto text = pfc::getWindowText(GetDlgItem(IDC_EDIT_LINENUMBER));
+        const auto numRet = qwr::string::GetNumber<uint32_t>(text.get_ptr());
         if (numRet)
         {
             ::SendMessage(hParent_, CScintillaGotoImpl::GetGotoMsg(), (WPARAM)GotoMsg::PerformGoto, (LPARAM)*numRet);

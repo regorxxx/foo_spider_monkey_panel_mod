@@ -416,39 +416,44 @@ void JsFbMetadbHandleList::MakeDifference(JsFbMetadbHandleList* handles)
 {
     qwr::QwrException::ExpectTrue(handles, "handles argument is null");
 
-    const auto a = qwr::pfc_x::Make_Stl_CRef(metadbHandleList_);
-    const auto b = qwr::pfc_x::Make_Stl_CRef(handles->GetHandleList());
-    qwr::pfc_x::Stl<metadb_handle_list> result;
-
-    std::set_difference(a.cbegin(), a.cend(), b.cbegin(), b.cend(), std::back_inserter(result));
-
-    metadbHandleList_ = result.Pfc();
+    metadb_handle_list r1, r2;
+    metadb_handle_list_helper::sorted_by_pointer_extract_difference(metadbHandleList_, handles->GetHandleList(), r1, r2);
+    metadbHandleList_ = r1;
 }
 
 void JsFbMetadbHandleList::MakeIntersection(JsFbMetadbHandleList* handles)
 {
     qwr::QwrException::ExpectTrue(handles, "handles argument is null");
 
-    const auto a = qwr::pfc_x::Make_Stl_CRef(metadbHandleList_);
-    const auto b = qwr::pfc_x::Make_Stl_CRef(handles->GetHandleList());
-    qwr::pfc_x::Stl<metadb_handle_list> result;
+    auto& other = handles->GetHandleList();
+    metadb_handle_list result;
+    size_t walk1{}, walk2{};
+    const auto last1 = metadbHandleList_.get_count();
+    const auto last2 = other.get_count();
 
-    std::set_intersection(a.cbegin(), a.cend(), b.cbegin(), b.cend(), std::back_inserter(result));
+    while (walk1 != last1 && walk2 != last2)
+    {
+        if (metadbHandleList_[walk1] < other[walk2])
+            ++walk1;
+        else if (other[walk2] < metadbHandleList_[walk1])
+            ++walk2;
+        else
+        {
+            result.add_item(metadbHandleList_[walk1]);
+            ++walk1;
+            ++walk2;
+        }
+    }
 
-    metadbHandleList_ = result.Pfc();
+    metadbHandleList_ = result;
 }
 
 void JsFbMetadbHandleList::MakeUnion(JsFbMetadbHandleList* handles)
 {
     qwr::QwrException::ExpectTrue(handles, "handles argument is null");
 
-    const auto a = qwr::pfc_x::Make_Stl_CRef(metadbHandleList_);
-    const auto b = qwr::pfc_x::Make_Stl_CRef(handles->GetHandleList());
-    qwr::pfc_x::Stl<metadb_handle_list> result;
-
-    std::set_union(a.cbegin(), a.cend(), b.cbegin(), b.cend(), std::back_inserter(result));
-
-    metadbHandleList_ = result.Pfc();
+    metadbHandleList_.add_items(handles->GetHandleList());
+    metadbHandleList_.sort_by_pointer_remove_duplicates();
 }
 
 void JsFbMetadbHandleList::OrderByFormat(JsFbTitleFormat* script, int8_t direction)

@@ -1,6 +1,4 @@
 #pragma once
-#include <qwr/pfc_helpers_ui.h>
-
 
 namespace qwr::ui
 {
@@ -106,7 +104,7 @@ public:
             return;
         }
 
-        value_ = qwr::pfc_x::uGetDlgItemText<char>(hWnd_, controlId_);
+        value_ = uGetDlgItemText(hWnd_, controlId_);
     }
     void WriteToUi() override
     {

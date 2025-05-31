@@ -109,7 +109,6 @@ using JSON = nlohmann::json;
 #pragma warning(pop)
 
 // fb2k_utils
-#include <qwr/pfc_helpers_cnt.h>
 #include <qwr/unicode.h>
 #include <qwr/qwr_exception.h>
 

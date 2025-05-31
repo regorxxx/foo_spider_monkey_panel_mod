@@ -10,7 +10,6 @@
 #include <2K3/FileDialog.hpp>
 #include <2K3/TextFile.hpp>
 #include <qwr/fb2k_paths.h>
-#include <qwr/pfc_helpers_ui.h>
 
 namespace
 {

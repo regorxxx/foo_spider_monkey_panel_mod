@@ -426,7 +426,7 @@ JS::Value Plman::GetPlaybackQueueContents()
     playlist_manager::get()->queue_get_contents(contents);
 
     JS::RootedValue jsValue(pJsCtx_);
-    convert::to_js::ToArrayValue(pJsCtx_, qwr::pfc_x::Make_Stl_CRef(contents), &jsValue);
+    convert::to_js::ToArrayValue(pJsCtx_, contents, &jsValue);
     return jsValue;
 }
 

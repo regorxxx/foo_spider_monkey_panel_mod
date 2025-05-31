@@ -214,11 +214,12 @@ bool metadb_display_field_provider_impl::process_field(uint32_t index, metadb_ha
 
 void track_property_provider_impl::enumerate_properties(metadb_handle_list_cref p_tracks, track_property_callback& p_out)
 {
-    const auto stlHandleList = qwr::pfc_x::Make_Stl_CRef(p_tracks);
-    if (stlHandleList.size() == 1)
+    const auto count = p_tracks.get_count();
+
+    if (count == 1)
     {
         metadb_index_hash hash;
-        if (g_client->hashHandle(stlHandleList.front(), hash))
+        if (g_client->hashHandle(p_tracks[0], hash))
         {
             Fields tmp = GetStats(hash);
             if (tmp.playcount > 0)
@@ -246,9 +247,9 @@ void track_property_provider_impl::enumerate_properties(metadb_handle_list_cref 
     else
     {
         std::vector<metadb_index_hash> hashes;
-        hashes.reserve(stlHandleList.size());
+        hashes.reserve(count);
 
-        for (const auto& handle: stlHandleList)
+        for (const auto& handle : p_tracks)
         {
             metadb_index_hash hash;
             if (g_client->hashHandle(handle, hash))

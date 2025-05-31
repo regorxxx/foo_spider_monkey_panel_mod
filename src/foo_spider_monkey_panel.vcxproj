@@ -219,7 +219,6 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
       <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <ClCompile Include="ui\ui_input_box.cpp" />
-    <ClCompile Include="ui\ui_name_value_edit.cpp" />
     <ClCompile Include="ui\ui_package_manager.cpp" />
     <ClCompile Include="ui\ui_editor_config.cpp" />
     <ClCompile Include="ui\ui_slow_script.cpp" />
@@ -364,8 +363,6 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     <ClInclude Include="qwr\error_popup.h" />
     <ClInclude Include="qwr\fb2k_paths.h" />
     <ClInclude Include="qwr\hook_handler.h" />
-    <ClInclude Include="qwr\pfc_helpers_cnt.h" />
-    <ClInclude Include="qwr\pfc_helpers_ui.h" />
     <ClInclude Include="qwr\qwr_exception.h" />
     <ClInclude Include="qwr\string_helpers.h" />
     <ClInclude Include="qwr\thread_helpers.h" />
@@ -403,7 +400,6 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     <ClInclude Include="ui\ui_edit_in_progress.h" />
     <ClInclude Include="ui\ui_html.h" />
     <ClInclude Include="ui\ui_input_box.h" />
-    <ClInclude Include="ui\ui_name_value_edit.h" />
     <ClInclude Include="ui\ui_package_manager.h" />
     <ClInclude Include="ui\ui_editor_config.h" />
     <ClInclude Include="ui\ui_slow_script.h" />

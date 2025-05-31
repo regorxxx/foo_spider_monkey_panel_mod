@@ -1,10 +1,7 @@
 #include <stdafx.h>
-
 #include "ui_input_box.h"
 
 #include <utils/gdi_helpers.h>
-
-#include <qwr/pfc_helpers_ui.h>
 
 namespace smp::ui
 {
@@ -39,16 +36,12 @@ LRESULT CInputBox::OnInitDialog(HWND /*hwndFocus*/, LPARAM /*lParam*/)
 
 LRESULT CInputBox::OnCommand(UINT /*codeNotify*/, int id, HWND /*hwndCtl*/)
 {
-    if (id == IDOK || id == IDCANCEL)
+    if (id == IDOK)
     {
-        if (id == IDOK)
-        {
-            value_ = qwr::pfc_x::uGetWindowText<char>(GetDlgItem(IDC_INPUT_VALUE));
-        }
-
-        EndDialog(id);
+        value_ = pfc::getWindowText(GetDlgItem(IDC_INPUT_VALUE)).get_ptr();
     }
 
+    EndDialog(id);
     return 0;
 }
 
