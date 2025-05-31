@@ -31,7 +31,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(IncludePath);..\foobar2000-sdk;..\foobar2000-sdk\foobar2000;..\includes;..\scintilla\include;..\scintilla\lexilla\src;..\scintilla\lexlib;..\mozjs\include;..\fb2k_utils;..\miniz;..\src\PropertyList;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(IncludePath);..\foobar2000-sdk;..\foobar2000-sdk\foobar2000;..\includes;..\scintilla\include;..\scintilla\lexilla\src;..\scintilla\lexlib;..\mozjs\include;..\miniz;..\src\PropertyList;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/Zm200 /Zc:__cplusplus /Zc:preprocessor /experimental:newLambdaProcessor /Zc:char8_t- /utf-8 %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -185,6 +185,14 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     <ClCompile Include="panel\js_panel_window_cui.cpp" />
     <ClCompile Include="panel\js_panel_window_dui.cpp" />
     <ClCompile Include="panel\modal_blocking_scope.cpp" />
+    <ClCompile Include="qwr\error_popup.cpp" />
+    <ClCompile Include="qwr\fb2k_paths.cpp" />
+    <ClCompile Include="qwr\hook_handler.cpp" />
+    <ClCompile Include="qwr\string_helpers.cpp" />
+    <ClCompile Include="qwr\thread_helpers.cpp" />
+    <ClCompile Include="qwr\thread_pool.cpp" />
+    <ClCompile Include="qwr\unicode.cpp" />
+    <ClCompile Include="qwr\winapi_error_helpers.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
@@ -354,6 +362,21 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     <ClInclude Include="panel\js_panel_window_dui.h" />
     <ClInclude Include="panel\modal_blocking_scope.h" />
     <ClInclude Include="panel\user_message.h" />
+    <ClInclude Include="qwr\error_popup.h" />
+    <ClInclude Include="qwr\fb2k_paths.h" />
+    <ClInclude Include="qwr\hook_handler.h" />
+    <ClInclude Include="qwr\pfc_helpers_cnt.h" />
+    <ClInclude Include="qwr\pfc_helpers_ui.h" />
+    <ClInclude Include="qwr\qwr_exception.h" />
+    <ClInclude Include="qwr\string_helpers.h" />
+    <ClInclude Include="qwr\thread_helpers.h" />
+    <ClInclude Include="qwr\thread_pool.h" />
+    <ClInclude Include="qwr\type_traits.h" />
+    <ClInclude Include="qwr\ui_ddx.h" />
+    <ClInclude Include="qwr\ui_ddx_option.h" />
+    <ClInclude Include="qwr\ui_option.h" />
+    <ClInclude Include="qwr\unicode.h" />
+    <ClInclude Include="qwr\winapi_error_helpers.h" />
     <ClInclude Include="resources\resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="timeout\timeout.h" />
@@ -415,9 +438,6 @@ copy /Y "$(TargetPath)" "%component_path%"</Command>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\fb2k_utils\fb2k_utils.vcxproj">
-      <Project>{ee3bf4f9-2014-4cff-96c8-44cfb85e0571}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\foobar2000-sdk\columns_ui-sdk\columns_ui-sdk.vcxproj">
       <Project>{93ec0ede-01cd-4fb0-b8e8-4f2a027e026e}</Project>
     </ProjectReference>

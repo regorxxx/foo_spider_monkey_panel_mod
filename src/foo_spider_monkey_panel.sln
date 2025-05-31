@@ -5,8 +5,6 @@ VisualStudioVersion = 17.14.36025.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foo_spider_monkey_panel", "foo_spider_monkey_panel.vcxproj", "{43DF6037-DBE4-4468-9A50-4311495F3C86}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fb2k_utils", "..\fb2k_utils\fb2k_utils.vcxproj", "{979A196B-7F80-47B2-8CDA-B16540891F67}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "miniz", "..\miniz\miniz.vcxproj", "{1B0654F2-3FEC-43B8-8C0A-6206C64BD6B2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Scintilla", "..\scintilla\win32\Scintilla.vcxproj", "{10B2A7EF-9089-4352-BA26-7E9AEF50987D}"
@@ -32,8 +30,6 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{43DF6037-DBE4-4468-9A50-4311495F3C86}.Release|Win32.ActiveCfg = Release|Win32
 		{43DF6037-DBE4-4468-9A50-4311495F3C86}.Release|Win32.Build.0 = Release|Win32
-		{979A196B-7F80-47B2-8CDA-B16540891F67}.Release|Win32.ActiveCfg = Release|Win32
-		{979A196B-7F80-47B2-8CDA-B16540891F67}.Release|Win32.Build.0 = Release|Win32
 		{1B0654F2-3FEC-43B8-8C0A-6206C64BD6B2}.Release|Win32.ActiveCfg = Release|Win32
 		{1B0654F2-3FEC-43B8-8C0A-6206C64BD6B2}.Release|Win32.Build.0 = Release|Win32
 		{10B2A7EF-9089-4352-BA26-7E9AEF50987D}.Release|Win32.ActiveCfg = Release|Win32

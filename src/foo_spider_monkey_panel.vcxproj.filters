@@ -457,6 +457,30 @@
     <ClCompile Include="2K3\Attach.cpp">
       <Filter>2K3</Filter>
     </ClCompile>
+    <ClCompile Include="qwr\error_popup.cpp">
+      <Filter>qwr</Filter>
+    </ClCompile>
+    <ClCompile Include="qwr\fb2k_paths.cpp">
+      <Filter>qwr</Filter>
+    </ClCompile>
+    <ClCompile Include="qwr\hook_handler.cpp">
+      <Filter>qwr</Filter>
+    </ClCompile>
+    <ClCompile Include="qwr\string_helpers.cpp">
+      <Filter>qwr</Filter>
+    </ClCompile>
+    <ClCompile Include="qwr\thread_helpers.cpp">
+      <Filter>qwr</Filter>
+    </ClCompile>
+    <ClCompile Include="qwr\thread_pool.cpp">
+      <Filter>qwr</Filter>
+    </ClCompile>
+    <ClCompile Include="qwr\unicode.cpp">
+      <Filter>qwr</Filter>
+    </ClCompile>
+    <ClCompile Include="qwr\winapi_error_helpers.cpp">
+      <Filter>qwr</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="js_engine\js_engine.h">
@@ -961,6 +985,51 @@
     <ClInclude Include="2K3\LoadImageAsync.hpp">
       <Filter>2K3</Filter>
     </ClInclude>
+    <ClInclude Include="qwr\error_popup.h">
+      <Filter>qwr</Filter>
+    </ClInclude>
+    <ClInclude Include="qwr\fb2k_paths.h">
+      <Filter>qwr</Filter>
+    </ClInclude>
+    <ClInclude Include="qwr\hook_handler.h">
+      <Filter>qwr</Filter>
+    </ClInclude>
+    <ClInclude Include="qwr\pfc_helpers_cnt.h">
+      <Filter>qwr</Filter>
+    </ClInclude>
+    <ClInclude Include="qwr\pfc_helpers_ui.h">
+      <Filter>qwr</Filter>
+    </ClInclude>
+    <ClInclude Include="qwr\qwr_exception.h">
+      <Filter>qwr</Filter>
+    </ClInclude>
+    <ClInclude Include="qwr\string_helpers.h">
+      <Filter>qwr</Filter>
+    </ClInclude>
+    <ClInclude Include="qwr\thread_helpers.h">
+      <Filter>qwr</Filter>
+    </ClInclude>
+    <ClInclude Include="qwr\thread_pool.h">
+      <Filter>qwr</Filter>
+    </ClInclude>
+    <ClInclude Include="qwr\type_traits.h">
+      <Filter>qwr</Filter>
+    </ClInclude>
+    <ClInclude Include="qwr\ui_ddx.h">
+      <Filter>qwr</Filter>
+    </ClInclude>
+    <ClInclude Include="qwr\ui_ddx_option.h">
+      <Filter>qwr</Filter>
+    </ClInclude>
+    <ClInclude Include="qwr\ui_option.h">
+      <Filter>qwr</Filter>
+    </ClInclude>
+    <ClInclude Include="qwr\unicode.h">
+      <Filter>qwr</Filter>
+    </ClInclude>
+    <ClInclude Include="qwr\winapi_error_helpers.h">
+      <Filter>qwr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="js_engine">
@@ -1025,6 +1094,9 @@
     </Filter>
     <Filter Include="2K3">
       <UniqueIdentifier>{fbefef93-448c-410e-90b5-34841f47befd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="qwr">
+      <UniqueIdentifier>{a651e2b4-e32e-4584-8353-b90619809011}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
